@@ -1,0 +1,86 @@
+-Swamp building inside: right wall lacks collision
+
+================================
+Bugs:
+================================
+
+-Optimization
+-Stop sounds from penetrating indoor walls
+-Boomerang glitch: sometimes doesn't return
+
+========================
+Single Player Phase:
+========================
+
+autoincid to become zIndex (or at least renamed to be zIndex related)
+-fix occasional texture bleeding issue with tiles
+	-Resolve this with a translation script after you make any change.
+-Tiles need non-green colors for background color
+Level transition system/architecture/doors
+NPCs
+Save model/save to disk
+
+========================
+V2 Phase
+========================
+
+V2:
+
+-Somaria splash in water
+-Flute (should bring up map)
+-shops + gamble + fortune teller
+-ledge-jumpable waterfalls
+-pushable graves
+-shovel
+-death mountain
+-Dead anim: rapidly alt between colors
+
+===================================================
+Help
+===================================================
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_color.h>
+
+ALLEGRO_KEY_X
+al_map_rgb(0, 0, 0)
+al_color_name("white")
+al_draw_tinted_scaled_rotated_bitmap_region(bitmap, currentFrame.rect.x1, currentFrame.rect.y1, currentFrame.rect.w(), currentFrame.rect.h(), al_color_name("white"), cx, cy, x, y, xDir, yDir, 0, 0);
+//al_draw_bitmap_region(bitmap, currentFrame.rect.x1, currentFrame.rect.y1, currentFrame.rect.w(), currentFrame.rect.h(), x, y, 0);
+al_draw_rectangle(j * 16, i * 16, (j + 1) * 16, (i + 1) * 16, al_map_rgba(255, 0, 0, 128), 1.0);
+
+
+sf::RectangleShape rect;
+rect.setPosition(shape.points[0].x, shape.points[0].y);
+rect.setSize(sf::Vector2f(shape.points[2].x - shape.points[0].x, shape.points[2].y - shape.points[0].y));
+rect.setFillColor(sf::Color(0, 0, 255, 128));
+
+#include <SFML/Graphics.hpp>
+
+for zVel and z, upwards is POSITIVE. This means that a positive zVel sends it up and a negative sends it down.
+
+===================================================
+Translations/Initializations Guide
+===================================================
+Search "TILE TRANSLATIONS" for the translations from tiles to objects
+Search "INSTANCE SETUP" for the creation of instances from level json
+Search "SPRITE_SETUP" for link sprite setup (i.e. swords, shields)
+Search "SHADER SETUP" for shader setup
+Search "SWORD COLLIDERS" for where sword colliders/damagers are setup
+Search "OVERRIDES" for tile overrides
+
+===================================================
+Save a trip to the debugger! Check this debug checklist first
+===================================================
+-Make sure you're calling the base class in any derived update() method or similar! i.e. Actor::update()
+AI Debugging tips:
+	-If an ai can't go somewhere after exiting a door or opening a chest, make sure it's not trying to hit an entrance or chest that is blocked
+		-Rock piles/big rocks
+		-Bombable walls
+		-And a LOT more you probably forgot about
+	-Log events
+		-Every time you move to a new pos (log i and j)
+		-Every time you change the aiState
+		-Every time a path check returns 0

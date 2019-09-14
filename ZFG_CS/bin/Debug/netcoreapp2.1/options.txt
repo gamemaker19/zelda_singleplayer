@@ -1,0 +1,1 @@
+{"numCPUs":99,"enableMasterSword":true,"musicVolume":1.0,"soundVolume":1.0}

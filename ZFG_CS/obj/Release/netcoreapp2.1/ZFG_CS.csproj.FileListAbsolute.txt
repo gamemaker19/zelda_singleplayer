@@ -1,0 +1,11 @@
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\ZFG_CS\bin\Release\netcoreapp2.1\ZFG_CS.deps.json
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\ZFG_CS\bin\Release\netcoreapp2.1\ZFG_CS.runtimeconfig.json
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\ZFG_CS\bin\Release\netcoreapp2.1\ZFG_CS.runtimeconfig.dev.json
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\ZFG_CS\bin\Release\netcoreapp2.1\ZFG_CS.dll
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\ZFG_CS\bin\Release\netcoreapp2.1\ZFG_CS.pdb
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\ZFG_CS\obj\Release\netcoreapp2.1\ZFG_CS.csproj.CoreCompileInputs.cache
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\ZFG_CS\obj\Release\netcoreapp2.1\ZFG_CS.AssemblyInfoInputs.cache
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\ZFG_CS\obj\Release\netcoreapp2.1\ZFG_CS.AssemblyInfo.cs
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\ZFG_CS\obj\Release\netcoreapp2.1\ZFG_CS.dll
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\ZFG_CS\obj\Release\netcoreapp2.1\ZFG_CS.pdb
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\ZFG_CS\obj\Release\netcoreapp2.1\ZFG_CS.csprojAssemblyReference.cache

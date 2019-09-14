@@ -1,0 +1,17 @@
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\bin\Debug\netcoreapp2.1\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\bin\Debug\netcoreapp2.1\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\bin\Debug\netcoreapp2.1\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\bin\Debug\netcoreapp2.1\Tests.deps.json
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\bin\Debug\netcoreapp2.1\Tests.runtimeconfig.json
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\bin\Debug\netcoreapp2.1\Tests.runtimeconfig.dev.json
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\bin\Debug\netcoreapp2.1\Tests.dll
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\bin\Debug\netcoreapp2.1\Tests.pdb
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\bin\Debug\netcoreapp2.1\ZFG_CS.dll
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\bin\Debug\netcoreapp2.1\ZFG_CS.pdb
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\obj\Debug\netcoreapp2.1\Tests.csprojAssemblyReference.cache
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\obj\Debug\netcoreapp2.1\Tests.csproj.CoreCompileInputs.cache
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\obj\Debug\netcoreapp2.1\Tests.AssemblyInfoInputs.cache
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\obj\Debug\netcoreapp2.1\Tests.AssemblyInfo.cs
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\obj\Debug\netcoreapp2.1\Tests.csproj.CopyComplete
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\obj\Debug\netcoreapp2.1\Tests.dll
+D:\Documents\Game Projects\ZeldaCpp\ZFG_CS\Tests\obj\Debug\netcoreapp2.1\Tests.pdb

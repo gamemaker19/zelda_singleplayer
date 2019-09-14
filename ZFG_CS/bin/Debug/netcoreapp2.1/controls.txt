@@ -1,0 +1,1 @@
+{"Up":73,"Down":74,"Left":71,"Right":72,"Action":23,"Sword":2,"Map":25,"Item1":27,"Item2":28,"Item3":29,"Item4":30,"Item5":31,"DropItem1":16,"DropItem2":22,"DropItem3":4,"DropItem4":17,"DropItem5":19}
