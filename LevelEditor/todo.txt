@@ -1,0 +1,64 @@
+-Allow the same sprite frame to be used
+
+-Tile restructure
+  -Tiles are keyed off pixelkey instead of x/y
+  -Both JS and C++ code need ability to parse pixelkey
+  -must store this in tiledatas.json
+-Alternative:
+  -On tileset image, show tiles that are "base" tiles and that either must not change, or you must be aware data will be lost if they change
+  -Problem: old tileset data can linger if tileset is changed
+  -Or just deal with it and accept that tilesets are things that really can't change frequently or at all
+    -script that removes all tiles of a certain tileset in tiledatas.json
+
+-Child frame deletion is broken
+-Shadow sprite is wrong. Shouldn't be in "link.png". Also, it's uppercase in some machines when "git pull"ing
+
+=======================================
+Backlog:
+=======================================
+
+-We may possibly need tile-specific z-indices in the future
+  -Specify with i/j grid properties in level
+
+-Mark objects
+  -Set hotkeys for object marking
+  -Must factor in background color somehow
+-Tags: comma separate
+When switching levels, laggy
+copy command
+snap/remember regions
+ledge/ledgewall: tiledata is CSV
+When placing a tile, destroy all tiles at the same z-index in the same position
+Refactor: Investigate why addTileDatas is needed
+-Ctrl+click to select clumps to current selection
+
+=======================================
+Notes:
+=======================================
+Sprite.ts has serialization exmaple
+import * as Helpers from "./helpers";
+sounds: { [path: string]: Howl } = {};
+data.selectedLevel.scrollLines.pop();
+
+Tile water rules:
+1 is water-only portion, if it exists. 2 is shore/land portion, if it exists.
+The direction indicates location of shore. For example, bot left indicates the shore is on the bottom left (via diagonal).
+
+If you change the tilesets folder images (the actual tilesets used):
+  -Regenerate hash cache in visual studio tools
+If you change the levelimages folder images (which holds the image which is "data model" for level):
+  -Regenerate level in visual studio tools
+  -Note: there isn't any tile-specific metadata. The only data currently is elevation, and that's stored on a per-index level
+  -This means that "Translate Tiles" is idempotent and won't destroy any saved data.
+
+Shortcut to tile editor hotkeys: TILE_HOTKEYS
+
+Level Tile Overrides:
+
+Entrance schema:
+ENTRANCE_ID: string id
+EXIT_ID: string id
+EXIT_LEVEL: string
+DIRECTION: up, down, left or right. can be set to oneway if it shouldn't go anywhere but just be an exit.
+HALVE_HEIGHT: set to 1 to halve the collision HALVE_HEIGHT
+MUSIC_OVERRIDE: set to a string sound key to play that music, otherwise default music of level will play. set to 0 to not change music at all. set to 1 for a quieter version.

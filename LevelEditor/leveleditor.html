@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="styles.css">
+<title>Level editor</title>
+</head>
+<body>
+
+<a href='' id='link'></a>
+
+<div id="app0">
+  <div v-if="!isLoaded()">Loading...</div>
+</div>
+
+<div id="sprite-list-container">
+  <h1>Levels</h1>
+  <div id="app1">
+    <div class="sprite-item" v-for="level in levels" v-on:click="changeLevel(level)"
+      v-bind:class="{ selected: level === selectedLevel }">{{ level.name }}</div>
+    <br>
+    <button v-on:click="addLevel()">New level</button><br>
+    <input type="text" v-model="newLevelName" style="width: 140px" />
+    <!--
+    <div>
+      Background:
+      <select v-model="selectedBackground" @change="onBackgroundChange(selectedBackground)" style="width: 90%">
+        <option v-for="background in backgrounds" v-bind:value="background">{{ background.path }}</option>
+      </select>
+    </div>
+    -->
+
+  </div>
+</div>
+
+<div id="sprite-list-container">
+  <div id="app2">
+    <h1>Objects</h1>
+    <div class="sprite-item" v-for="obj in objs" v-on:click="changeObj(obj)"
+      v-bind:class="{ selected: obj === selectedObj }">{{ obj.name }}</div>
+    <br>
+    <h1>Instances</h1>
+    <button v-if="selectedLevel" v-on:click="sortInstances()">Sort by name</button>
+    <div v-if="selectedLevel" class="sprite-list-scroll">
+      <div class="sprite-item" v-for="instance in selectedLevel.instances" v-on:click="onInstanceClick(instance)"
+        v-bind:class="{ selected: selectedInstances.indexOf(instance) !== -1 }">{{ instance.name }}</div>
+      <br>
+    </div>
+  </div>
+</div>
+
+<div class="canvas-section">
+
+  <div class="level-canvas-wrapper" style="width:600px;height:600px" tabindex="1">
+    <canvas id="level-canvas" class="layer-canvas" width="600" height="600"></canvas>
+    <canvas id="ui-canvas" class="layer-canvas" width="600" height="600"></canvas>
+  </div>
+  <div id="app3">
+    <div v-if="selectedLevel">
+      
+      <button v-on:click="saveLevel()">Save</button>
+      <!--<button v-on:click="translateTiles()" title="You must click this if you changed the map image, to save the changes.">Translate Tiles</button>-->
+      <button style="display:inline-block" v-on:click="undo()">Undo</button>
+      <button style="display:inline-block" v-on:click="redo()">Redo</button>
+
+      <input type="checkbox" v-model="showInstances" @change="redraw()" />Instances |
+      <input type="checkbox" v-model="showLevelGrid" @change="redraw()" />Grid |
+      <input type="checkbox" v-model="showRoomLines" @change="redraw()" />Room lines |
+      <input type="checkbox" v-model="showNavMesh" @change="redraw()" />Navmesh |
+      <!--Zoom:<input type="number" style="width:50px" v-model:number="displayZoom" @change="redraw()"> %-->
+      <br>
+      Width:<input type="number" style="width:50px" v-model:number="selectedLevel.width" @change="onLevelSizeChange()"> |
+      Height:<input type="number" style="width:50px" v-model:number="selectedLevel.height" @change="onLevelSizeChange()"> |
+      <span v-if="levelSelectedCoords.length > 0">Selection: {{ getSelectionCoords() }}</span> |
+      <span>Offset: {{ getLevelOffset() }}</span><br>
+    | <span>Tid: {{ getLevelSelectionTileData() }}</span>
+      <br>
+      Show overrides with key: <input type="text" v-model="showOverridesWithKey" @change="redraw()"/>
+      <br>
+      <!--<input type="checkbox" v-model="hideGizmos" @change="redraw()"/>Hide gizmos-->
+      <!--
+      Layers: <select v-model="layerIndex" @change="onLayerChange(layerIndex)" style="width: 200px">
+        <option v-for="(layer, index) in selectedLevel.layers" v-bind:value:number="index">{{ index }}</option>
+      </select>
+      <button v-on:click="addLayer()">Add layer</button>
+      -->
+      <h3>Tool</h3>
+      <input type="radio" name="selectedTool" value="0" v-model="selectedTool"> Select Tile Tool<br>
+      <input type="radio" name="selectedTool" value="1" v-model="selectedTool"> Place Tile Tool<br>
+      <input type="radio" name="selectedTool" value="2" v-model="selectedTool"> Rectangle Tile Tool<br>
+      <input type="radio" name="selectedTool" value="3" v-model="selectedTool"> Select Instance Tool<br>
+      <input type="radio" name="selectedTool" value="4" v-model="selectedTool"> Place Instance Tool<br>
+      <input type="radio" name="selectedTool" value="5" v-model="selectedTool"> Paint Elevation Tool&nbsp;<input type="number" v-model:number="paintElevationHeight"><br>
+      
+      <button style="display:inline-block" v-on:click="downloadImage()">Download image</button>
+
+      <div id="selection-properties" v-if="levelSelectedCoords.length > 0 && selectedTool == 0">
+        <h3>Selection properties</h3>
+        <div class="properties">
+          <textarea rows="14" cols="50" v-model="selectionProperties" v-on:change="onSelectionPropertyChange"></textarea>
+        </div>
+      </div>
+
+      <div v-if="selectedInstances.length > 0">
+        <h3>Selected Instance Properties</h3>
+        name<input type="text" v-model="selectedInstances[0].name" @change="redraw()" />
+        x<input type="text" v-model.number="selectedInstances[0].pos.x" class="short-input" @change="redraw()" />
+        y<input type="text" v-model.number="selectedInstances[0].pos.y" class="short-input" @change="redraw()" />
+        tag<input type="text" v-model.number="selectedInstances[0].tag" class="short-input" @change="redraw()" />
+        properties<br>
+        <div class="properties">
+          <textarea rows="14" cols="50" v-model="selectedInstances[0].properties"></textarea>
+        </div>
+      </div>
+        
+    </div>
+  </div>
+</div>
+
+<div class="canvas-section">
+  <div class="level-canvas-wrapper" style="width:500px;height:700px" tabindex="2">
+    <canvas id="tile-canvas" class="layer-canvas" id="canvas" width="500" height="700"></canvas>  
+    <canvas id="ui-tile-canvas" class="layer-canvas" id="canvas" width="500" height="700"></canvas>  
+  </div>
+  <div id="app4">
+    <div v-if="selectedLevel">
+      Tileset: <select v-model="selectedTileset" @change="onTilesetChange(selectedTileset)" style="width: 200px">
+        <option v-for="tileset in tilesets" v-bind:value="tileset">{{ tileset.path }}</option>
+      </select>
+      <input type="checkbox" v-model="showTileHitboxes" @change="redraw(true)">Show tile hitboxes<br>
+      <input type="checkbox" v-model="mode16x16" @change="redraw()">16x16 select<br>
+      Show tiles with tag: <input type="text" v-model="showTilesWithTag" @change="redraw(true)"><br>
+      <input type="checkbox" v-model="showTilesWithZIndex1" @change="redraw(true)">Show tiles with z index 1:<br>
+      Show tiles with sprite: <select v-model="showTilesWithSprite" @change="redraw(true)">
+        <option v-for="spriteName in getTileSpriteNames()" v-bind:value="spriteName">{{ spriteName }}</option>
+      </select>
+      <hr>
+      <div>
+        Tile Name: <input type="text" style="width:100px" v-model="multiEditName" v-on:change="setMultiEditName">
+        Id: {{ getTileSelectionTileData() }}
+        <br>
+        Hitbox Mode: <select v-model:number="multiEditHitboxMode" style="width: 200px" v-on:change="setMultiEditHitboxMode">
+          <option value="0">None</option>
+          <option value="1">Tile</option>
+          <option value="2">BoundingRect</option>
+          <option value="3">TopLeftDiag</option>
+          <option value="4">TopRightDiag</option>
+          <option value="5">BotLeftDiag</option>
+          <option value="6">BotRightDiag</option>
+          <option value="7">PixelPerfect</option>
+          <option value="8">Custom</option>
+          <option value="9">BoxTop</option>
+          <option value="10">BoxBot</option>
+          <option value="11">BoxLeft</option>
+          <option value="12">BoxRight</option>
+          <option value="13">BoxTopLeft</option>
+          <option value="14">BotTopRight</option>
+          <option value="15">BoxBotLeft</option>
+          <option value="16">BoxBotRight</option>
+        </select><br>
+        <span v-if="multiEditHitboxMode == 8">Custom hitbox points: <input type="text" v-model="customHitboxPoints" v-on:change="setMultiEditPoints" /></span>
+        Tag: <input type="text" v-model="multiEditTag" v-on:change="setMultiEditTag">
+        Z-Index: <select v-model="multiEditZIndex" style="width: 200px" v-on:change="setMultiEditZIndex">
+          <option value="-3">Background3</option>
+          <option value="-2">Background2</option>
+          <option value="-1">Background1</option>
+          <option value="0" default>Default</option>
+          <option value="1">Foreground1</option>
+          <option value="4">Foreground1TopHalf</option>
+          <option value="5">Foreground1Unmasked</option>
+          <option value="2">Foreground2</option>
+          <option value="3">Foreground3</option>
+        </select><br>
+        Sprite: <select v-model="multiEditTileSprite" style="width: 200px" v-on:change="setMultiEditTileSprite">
+          <option v-for="spriteName in getTileSpriteNames()" v-bind:value="spriteName">{{ spriteName }}</option>
+        </select>
+        <br>
+        <img src="images/waterTiles/TileWaterEdgeBot.png" v-on:click="multiEditTileSprite='TileWaterEdgeBot';setMultiEditTileSprite();" title="TileWaterEdgeBot"/>
+        <img src="images/waterTiles/TileWaterEdgeTop.png" v-on:click="multiEditTileSprite='TileWaterEdgeTop';setMultiEditTileSprite();" title="TileWaterEdgeTop"/>
+        <img src="images/waterTiles/TileWaterEdgeLeft.png" v-on:click="multiEditTileSprite='TileWaterEdgeLeft';setMultiEditTileSprite();" title="TileWaterEdgeLeft"/>
+        <img src="images/waterTiles/TileWaterEdgeRight.png" v-on:click="multiEditTileSprite='TileWaterEdgeRight';setMultiEditTileSprite();" title="TileWaterEdgeRight"/>
+        <br>
+        <img src="images/waterTiles/TileWaterEdgeBotLeft.png" v-on:click="multiEditTileSprite='TileWaterEdgeBotLeft';setMultiEditTileSprite();" title="TileWaterEdgeBotLeft"/>
+        <img src="images/waterTiles/TileWaterEdgeBotLeft2.png" v-on:click="multiEditTileSprite='TileWaterEdgeBotLeft2';setMultiEditTileSprite();" title="TileWaterEdgeBotLeft2"/>
+        <img src="images/waterTiles/TileWaterEdgeBotRight.png" v-on:click="multiEditTileSprite='TileWaterEdgeBotRight';setMultiEditTileSprite();" title="TileWaterEdgeBotRight"/>
+        <img src="images/waterTiles/TileWaterEdgeBotRight2.png" v-on:click="multiEditTileSprite='TileWaterEdgeBotRight2';setMultiEditTileSprite();" title="TileWaterEdgeBotRight2"/>
+        <br>
+        <img src="images/waterTiles/TileWaterEdgeTopLeft.png" v-on:click="multiEditTileSprite='TileWaterEdgeTopLeft';setMultiEditTileSprite();" title="TileWaterEdgeTopLeft"/>
+        <img src="images/waterTiles/TileWaterEdgeTopLeft2.png" v-on:click="multiEditTileSprite='TileWaterEdgeTopLeft2';setMultiEditTileSprite();" title="TileWaterEdgeTopLeft2"/>
+        <img src="images/waterTiles/TileWaterEdgeTopRight.png" v-on:click="multiEditTileSprite='TileWaterEdgeTopRight';setMultiEditTileSprite();" title="TileWaterEdgeTopRight"/>
+        <img src="images/waterTiles/TileWaterEdgeTopRight2.png" v-on:click="multiEditTileSprite='TileWaterEdgeTopRight2';setMultiEditTileSprite();" title="TileWaterEdgeTopRight2"/>
+        <br>
+        <img src="images/waterTiles/TileOWaterEdgeBot.png" v-on:click="multiEditTileSprite='TileOWaterEdgeBot';setMultiEditTileSprite();" title="TileOWaterEdgeBot"/>
+        <img src="images/waterTiles/TileOWaterEdgeBot2.png" v-on:click="multiEditTileSprite='TileOWaterEdgeBot2';setMultiEditTileSprite();" title="TileOWaterEdgeBot2"/>
+        <br>
+        <img src="images/waterTiles/TileOWaterEdgeCupDownLeft.png" v-on:click="multiEditTileSprite='TileOWaterEdgeCupDownLeft';setMultiEditTileSprite();" title="TileOWaterEdgeCupDownLeft"/>
+        <img src="images/waterTiles/TileOWaterEdgeCupDownLeft2.png" v-on:click="multiEditTileSprite='TileOWaterEdgeCupDownLeft2';setMultiEditTileSprite();" title="TileOWaterEdgeCupDownLeft2"/>
+        <img src="images/waterTiles/TileOWaterEdgeCupDownRight.png" v-on:click="multiEditTileSprite='TileOWaterEdgeCupDownRight';setMultiEditTileSprite();" title="TileOWaterEdgeCupDownRight"/>
+        <img src="images/waterTiles/TileOWaterEdgeCupDownRight2.png" v-on:click="multiEditTileSprite='TileOWaterEdgeCupDownRight2';setMultiEditTileSprite();" title="TileOWaterEdgeCupDownRight2"/>
+        <br>
+        <img src="images/waterTiles/TileOWaterEdgeCupUpLeft.png" v-on:click="multiEditTileSprite='TileOWaterEdgeCupUpLeft';setMultiEditTileSprite();" title="TileOWaterEdgeCupUpLeft"/>
+        <img src="images/waterTiles/TileOWaterEdgeCupUpLeft2.png" v-on:click="multiEditTileSprite='TileOWaterEdgeCupUpLeft2';setMultiEditTileSprite();" title="TileOWaterEdgeCupUpLeft2"/>
+        <img src="images/waterTiles/TileOWaterEdgeCupUpRight.png" v-on:click="multiEditTileSprite='TileOWaterEdgeCupUpRight';setMultiEditTileSprite();" title="TileOWaterEdgeCupUpRight"/>
+        <img src="images/waterTiles/TileOWaterEdgeCupUpRight2.png" v-on:click="multiEditTileSprite='TileOWaterEdgeCupUpRight2';setMultiEditTileSprite();" title="TileOWaterEdgeCupUpRight2"/>
+        
+      </div>
+
+      <div v-if="selectedTileClump() !== undefined">
+        <h3>Clump Data</h3>
+        Clump Name: <input type="text" style="width:100px" v-model="selectedTileClump().name"><br>
+        Clump Tag: <input type="text" v-model="selectedTileClump().tag"><br>
+        <button v-on:click="removeTileClump()">Remove Clump</button>
+      </div>
+      
+      <div v-if="selectedTileAnimation() !== undefined">
+        <h3>Animation Data</h3>
+        Animation Frame Time: <input type="number" v-model="selectedTileAnimation().frameTime">
+        <button v-on:click="removeTileAnimation()">Remove Animation</button>
+      </div>
+
+      <div v-if="tileSelectedCoords.length > 1 && selectedTileClump() === undefined && selectedTileAnimation() === undefined">
+        <button v-on:click="addTileClump()">Add Clump Data</button>
+        <button v-on:click="addTileAnimation()">Add Animation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
+<script src="node_modules/vue/dist/vue.js"></script>
+<script src="dist/main.bundle.js"></script>
+<script>
+  initLevelEditor();
+</script>
+
+</body>
+</html>

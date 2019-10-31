@@ -1,0 +1,108 @@
+h1, h2, h3 {
+  margin: 5px;
+  padding: 0px;
+}
+
+body {
+  white-space: nowrap;
+  overflow-x: scroll;
+  overflow-y: scroll;
+}
+
+#selected-hitbox {
+  border: 1px solid blue;
+}
+
+#sprite-list-container {
+  white-space: nowrap;
+  display:inline-block;
+  width: 200px;
+  height: 900px;
+  border: 1px solid black;
+  vertical-align: top;
+}
+
+.sprite-item {
+  cursor: default;
+}
+
+.selected {
+  background-color: lightblue;
+}
+
+.hitbox-input {
+  width: 120px;
+}
+
+.sprite-list-scroll {
+  overflow: scroll;
+  width: 100%;
+  height: 670px;
+}
+
+.hitbox-section {
+  margin-top: 10px;
+  padding: 5px;
+  display:block;
+  border: 1px solid black;
+}
+
+.hitbox-tag-input {
+  width: 40px;
+}
+
+.frame-data {
+  padding: 4px;
+}
+
+.selected-frame {
+  -webkit-box-shadow:inset 0px 0px 0px 2px lightgreen;
+  -moz-box-shadow:inset 0px 0px 0px 2px lightgreen;
+  box-shadow:inset 0px 0px 0px 2px lightgreen;
+}
+
+.canvas-section {
+  white-space: nowrap;
+  display:inline-block;
+  vertical-align: top;
+}
+
+.canvas-wrapper {
+  overflow: scroll;
+  border: 1px solid black;
+}
+
+.level-canvas-wrapper {
+  overflow: scroll;
+  background: darkgray;
+  position: relative;
+}
+
+.layer-canvas {
+  position: absolute;
+}
+
+#ui-canvas {
+  pointer-events:none;
+}
+
+#ui-tile-canvas {
+  pointer-events:none;
+}
+
+.short-input {
+  width: 30px;
+}
+
+#instance-properties {
+  border: 1px solid black;
+}
+
+.unselectable {
+  cursor: default;
+}
+
+.properties {
+  display:inline-block;
+  vertical-align: top;
+}
