@@ -28,237 +28,396 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.spriteListBox = new System.Windows.Forms.ListBox();
             this.Sprites = new System.Windows.Forms.Label();
             this.newSpriteBtn = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.spriteCanvas = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.hideGizmosCheckbox = new System.Windows.Forms.CheckBox();
+            this.flipHorizontalCheckbox = new System.Windows.Forms.CheckBox();
+            this.flipVerticalCheckbox = new System.Windows.Forms.CheckBox();
+            this.spritesheetSelect = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
+            this.alignmentSelect = new System.Windows.Forms.ComboBox();
+            this.wrapModeSelect = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.tileModeCheckBox = new System.Windows.Forms.CheckBox();
+            this.offsetXCheckBox = new System.Windows.Forms.CheckBox();
+            this.offsetYCheckBox = new System.Windows.Forms.CheckBox();
+            this.frameContainer = new System.Windows.Forms.GroupBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
+            this.spriteCanvasPanel = new System.Windows.Forms.Panel();
+            ((System.ComponentModel.ISupportInitialize)(this.spriteCanvas)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            this.spriteCanvasPanel.SuspendLayout();
             this.SuspendLayout();
             // 
-            // listBox1
+            // spriteListBox
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(12, 61);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(145, 524);
-            this.listBox1.TabIndex = 0;
+            this.spriteListBox.FormattingEnabled = true;
+            this.spriteListBox.ItemHeight = 20;
+            this.spriteListBox.Location = new System.Drawing.Point(18, 94);
+            this.spriteListBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.spriteListBox.Name = "spriteListBox";
+            this.spriteListBox.Size = new System.Drawing.Size(216, 804);
+            this.spriteListBox.TabIndex = 0;
+            this.spriteListBox.SelectedIndexChanged += new System.EventHandler(this.spriteListBox_SelectedIndexChanged);
             // 
             // Sprites
             // 
             this.Sprites.AutoSize = true;
             this.Sprites.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Sprites.Location = new System.Drawing.Point(12, 9);
+            this.Sprites.Location = new System.Drawing.Point(18, 14);
+            this.Sprites.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.Sprites.Name = "Sprites";
-            this.Sprites.Size = new System.Drawing.Size(66, 20);
+            this.Sprites.Size = new System.Drawing.Size(96, 29);
             this.Sprites.TabIndex = 1;
             this.Sprites.Text = "Sprites";
             // 
             // newSpriteBtn
             // 
-            this.newSpriteBtn.Location = new System.Drawing.Point(13, 32);
+            this.newSpriteBtn.Location = new System.Drawing.Point(20, 49);
+            this.newSpriteBtn.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.newSpriteBtn.Name = "newSpriteBtn";
-            this.newSpriteBtn.Size = new System.Drawing.Size(75, 23);
+            this.newSpriteBtn.Size = new System.Drawing.Size(112, 35);
             this.newSpriteBtn.TabIndex = 2;
             this.newSpriteBtn.Text = "New sprite";
             this.newSpriteBtn.UseVisualStyleBackColor = true;
             // 
-            // pictureBox1
+            // spriteCanvas
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(163, 15);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(803, 525);
-            this.pictureBox1.TabIndex = 3;
-            this.pictureBox1.TabStop = false;
+            this.spriteCanvas.Location = new System.Drawing.Point(22, 24);
+            this.spriteCanvas.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.spriteCanvas.Name = "spriteCanvas";
+            this.spriteCanvas.Size = new System.Drawing.Size(1118, 692);
+            this.spriteCanvas.TabIndex = 3;
+            this.spriteCanvas.TabStop = false;
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(981, 15);
+            this.pictureBox2.Location = new System.Drawing.Point(1472, 23);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(479, 628);
+            this.pictureBox2.Size = new System.Drawing.Size(718, 966);
             this.pictureBox2.TabIndex = 4;
             this.pictureBox2.TabStop = false;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(169, 546);
+            this.button1.Location = new System.Drawing.Point(254, 840);
+            this.button1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(53, 23);
+            this.button1.Size = new System.Drawing.Size(80, 35);
             this.button1.TabIndex = 5;
             this.button1.Text = "Play";
             this.button1.UseVisualStyleBackColor = true;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(228, 546);
+            this.button2.Location = new System.Drawing.Point(342, 840);
+            this.button2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(50, 23);
+            this.button2.Size = new System.Drawing.Size(75, 35);
             this.button2.TabIndex = 6;
             this.button2.Text = "Save";
             this.button2.UseVisualStyleBackColor = true;
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(284, 546);
+            this.button3.Location = new System.Drawing.Point(426, 840);
+            this.button3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(60, 23);
+            this.button3.Size = new System.Drawing.Size(90, 35);
             this.button3.TabIndex = 7;
             this.button3.Text = "Save All";
             this.button3.UseVisualStyleBackColor = true;
             // 
-            // checkBox1
+            // hideGizmosCheckbox
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(351, 551);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(83, 17);
-            this.checkBox1.TabIndex = 8;
-            this.checkBox1.Text = "Hide gizmos";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.hideGizmosCheckbox.AutoSize = true;
+            this.hideGizmosCheckbox.Location = new System.Drawing.Point(526, 848);
+            this.hideGizmosCheckbox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.hideGizmosCheckbox.Name = "hideGizmosCheckbox";
+            this.hideGizmosCheckbox.Size = new System.Drawing.Size(122, 24);
+            this.hideGizmosCheckbox.TabIndex = 8;
+            this.hideGizmosCheckbox.Text = "Hide gizmos";
+            this.hideGizmosCheckbox.UseVisualStyleBackColor = true;
             // 
-            // checkBox2
+            // flipHorizontalCheckbox
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(432, 551);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(92, 17);
-            this.checkBox2.TabIndex = 9;
-            this.checkBox2.Text = "Flip Horizontal";
-            this.checkBox2.UseVisualStyleBackColor = true;
+            this.flipHorizontalCheckbox.AutoSize = true;
+            this.flipHorizontalCheckbox.Location = new System.Drawing.Point(648, 848);
+            this.flipHorizontalCheckbox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.flipHorizontalCheckbox.Name = "flipHorizontalCheckbox";
+            this.flipHorizontalCheckbox.Size = new System.Drawing.Size(136, 24);
+            this.flipHorizontalCheckbox.TabIndex = 9;
+            this.flipHorizontalCheckbox.Text = "Flip Horizontal";
+            this.flipHorizontalCheckbox.UseVisualStyleBackColor = true;
             // 
-            // checkBox3
+            // flipVerticalCheckbox
             // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(521, 551);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(80, 17);
-            this.checkBox3.TabIndex = 10;
-            this.checkBox3.Text = "Flip Vertical";
-            this.checkBox3.UseVisualStyleBackColor = true;
+            this.flipVerticalCheckbox.AutoSize = true;
+            this.flipVerticalCheckbox.Location = new System.Drawing.Point(782, 848);
+            this.flipVerticalCheckbox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.flipVerticalCheckbox.Name = "flipVerticalCheckbox";
+            this.flipVerticalCheckbox.Size = new System.Drawing.Size(117, 24);
+            this.flipVerticalCheckbox.TabIndex = 10;
+            this.flipVerticalCheckbox.Text = "Flip Vertical";
+            this.flipVerticalCheckbox.UseVisualStyleBackColor = true;
             // 
-            // comboBox1
+            // spritesheetSelect
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(234, 575);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
-            this.comboBox1.TabIndex = 11;
+            this.spritesheetSelect.FormattingEnabled = true;
+            this.spritesheetSelect.Location = new System.Drawing.Point(351, 885);
+            this.spritesheetSelect.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.spritesheetSelect.Name = "spritesheetSelect";
+            this.spritesheetSelect.Size = new System.Drawing.Size(180, 28);
+            this.spritesheetSelect.TabIndex = 11;
+            this.spritesheetSelect.SelectedIndexChanged += new System.EventHandler(this.spritesheetSelect_SelectedIndexChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(168, 578);
+            this.label1.Location = new System.Drawing.Point(252, 889);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(60, 13);
+            this.label1.Size = new System.Drawing.Size(91, 20);
             this.label1.TabIndex = 12;
             this.label1.Text = "Spritesheet";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(168, 605);
+            this.label2.Location = new System.Drawing.Point(252, 931);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(53, 13);
+            this.label2.Size = new System.Drawing.Size(80, 20);
             this.label2.TabIndex = 13;
             this.label2.Text = "Alignment";
             // 
-            // comboBox2
+            // alignmentSelect
             // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(223, 602);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(121, 21);
-            this.comboBox2.TabIndex = 14;
+            this.alignmentSelect.FormattingEnabled = true;
+            this.alignmentSelect.Location = new System.Drawing.Point(334, 926);
+            this.alignmentSelect.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.alignmentSelect.Name = "alignmentSelect";
+            this.alignmentSelect.Size = new System.Drawing.Size(180, 28);
+            this.alignmentSelect.TabIndex = 14;
             // 
-            // comboBox3
+            // wrapModeSelect
             // 
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(426, 602);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(121, 21);
-            this.comboBox3.TabIndex = 16;
+            this.wrapModeSelect.FormattingEnabled = true;
+            this.wrapModeSelect.Location = new System.Drawing.Point(639, 926);
+            this.wrapModeSelect.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.wrapModeSelect.Name = "wrapModeSelect";
+            this.wrapModeSelect.Size = new System.Drawing.Size(180, 28);
+            this.wrapModeSelect.TabIndex = 16;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(358, 606);
+            this.label3.Location = new System.Drawing.Point(537, 932);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(62, 13);
+            this.label3.Size = new System.Drawing.Size(91, 20);
             this.label3.TabIndex = 15;
             this.label3.Text = "Wrap mode";
             // 
             // groupBox1
             // 
-            this.groupBox1.Location = new System.Drawing.Point(171, 638);
+            this.groupBox1.Location = new System.Drawing.Point(256, 982);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(623, 64);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox1.Size = new System.Drawing.Size(934, 98);
             this.groupBox1.TabIndex = 17;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Global Hitboxes";
             // 
             // groupBox2
             // 
-            this.groupBox2.Location = new System.Drawing.Point(171, 710);
+            this.groupBox2.Location = new System.Drawing.Point(256, 1092);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(623, 64);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox2.Size = new System.Drawing.Size(934, 98);
             this.groupBox2.TabIndex = 18;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Frame Hitboxes";
             // 
             // groupBox3
             // 
-            this.groupBox3.Location = new System.Drawing.Point(171, 784);
+            this.groupBox3.Location = new System.Drawing.Point(256, 1206);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(623, 64);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.groupBox3.Size = new System.Drawing.Size(934, 98);
             this.groupBox3.TabIndex = 19;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Frame POIs";
             // 
+            // tileModeCheckBox
+            // 
+            this.tileModeCheckBox.AutoSize = true;
+            this.tileModeCheckBox.Location = new System.Drawing.Point(1472, 997);
+            this.tileModeCheckBox.Name = "tileModeCheckBox";
+            this.tileModeCheckBox.Size = new System.Drawing.Size(103, 24);
+            this.tileModeCheckBox.TabIndex = 20;
+            this.tileModeCheckBox.Text = "Tile mode";
+            this.tileModeCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // offsetXCheckBox
+            // 
+            this.offsetXCheckBox.AutoSize = true;
+            this.offsetXCheckBox.Location = new System.Drawing.Point(1581, 998);
+            this.offsetXCheckBox.Name = "offsetXCheckBox";
+            this.offsetXCheckBox.Size = new System.Drawing.Size(94, 24);
+            this.offsetXCheckBox.TabIndex = 21;
+            this.offsetXCheckBox.Text = "Offset X";
+            this.offsetXCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // offsetYCheckBox
+            // 
+            this.offsetYCheckBox.AutoSize = true;
+            this.offsetYCheckBox.Location = new System.Drawing.Point(1682, 998);
+            this.offsetYCheckBox.Name = "offsetYCheckBox";
+            this.offsetYCheckBox.Size = new System.Drawing.Size(94, 24);
+            this.offsetYCheckBox.TabIndex = 22;
+            this.offsetYCheckBox.Text = "Offset Y";
+            this.offsetYCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // frameContainer
+            // 
+            this.frameContainer.Location = new System.Drawing.Point(1472, 1028);
+            this.frameContainer.Name = "frameContainer";
+            this.frameContainer.Size = new System.Drawing.Size(718, 162);
+            this.frameContainer.TabIndex = 23;
+            this.frameContainer.TabStop = false;
+            this.frameContainer.Text = "Frames";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(1612, 1199);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 26);
+            this.textBox1.TabIndex = 24;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(1477, 1202);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(129, 20);
+            this.label4.TabIndex = 25;
+            this.label4.Text = "Set bulk duration";
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(1718, 1196);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(89, 33);
+            this.button4.TabIndex = 26;
+            this.button4.Text = "Apply";
+            this.button4.UseVisualStyleBackColor = false;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(1477, 1238);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(126, 20);
+            this.label5.TabIndex = 27;
+            this.label5.Text = "Loop start frame";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(1610, 1238);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(100, 26);
+            this.textBox2.TabIndex = 28;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(1481, 1278);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(89, 26);
+            this.button5.TabIndex = 29;
+            this.button5.Text = "Add as frame";
+            this.button5.UseVisualStyleBackColor = true;
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(1581, 1278);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(149, 26);
+            this.button6.TabIndex = 30;
+            this.button6.Text = "Reverse frames";
+            this.button6.UseVisualStyleBackColor = true;
+            // 
+            // spriteCanvasPanel
+            // 
+            this.spriteCanvasPanel.Controls.Add(this.spriteCanvas);
+            this.spriteCanvasPanel.Location = new System.Drawing.Point(254, 94);
+            this.spriteCanvasPanel.Name = "spriteCanvasPanel";
+            this.spriteCanvasPanel.Size = new System.Drawing.Size(1163, 738);
+            this.spriteCanvasPanel.TabIndex = 31;
+            // 
             // SpriteEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1904, 985);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.ClientSize = new System.Drawing.Size(2856, 1515);
+            this.Controls.Add(this.spriteCanvasPanel);
+            this.Controls.Add(this.button6);
+            this.Controls.Add(this.button5);
+            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.frameContainer);
+            this.Controls.Add(this.offsetYCheckBox);
+            this.Controls.Add(this.offsetXCheckBox);
+            this.Controls.Add(this.tileModeCheckBox);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.comboBox3);
+            this.Controls.Add(this.wrapModeSelect);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.comboBox2);
+            this.Controls.Add(this.alignmentSelect);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.checkBox3);
-            this.Controls.Add(this.checkBox2);
-            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.spritesheetSelect);
+            this.Controls.Add(this.flipVerticalCheckbox);
+            this.Controls.Add(this.flipHorizontalCheckbox);
+            this.Controls.Add(this.hideGizmosCheckbox);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.pictureBox2);
-            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.newSpriteBtn);
             this.Controls.Add(this.Sprites);
-            this.Controls.Add(this.listBox1);
+            this.Controls.Add(this.spriteListBox);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "SpriteEditor";
             this.Text = "SpriteEditor";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.Load += new System.EventHandler(this.SpriteEditor_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.spriteCanvas)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            this.spriteCanvasPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -266,26 +425,38 @@
 
         #endregion
 
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ListBox spriteListBox;
         private System.Windows.Forms.Label Sprites;
         private System.Windows.Forms.Button newSpriteBtn;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox spriteCanvas;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.CheckBox checkBox3;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.CheckBox hideGizmosCheckbox;
+        private System.Windows.Forms.CheckBox flipHorizontalCheckbox;
+        private System.Windows.Forms.CheckBox flipVerticalCheckbox;
+        private System.Windows.Forms.ComboBox spritesheetSelect;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.ComboBox comboBox3;
+        private System.Windows.Forms.ComboBox alignmentSelect;
+        private System.Windows.Forms.ComboBox wrapModeSelect;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.CheckBox tileModeCheckBox;
+        private System.Windows.Forms.CheckBox offsetXCheckBox;
+        private System.Windows.Forms.CheckBox offsetYCheckBox;
+        private System.Windows.Forms.GroupBox frameContainer;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Panel spriteCanvasPanel;
     }
 }
 

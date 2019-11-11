@@ -1,0 +1,16 @@
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\bin\Debug\LevelEditor_CS.exe.config
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\bin\Debug\LevelEditor_CS.exe
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\bin\Debug\LevelEditor_CS.pdb
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.csprojAssemblyReference.cache
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Controls.ChildFrame.resources
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Controls.Frame.resources
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Controls.Hitbox.resources
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Controls.POI.resources
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.SpriteEditor.resources
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Properties.Resources.resources
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.csproj.GenerateResource.cache
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.exe
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.pdb
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\bin\Debug\Newtonsoft.Json.dll
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\bin\Debug\Newtonsoft.Json.xml
+D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.csproj.CopyComplete

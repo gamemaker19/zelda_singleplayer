@@ -39,56 +39,62 @@
             // xLabel
             // 
             this.xLabel.AutoSize = true;
-            this.xLabel.Location = new System.Drawing.Point(14, 17);
+            this.xLabel.Location = new System.Drawing.Point(21, 0);
+            this.xLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.xLabel.Name = "xLabel";
-            this.xLabel.Size = new System.Drawing.Size(12, 13);
+            this.xLabel.Size = new System.Drawing.Size(16, 20);
             this.xLabel.TabIndex = 0;
             this.xLabel.Text = "x";
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(33, 15);
+            this.textBox1.Location = new System.Drawing.Point(50, 0);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(68, 20);
+            this.textBox1.Size = new System.Drawing.Size(100, 26);
             this.textBox1.TabIndex = 1;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(117, 18);
+            this.label1.Location = new System.Drawing.Point(176, 0);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(12, 13);
+            this.label1.Size = new System.Drawing.Size(16, 20);
             this.label1.TabIndex = 2;
             this.label1.Text = "y";
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(136, 16);
+            this.textBox2.Location = new System.Drawing.Point(204, 0);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(79, 20);
+            this.textBox2.Size = new System.Drawing.Size(116, 26);
             this.textBox2.TabIndex = 3;
             // 
             // selectBtn
             // 
-            this.selectBtn.Location = new System.Drawing.Point(231, 15);
+            this.selectBtn.Location = new System.Drawing.Point(346, 0);
+            this.selectBtn.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.selectBtn.Name = "selectBtn";
-            this.selectBtn.Size = new System.Drawing.Size(75, 23);
+            this.selectBtn.Size = new System.Drawing.Size(112, 35);
             this.selectBtn.TabIndex = 4;
             this.selectBtn.Text = "Select";
             this.selectBtn.UseVisualStyleBackColor = true;
             // 
             // deleteBtn
             // 
-            this.deleteBtn.Location = new System.Drawing.Point(312, 15);
+            this.deleteBtn.Location = new System.Drawing.Point(468, 0);
+            this.deleteBtn.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.deleteBtn.Name = "deleteBtn";
-            this.deleteBtn.Size = new System.Drawing.Size(75, 23);
+            this.deleteBtn.Size = new System.Drawing.Size(112, 35);
             this.deleteBtn.TabIndex = 5;
             this.deleteBtn.Text = "Delete";
             this.deleteBtn.UseVisualStyleBackColor = true;
             // 
             // POI
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.deleteBtn);
             this.Controls.Add(this.selectBtn);
@@ -96,8 +102,9 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.xLabel);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "POI";
-            this.Size = new System.Drawing.Size(623, 145);
+            this.Size = new System.Drawing.Size(595, 46);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,8 +49,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\ChildFrame.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ChildFrame.Designer.cs">
+      <DependentUpon>ChildFrame.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Frame.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Frame.Designer.cs">
+      <DependentUpon>Frame.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Hitbox.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\Hitbox.Designer.cs">
       <DependentUpon>Hitbox.cs</DependentUpon>
@@ -58,6 +73,31 @@
     <Compile Include="Controls\POI.Designer.cs">
       <DependentUpon>POI.cs</DependentUpon>
     </Compile>
+    <Compile Include="Editor\CanvasUI.cs" />
+    <Compile Include="Editor\Consts.cs" />
+    <Compile Include="Editor\Ghost.cs" />
+    <Compile Include="Editor\GlobalInput.cs" />
+    <Compile Include="Editor\Helpers.cs" />
+    <Compile Include="Editor\Mathf.cs" />
+    <Compile Include="Editor\Selectable.cs" />
+    <Compile Include="Models\Collider.cs" />
+    <Compile Include="Models\Frame.cs" />
+    <Compile Include="Models\GridCoords.cs" />
+    <Compile Include="Models\GridRect.cs" />
+    <Compile Include="Models\Hitbox.cs" />
+    <Compile Include="Models\Level.cs" />
+    <Compile Include="Models\Line.cs" />
+    <Compile Include="Models\Obj.cs" />
+    <Compile Include="Models\POI.cs" />
+    <Compile Include="Models\Point.cs" />
+    <Compile Include="Models\Rect.cs" />
+    <Compile Include="Models\Shape.cs" />
+    <Compile Include="Models\ShapeInstance.cs" />
+    <Compile Include="Models\Sprite.cs" />
+    <Compile Include="Models\SpriteInstance.cs" />
+    <Compile Include="Models\Spritesheet.cs" />
+    <Compile Include="Models\TileData.cs" />
+    <Compile Include="Models\TileInstance.cs" />
     <Compile Include="SpriteEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,6 +106,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\ChildFrame.resx">
+      <DependentUpon>ChildFrame.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Frame.resx">
+      <DependentUpon>Frame.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\Hitbox.resx">
       <DependentUpon>Hitbox.cs</DependentUpon>
     </EmbeddedResource>
@@ -84,6 +130,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

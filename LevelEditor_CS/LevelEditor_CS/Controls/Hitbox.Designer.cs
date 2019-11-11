@@ -2,7 +2,7 @@
 {
     partial class Hitbox
     {
-        /// <summary>
+        /// <summary> 
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
@@ -22,150 +22,173 @@
 
         #region Component Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
-            this.deleteBtn = new System.Windows.Forms.Button();
-            this.selectBtn = new System.Windows.Forms.Button();
-            this.triggerCheckbox = new System.Windows.Forms.CheckBox();
-            this.flagLabel = new System.Windows.Forms.Label();
-            this.flagText = new System.Windows.Forms.TextBox();
-            this.yOffLabel = new System.Windows.Forms.Label();
-            this.yOffText = new System.Windows.Forms.TextBox();
-            this.xOffLabel = new System.Windows.Forms.Label();
-            this.xOffText = new System.Windows.Forms.TextBox();
-            this.heightLabel = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.widthTextBox = new System.Windows.Forms.TextBox();
             this.heightTextBox = new System.Windows.Forms.TextBox();
-            this.widthLabel = new System.Windows.Forms.Label();
-            this.widthText = new System.Windows.Forms.TextBox();
+            this.heightText = new System.Windows.Forms.Label();
+            this.xOffTextBox = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.yOffTextBox = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.triggerCheckBox = new System.Windows.Forms.CheckBox();
+            this.selectBtn = new System.Windows.Forms.Button();
+            this.deleteBtn = new System.Windows.Forms.Button();
+            this.SuspendLayout();
             // 
-            // deleteBtn
+            // label1
             // 
-            this.deleteBtn.Location = new System.Drawing.Point(485, 19);
-            this.deleteBtn.Name = "deleteBtn";
-            this.deleteBtn.Size = new System.Drawing.Size(64, 23);
-            this.deleteBtn.TabIndex = 12;
-            this.deleteBtn.Text = "Delete";
-            this.deleteBtn.UseVisualStyleBackColor = true;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(4, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(20, 20);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "w";
             // 
-            // selectBtn
+            // widthTextBox
             // 
-            this.selectBtn.Location = new System.Drawing.Point(415, 19);
-            this.selectBtn.Name = "selectBtn";
-            this.selectBtn.Size = new System.Drawing.Size(64, 23);
-            this.selectBtn.TabIndex = 11;
-            this.selectBtn.Text = "Select";
-            this.selectBtn.UseVisualStyleBackColor = true;
-            // 
-            // triggerCheckbox
-            // 
-            this.triggerCheckbox.AutoSize = true;
-            this.triggerCheckbox.Location = new System.Drawing.Point(347, 22);
-            this.triggerCheckbox.Name = "triggerCheckbox";
-            this.triggerCheckbox.Size = new System.Drawing.Size(59, 17);
-            this.triggerCheckbox.TabIndex = 10;
-            this.triggerCheckbox.Text = "Trigger";
-            this.triggerCheckbox.UseVisualStyleBackColor = true;
-            // 
-            // flagLabel
-            // 
-            this.flagLabel.AutoSize = true;
-            this.flagLabel.Location = new System.Drawing.Point(258, 22);
-            this.flagLabel.Name = "flagLabel";
-            this.flagLabel.Size = new System.Drawing.Size(24, 13);
-            this.flagLabel.TabIndex = 9;
-            this.flagLabel.Text = "flag";
-            // 
-            // flagText
-            // 
-            this.flagText.Location = new System.Drawing.Point(288, 19);
-            this.flagText.Name = "flagText";
-            this.flagText.Size = new System.Drawing.Size(39, 20);
-            this.flagText.TabIndex = 8;
-            // 
-            // yOffLabel
-            // 
-            this.yOffLabel.AutoSize = true;
-            this.yOffLabel.Location = new System.Drawing.Point(179, 21);
-            this.yOffLabel.Name = "yOffLabel";
-            this.yOffLabel.Size = new System.Drawing.Size(27, 13);
-            this.yOffLabel.TabIndex = 7;
-            this.yOffLabel.Text = "y-off";
-            // 
-            // yOffText
-            // 
-            this.yOffText.Location = new System.Drawing.Point(212, 19);
-            this.yOffText.Name = "yOffText";
-            this.yOffText.Size = new System.Drawing.Size(37, 20);
-            this.yOffText.TabIndex = 6;
-            // 
-            // xOffLabel
-            // 
-            this.xOffLabel.AutoSize = true;
-            this.xOffLabel.Location = new System.Drawing.Point(112, 21);
-            this.xOffLabel.Name = "xOffLabel";
-            this.xOffLabel.Size = new System.Drawing.Size(27, 13);
-            this.xOffLabel.TabIndex = 5;
-            this.xOffLabel.Text = "x-off";
-            // 
-            // xOffText
-            // 
-            this.xOffText.Location = new System.Drawing.Point(145, 19);
-            this.xOffText.Name = "xOffText";
-            this.xOffText.Size = new System.Drawing.Size(28, 20);
-            this.xOffText.TabIndex = 4;
-            // 
-            // heightLabel
-            // 
-            this.heightLabel.AutoSize = true;
-            this.heightLabel.Location = new System.Drawing.Point(60, 22);
-            this.heightLabel.Name = "heightLabel";
-            this.heightLabel.Size = new System.Drawing.Size(13, 13);
-            this.heightLabel.TabIndex = 3;
-            this.heightLabel.Text = "h";
+            this.widthTextBox.Location = new System.Drawing.Point(32, 0);
+            this.widthTextBox.Name = "widthTextBox";
+            this.widthTextBox.Size = new System.Drawing.Size(44, 26);
+            this.widthTextBox.TabIndex = 1;
             // 
             // heightTextBox
             // 
-            this.heightTextBox.Location = new System.Drawing.Point(75, 18);
+            this.heightTextBox.Location = new System.Drawing.Point(115, 0);
             this.heightTextBox.Name = "heightTextBox";
-            this.heightTextBox.Size = new System.Drawing.Size(32, 20);
-            this.heightTextBox.TabIndex = 2;
+            this.heightTextBox.Size = new System.Drawing.Size(50, 26);
+            this.heightTextBox.TabIndex = 3;
             // 
-            // widthLabel
+            // heightText
             // 
-            this.widthLabel.AutoSize = true;
-            this.widthLabel.Location = new System.Drawing.Point(7, 22);
-            this.widthLabel.Name = "widthLabel";
-            this.widthLabel.Size = new System.Drawing.Size(15, 13);
-            this.widthLabel.TabIndex = 1;
-            this.widthLabel.Text = "w";
+            this.heightText.AutoSize = true;
+            this.heightText.Location = new System.Drawing.Point(91, 0);
+            this.heightText.Name = "heightText";
+            this.heightText.Size = new System.Drawing.Size(18, 20);
+            this.heightText.TabIndex = 2;
+            this.heightText.Text = "h";
             // 
-            // widthText
+            // xOffTextBox
             // 
-            this.widthText.Location = new System.Drawing.Point(24, 18);
-            this.widthText.Name = "widthText";
-            this.widthText.Size = new System.Drawing.Size(29, 20);
-            this.widthText.TabIndex = 0;
+            this.xOffTextBox.Location = new System.Drawing.Point(217, 0);
+            this.xOffTextBox.Name = "xOffTextBox";
+            this.xOffTextBox.Size = new System.Drawing.Size(59, 26);
+            this.xOffTextBox.TabIndex = 5;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(171, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(40, 20);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "x-off";
+            // 
+            // yOffTextBox
+            // 
+            this.yOffTextBox.Location = new System.Drawing.Point(328, 0);
+            this.yOffTextBox.Name = "yOffTextBox";
+            this.yOffTextBox.Size = new System.Drawing.Size(59, 26);
+            this.yOffTextBox.TabIndex = 7;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(282, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(40, 20);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "y-off";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(434, 0);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(94, 26);
+            this.textBox1.TabIndex = 9;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(393, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(35, 20);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "flag";
+            // 
+            // triggerCheckBox
+            // 
+            this.triggerCheckBox.AutoSize = true;
+            this.triggerCheckBox.Location = new System.Drawing.Point(543, 0);
+            this.triggerCheckBox.Name = "triggerCheckBox";
+            this.triggerCheckBox.Size = new System.Drawing.Size(93, 24);
+            this.triggerCheckBox.TabIndex = 11;
+            this.triggerCheckBox.Text = "Trigger?";
+            this.triggerCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // selectBtn
+            // 
+            this.selectBtn.Location = new System.Drawing.Point(651, 0);
+            this.selectBtn.Name = "selectBtn";
+            this.selectBtn.Size = new System.Drawing.Size(75, 31);
+            this.selectBtn.TabIndex = 12;
+            this.selectBtn.Text = "Select";
+            this.selectBtn.UseVisualStyleBackColor = true;
+            // 
+            // deleteBtn
+            // 
+            this.deleteBtn.Location = new System.Drawing.Point(732, 0);
+            this.deleteBtn.Name = "deleteBtn";
+            this.deleteBtn.Size = new System.Drawing.Size(75, 31);
+            this.deleteBtn.TabIndex = 13;
+            this.deleteBtn.Text = "Delete";
+            this.deleteBtn.UseVisualStyleBackColor = true;
+            // 
+            // Hitbox
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.deleteBtn);
+            this.Controls.Add(this.selectBtn);
+            this.Controls.Add(this.triggerCheckBox);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.yOffTextBox);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.xOffTextBox);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.heightTextBox);
+            this.Controls.Add(this.heightText);
+            this.Controls.Add(this.widthTextBox);
+            this.Controls.Add(this.label1);
+            this.Name = "Hitbox";
+            this.Size = new System.Drawing.Size(896, 50);
+            this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Button deleteBtn;
-        private System.Windows.Forms.Button selectBtn;
-        private System.Windows.Forms.CheckBox triggerCheckbox;
-        private System.Windows.Forms.Label flagLabel;
-        private System.Windows.Forms.TextBox flagText;
-        private System.Windows.Forms.Label yOffLabel;
-        private System.Windows.Forms.TextBox yOffText;
-        private System.Windows.Forms.Label xOffLabel;
-        private System.Windows.Forms.TextBox xOffText;
-        private System.Windows.Forms.Label heightLabel;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox widthTextBox;
         private System.Windows.Forms.TextBox heightTextBox;
-        private System.Windows.Forms.Label widthLabel;
-        private System.Windows.Forms.TextBox widthText;
+        private System.Windows.Forms.Label heightText;
+        private System.Windows.Forms.TextBox xOffTextBox;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox yOffTextBox;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.CheckBox triggerCheckBox;
+        private System.Windows.Forms.Button selectBtn;
+        private System.Windows.Forms.Button deleteBtn;
     }
 }
