@@ -1,6 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using LevelEditor_CS.Editor;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -81,16 +83,14 @@ namespace LevelEditor_CS.Models
             return new Point(x, y);
         }
 
-        /*
-        public void draw(ctx: CanvasRenderingContext2D, frameIndex: number, x: number, y: number, flipX?: number, flipY?: number, options?: string, alpha?: number, scaleX?: number, scaleY?: number)
+        public void draw(Graphics canvas, int frameIndex, float x, float y, int flipX = 1, int flipY = 1, string options = "", float alpha = 1, float scaleX = 1, float scaleY = 1)
         {
-            flipX = flipX || 1;
-            flipY = flipY || 1;
-            let frame = this.frames[frameIndex];
-            let rect = frame.rect;
-            let offset = this.getAlignOffset(frame, flipX, flipY);
+            var frame = this.frames[frameIndex];
+            var rect = frame.rect;
+            var offset = this.getAlignOffset(frame, flipX, flipY);
 
-            let wrappers : any = [];
+            /*
+            var wrappers : any = [];
             wrappers.push({
             closure: () => {
                 Helpers.drawImage(ctx, this.spritesheet.imgEl, rect.x1, rect.y1, rect.w, rect.h, x + offset.x + frame.offset.x, y + offset.y + frame.offset.y, flipX, flipY, options, alpha, scaleX, scaleY);
@@ -98,54 +98,53 @@ namespace LevelEditor_CS.Models
             zIndex: 0
             });
 
-            for (let childFrame of frame.childFrames)
+            for (var childFrame of frame.childFrames)
             {
                 wrappers.push({
                 closure: () => {
-                    let childOffsetX = x + offset.x + frame.offset.x + childFrame.offset.x;
-                    let childOffsetY = y + offset.y + frame.offset.y + childFrame.offset.y;
+                    var childOffsetX = x + offset.x + frame.offset.x + childFrame.offset.x;
+                    var childOffsetY = y + offset.y + frame.offset.y + childFrame.offset.y;
                     Helpers.drawImage(ctx, this.spritesheet.imgEl, childFrame.rect.x1, childFrame.rect.y1, childFrame.rect.w, childFrame.rect.h, childOffsetX, childOffsetY, childFrame.xDir, childFrame.yDir, options, alpha, scaleX, scaleY);
                 },
-            zIndex: childFrame.zIndex
+                zIndex: childFrame.zIndex
                 });
+            }
+
+            wrappers.sort((a: any, b: any) => {
+              return a.zIndex - b.zIndex;
+            });
+
+            for(var wrapper of wrappers) {
+              wrapper.closure();
+            }
+            */
         }
 
-        wrappers.sort((a: any, b: any) => {
-          return a.zIndex - b.zIndex;
-        });
-
-        for(let wrapper of wrappers) {
-          wrapper.closure();
-        }
-      }
-
-        drawFrame(ctx: CanvasRenderingContext2D, frame: Frame, x: number, y: number, flipX?: number, flipY?: number, options?: string, alpha?: number, scaleX?: number, scaleY?: number)
+        public void drawFrame(Graphics canvas, Frame frame, float x, float y, int flipX = 1, int flipY = 1, string options = "", float alpha = 1, float scaleX = 1, float scaleY = 1)
         {
-            flipX = flipX || 1;
-            flipY = flipY || 1;
-            let rect = frame.rect;
-            let offset = this.getAlignOffset(frame, flipX, flipY);
-            Helpers.drawImage(ctx, this.spritesheet.imgEl, rect.x1, rect.y1, rect.w, rect.h, x + offset.x + frame.offset.x, y + offset.y + frame.offset.y, flipX, flipY, options, alpha, scaleX, scaleY);
+            var rect = frame.rect;
+            var offset = this.getAlignOffset(frame, flipX, flipY);
+            Helpers.drawImage(canvas, this.spritesheet.image, rect.x1, rect.y1, rect.w, rect.h, x + offset.x + frame.offset.x, y + offset.y + frame.offset.y, flipX, flipY, options, alpha, scaleX, scaleY);
         }
 
         //Returns actual width and heights, not 0-1 number
-        getAlignOffset(frame: Frame, flipX?: number, flipY?: number) : Point {
-            let rect = frame.rect;
-            flipX = flipX || 1;
-            flipY = flipY || 1;
+        public Point getAlignOffset(Frame frame, int flipX = 1, int flipY = 1)
+        {
+            var rect = frame.rect;
 
-            let w = rect.w;
-            let h = rect.h;
+            var w = rect.w;
+            var h = rect.h;
 
-            let halfW = w * 0.5;
-            let halfH = h * 0.5;
+            var halfW = w * 0.5f;
+            var halfH = h * 0.5f;
 
-            if(flipX > 0) halfW = Math.floor(halfW);
-            else halfW = Math.ceil(halfW);
-            if(flipY > 0) halfH = Math.floor(halfH);
-            else halfH = Math.ceil(halfH);
+            if(flipX > 0) halfW = Mathf.Floor(halfW);
+            else halfW = Mathf.Ceil(halfW);
+            if(flipY > 0) halfH = Mathf.Floor(halfH);
+            else halfH = Mathf.Ceil(halfH);
 
-            let x; let y;
+            float x = 0; 
+            float y = 0;
 
             if(this.alignment == "topleft") {
                 x = 0; y = 0;
@@ -175,36 +174,35 @@ namespace LevelEditor_CS.Models
                 x = -w; y = -h;
             }
             else {
-                throw "No alignment provided";
+                throw new Exception("No alignment provided");
             }
             return new Point(x, y);
         }
 
-        getParentFrames()
+        public List<Frame> getParentFrames()
         {
-            let frames = [];
-            for (let frame of this.frames)
+            var frames = new List<Frame>();
+            foreach (var frame in this.frames)
             {
-                if (frame.parentFrameIndex == undefined)
+                if (frame.parentFrameIndex == -1)
                 {
-                    frames.push(frame);
+                    frames.Add(frame);
                 }
             }
             return frames;
         }
 
-        getChildFrames(parentFrameIndex: number)
+        public List<Frame> getChildFrames(int parentFrameIndex)
         {
-            let frames = [];
-            for (let frame of this.frames)
+            var frames = new List<Frame>();
+            foreach (var frame in this.frames)
             {
                 if (frame.parentFrameIndex == parentFrameIndex)
                 {
-                    frames.push(frame);
+                    frames.Add(frame);
                 }
             }
             return frames;
         }
-        */
     }
 }

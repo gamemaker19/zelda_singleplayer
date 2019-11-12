@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,9 +10,26 @@ using System.Threading.Tasks;
 
 namespace LevelEditor_CS.Editor
 {
+    public class PixelData
+    {
+        public float x;
+        public float y;
+        public Color rgb;
+        public List<PixelData> neighbors;
+        
+        public PixelData(float x, float y, Color rgb, List<PixelData> neighbors)
+        {
+            this.x = x;
+            this.y = y;
+            this.rgb = rgb;
+            this.neighbors = neighbors;
+        }
+    }
+
+
     public class Helpers
     {
-        public static List<Spritesheet> GetSpritesheets()
+        public static List<Spritesheet> getSpritesheets()
         {
             var spritesheetsFiles = Directory.GetFiles(Consts.ASSETS_PATH + "/spritesheets");
             List<Spritesheet> spritesheets = new List<Spritesheet>();
@@ -23,7 +41,7 @@ namespace LevelEditor_CS.Editor
             return spritesheets;
         }
 
-        public static List<Sprite> GetSprites()
+        public static List<Sprite> getSprites()
         {
             var spritefiles = Directory.GetFiles(Consts.ASSETS_PATH + "/sprites");
             List<Sprite> sprites = new List<Sprite>();
@@ -36,25 +54,222 @@ namespace LevelEditor_CS.Editor
             return sprites;
         }
 
-        /*
-        public bool inRect(x: number, y: number, rect: Rect) 
+        public static Dictionary<string, string> storageKeys = null;
+
+        public static void setStorageKeyIfNull()
         {
-            let rx:number = rect.x1;
-            let ry:number = rect.y1;
-            let rx2:number = rect.x2;
-            let ry2:number = rect.y2;
+            if (storageKeys == null)
+            {
+                string storageJson = File.ReadAllText("storage.json");
+                if (string.IsNullOrEmpty(storageJson))
+                {
+                    storageKeys = new Dictionary<string, string>();
+                }
+                else
+                {
+                    storageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(storageJson);
+                }
+            }
+        }
+
+        public static string getStorageKey(string key)
+        {
+            setStorageKeyIfNull();
+            return storageKeys.ContainsKey(key) ? storageKeys[key] : "";
+        }
+
+        public static void setStorageKey(string key, string val)
+        {
+            setStorageKeyIfNull();
+            storageKeys[key] = val;
+        }
+
+        public static void drawRect(Graphics canvas, Rect rect, Color fillColor, Color strokeColor, int strokeWidth, int fillAlpha) 
+        {
+          
+        }
+
+        public static void drawText(Graphics canvas, string text, float x, float y, string fillColor, string outlineColor, int size, string hAlign, string vAlign, string font)
+        {
+        }
+
+        public static void drawCircle(Graphics canvas, float x, float y, float r, Color fillColor, Color lineColor, int lineThicknessfloat)
+        {
+        }
+
+        public static void drawLine(Graphics canvas, float x, float y, float x2, float y2, Color color, int thickness)
+        {
+        }
+
+        public static void drawImage(Graphics canvas, Bitmap bitmap, float sX, float sY, float sW = -1, float sH, float x, float y, int flipX, int flipY, string options, float alpha, float scaleX, float scaleY) 
+        {
+        }
+
+        public static void get2DArrayFromImage(Bitmap bitmap)
+        {
+            var data = imageData.data;
+            var arr = [];
+            var row = [];
+            for (var i = 0; i < data.length; i += 4)
+            {
+                if (i % (imageData.width * 4) === 0)
+                {
+                    if (i > 0)
+                    {
+                        arr.push(row);
+                    }
+                    row = [];
+                }
+
+                var red = data[i];
+                var green = data[i + 1];
+                var blue = data[i + 2];
+                var alpha = data[i + 3];
+
+                row.push(new PixelData(-1, -1, new Color(red, green, blue, alpha), []));
+
+                if (i == data.length - 4)
+                {
+                    arr.push(row);
+                }
+            }
+
+            for (var i = 0; i < arr.length; i++)
+            {
+                for (var j = 0; j < arr[i].length; j++)
+                {
+                    arr[i][j].x = j;
+                    arr[i][j].y = i;
+                }
+            }
+
+            for (var i = 0; i < arr.length; i++)
+            {
+                for (var j = 0; j < arr[i].length; j++)
+                {
+                    arr[i][j].neighbors.push(get2DArrayEl(arr, i - 1, j - 1));
+                    arr[i][j].neighbors.push(get2DArrayEl(arr, i - 1, j));
+                    arr[i][j].neighbors.push(get2DArrayEl(arr, i - 1, j + 1));
+                    arr[i][j].neighbors.push(get2DArrayEl(arr, i, j - 1));
+                    arr[i][j].neighbors.push(get2DArrayEl(arr, i, j));
+                    arr[i][j].neighbors.push(get2DArrayEl(arr, i, j + 1));
+                    arr[i][j].neighbors.push(get2DArrayEl(arr, i + 1, j - 1));
+                    arr[i][j].neighbors.push(get2DArrayEl(arr, i + 1, j));
+                    arr[i][j].neighbors.push(get2DArrayEl(arr, i + 1, j + 1));
+                    _.pull(arr[i][j].neighbors, undefined);
+                }
+            }
+
+            return arr;
+        }
+
+        public Rect getPixelClumpRect(float x, float y, List<List<PixelData>> imageArr)
+        {
+            int ix = Mathf.Round(x);
+            int iy = Mathf.Round(y);
+            var selectedNode = imageArr[iy][ix];
+            if (selectedNode == null)
+            {
+                return null;
+            }
+            if (selectedNode.rgb.A == 0)
+            {
+                Console.WriteLine("Clicked transparent pixel");
+                return null;
+            }
+
+            var queue = new List<PixelData>();
+            queue.Add(selectedNode);
+
+            var minX = float.MaxValue;
+            var minY = float.MaxValue;
+            var maxX = -1f;
+            var maxY = -1f;
+
+            var num = 0;
+            var visitedNodes = new HashSet<PixelData>();
+            while (queue.Count > 0)
+            {
+                var node = queue[0];
+                queue.RemoveAt(0);
+                num++;
+                if (node.x < minX) minX = node.x;
+                if (node.y < minY) minY = node.y;
+                if (node.x > maxX) maxX = node.x;
+                if (node.y > maxY) maxY = node.y;
+
+                foreach (var neighbor in node.neighbors)
+                {
+                    if (visitedNodes.Contains(neighbor)) continue;
+                    if (!queue.Contains(neighbor))
+                    {
+                        queue.Add(neighbor);
+                    }
+                }
+                visitedNodes.Add(node);
+            }
+            //console.log(num);
+            return new Rect(Mathf.Round(minX), Mathf.Round(minY), Mathf.Round(maxX + 1), Mathf.Round(maxY + 1));
+
+        }
+
+        public Rect getSelectedPixelRect(float x, float y, float endX, float endY, List<List<PixelData>> imageArr)
+        {
+            x = Mathf.Round(x);
+            y = Mathf.Round(y);
+
+            var minX = float.MaxValue;
+            var minY = float.MaxValue;
+            var maxX = -1f;
+            var maxY = -1f;
+
+            for (int i = (int)y; i <= endY; i++)
+            {
+                for (int j = (int)x; j <= endX; j++)
+                {
+                    if (imageArr[i][j].rgb.A != 0)
+                    {
+                        if (i < minY) minY = i;
+                        if (i > maxY) maxY = i;
+                        if (j < minX) minX = j;
+                        if (j > maxX) maxX = j;
+                    }
+                }
+            }
+
+            if (minX == float.MaxValue || minY == float.MaxValue || maxX == -1 || maxY == -1) return null;
+
+            return new Rect(Mathf.Round(minX), Mathf.Round(minY), Mathf.Round(maxX + 1), Mathf.Round(maxY + 1));
+        }
+
+        public static PixelData get2DArrayEl(List<List<PixelData>> arr, int i, int j)
+        {
+            if (i < 0 || i >= arr.Count) return null;
+            if (j < 0 || j >= arr[0].Count) return null;
+            if (arr[i][j].rgb.A == 0) return null;
+            return arr[i][j];
+        }
+
+        public static bool inRect(float x, float y, Rect rect)
+        {
+            var rx = rect.x1;
+            var ry = rect.y1;
+            var rx2 = rect.x2;
+            var ry2 = rect.y2;
             return x >= rx && x <= rx2 && y >= ry && y <= ry2;
         }
 
-        bool inCircle(x: number, y: number, circleX: number, circleY: number, r: number)
+        public static bool inCircle(float x, float y, float circleX, float circleY, float r)
         {
-            if(Math.sqrt(Math.pow(x - circleX, 2) + Math.pow(y - circleY, 2)) <= r) {
+            if (Math.Sqrt(Math.Pow(x - circleX, 2) + Math.Pow(y - circleY, 2)) <= r)
+            {
                 return true;
             }
             return false;
         }
 
-        void toZero(num: number, inc: number, dir: number)
+        /*
+        void toZero(float num, float inc, float dir)
         {
             if (dir === 1)
             {
@@ -74,21 +289,21 @@ namespace LevelEditor_CS.Editor
             }
         }
 
-        void incrementRange(num: number, min: number, max: number)
+        void incrementRange(float num, float min, float max)
         {
             num++;
             if (num >= max) num = min;
             return num;
         }
 
-        void decrementRange(num: number, min: number, max: number)
+        void decrementRange(float num, float min, float max)
         {
             num--;
             if (num < min) num = max - 1;
             return num;
         }
 
-        void clamp01(num: number)
+        void clamp01(float num)
         {
             if (num < 0) num = 0;
             if (num > 1) num = 1;
@@ -96,64 +311,64 @@ namespace LevelEditor_CS.Editor
         }
 
         //Inclusive
-        void randomRange(start: number, end: number)
+        void randomRange(float start, float end)
         {
             return _.random(start, end);
         }
 
-        void clampMax(num: number, max: number)
+        void clampMax(float num, float max)
         {
             return num < max ? num : max;
         }
 
-        void clampMin(num: number, min: number)
+        void clampMin(float num, float min)
         {
             return num > min ? num : min;
         }
 
-        void clampMin0(num: number)
+        void clampMin0(float num)
         {
             return clampMin(num, 0);
         }
 
-        void clamp(num: number, min: number, max: number)
+        void clamp(float num, float min, float max)
         {
             if (num < min) return min;
             if (num > max) return max;
             return num;
         }
 
-        void sin(degrees: number)
+        void sin(float degrees)
         {
             let rads = degrees * Math.PI / 180;
             return Math.sin(rads);
         }
 
-        void cos(degrees: number)
+        void cos(float degrees)
         {
             let rads = degrees * Math.PI / 180;
             return Math.cos(rads);
         }
 
-        void atan(value: number)
+        void atan(float value)
         {
             return Math.atan(value) * 180 / Math.PI;
         }
 
-        void moveTo(num: number, dest: number, inc: number)
+        void moveTo(float num, float dest, float inc)
         {
             inc *= Math.sign(dest - num);
             num += inc;
             return num;
         }
 
-        void lerp(num: number, dest: number, timeScale: number)
+        void lerp(float num, float dest, float timeScale)
         {
             num = num + (dest - num) * timeScale;
             return num;
         }
 
-        void lerpNoOver(num: number, dest: number, timeScale: number)
+        void lerpNoOver(float num, float dest, float timeScale)
         {
             num = num + (dest - num) * timeScale;
             if (Math.abs(num - dest) < 1) num = dest;
@@ -161,7 +376,7 @@ namespace LevelEditor_CS.Editor
         }
 
         //Expects angle and destAngle to be > 0 and < 360
-        void lerpAngle(angle: number, destAngle: number, timeScale: number)
+        void lerpAngle(float angle, float destAngle, float timeScale)
         {
             let dir = 1;
             if (Math.abs(destAngle - angle) > 180)
@@ -172,19 +387,19 @@ namespace LevelEditor_CS.Editor
             return to360(angle);
         }
 
-        void to360(angle: number)
+        void to360(float angle)
         {
             if (angle < 0) angle += 360;
             if (angle > 360) angle -= 360;
             return angle;
         }
 
-        void getHex(r: number, g: number, b: number, a: number)
+        void getHex(float r, float g, float b, float a)
         {
             return "#" + r.toString(16) + g.toString(16) + b.toString(16) + a.toString(16);
         }
 
-        void roundEpsilon(num: number)
+        void roundEpsilon(float num)
         {
             let numRound = Math.round(num);
             let diff = Math.abs(numRound - num);
@@ -226,74 +441,7 @@ namespace LevelEditor_CS.Editor
         let helperCtx3 = helperCanvas3.getContext("2d");
         noCanvasSmoothing(helperCtx3);
 
-        void drawImage(ctx: CanvasRenderingContext2D, imgEl: HTMLImageElement, sX: number, sY: number, sW?: number, sH?: number,
-          x?: number, y?: number, flipX?: number, flipY?: number, options?: string, alpha?: number, scaleX?: number, scaleY?: number) : void {
-  
-          if(!sW) {
-            ctx.drawImage(imgEl, (sX), sY);
-            return;
-          }
-
-          ctx.globalAlpha = (alpha === undefined || alpha === undefined) ? 1 : alpha;
-
-          helperCanvas.width = sW;
-          helperCanvas.height = sH;
-  
-          helperCtx.save();
-          scaleX = scaleX || 1;
-          scaleY = scaleY || 1;
-          flipX = (flipX || 1);
-          flipY = (flipY || 1);
-          helperCtx.scale(flipX* scaleX, flipY* scaleY);
-
-          helperCtx.clearRect(0, 0, helperCanvas.width, helperCanvas.height);
-          helperCtx.drawImage(
-            imgEl,
-            sX, //source x
-            sY, //source y
-            sW, //source width
-            sH, //source height
-            0,  //dest x
-            0, //dest y
-            flipX* sW, //dest width
-            flipY * sH  //dest height
-          );
-
-          ctx.drawImage(helperCanvas, x, y);
-  
-          ctx.globalAlpha = 1;
-          helperCtx.restore();
-        }
-
-        void drawRect(ctx: CanvasRenderingContext2D, rect: Rect, fillColor?: string, strokeColor?: string, strokeWidth?: number, fillAlpha?: number) : void {
-          let rx: number = Math.round(rect.x1);
-          let ry: number = Math.round(rect.y1);
-          let rx2: number = Math.round(rect.x2);
-          let ry2: number = Math.round(rect.y2);
-
-          ctx.beginPath();
-          ctx.rect(rx, ry, rx2 - rx, ry2 - ry);
-
-          if(fillAlpha) {
-            ctx.globalAlpha = fillAlpha;
-          }
-
-          if(strokeColor) {
-            strokeWidth = strokeWidth? strokeWidth : 1;
-            ctx.lineWidth = strokeWidth;
-            ctx.strokeStyle = strokeColor;
-            ctx.stroke();
-          }
-
-          if(fillColor) {
-            ctx.fillStyle = fillColor;
-            ctx.fill();
-          }
-
-          ctx.globalAlpha = 1;
-        }
-
-        void drawPolygon(ctx: CanvasRenderingContext2D, shape: Shape, closed: boolean, fillColor?: string, lineColor?: string, lineThickness?: number, fillAlpha?: number) : void {
+        void drawPolygon(ctx: CanvasRenderingContext2D, shape: Shape, closed: boolean, fillColor?: string, lineColor?: string, lineThicknessfloat ?, fillAlphafloat ?) : void {
 
           let vertices = shape.points;
 
@@ -304,7 +452,7 @@ namespace LevelEditor_CS.Editor
           ctx.beginPath();
           ctx.moveTo(vertices[0].x, vertices[0].y);
 
-          for(let i: number = 1; i<vertices.length; i++) {
+          for(let float i = 1; i<vertices.length; i++) {
               ctx.lineTo(vertices[i].x, vertices[i].y);
           }
 
@@ -326,87 +474,31 @@ namespace LevelEditor_CS.Editor
           ctx.globalAlpha = 1;
         }
 
-        void drawText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, fillColor: string, outlineColor: string, size: number, hAlign: string, vAlign: string, font: string)
-        {
-            ctx.save();
-            fillColor = fillColor || "black";
-            size = size || 14;
-            hAlign = hAlign || "center";  //start,end,left,center,right
-            vAlign = vAlign || "middle";  //Top,Bottom,Middle,Alphabetic,Hanging
-            font = font || "Arial";
-            ctx.font = size + "px " + font;
-            ctx.fillStyle = fillColor;
-            ctx.textAlign = hAlign;
-            ctx.textBaseline = vAlign;
-            ctx.fillText(text, x, y);
-            if (outlineColor)
-            {
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = outlineColor;
-                ctx.strokeText(text, x, y);
-            }
-            ctx.restore();
-        }
-
-        void drawCircle(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, fillColor?: string, lineColor?: string, lineThickness?: number)
-        {
-            ctx.beginPath();
-            ctx.arc(x, y, r, 0, 2 * Math.PI, false);
-
-            if (fillColor)
-            {
-                ctx.fillStyle = fillColor;
-                ctx.fill();
-            }
-
-            if (lineColor)
-            {
-                ctx.lineWidth = lineThickness;
-                ctx.strokeStyle = lineColor;
-                ctx.stroke();
-            }
-
-        }
-
-        void drawLine(ctx: CanvasRenderingContext2D, x: number, y: number, x2: number, y2: number, color?: string, thickness?: number)
-        {
-
-            if (!thickness) thickness = 1;
-            if (!color) color = 'black';
-
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x2, y2);
-            ctx.lineWidth = thickness;
-            ctx.strokeStyle = color;
-            ctx.stroke();
-        }
-
-        void linepointNearestMouse(x0: number, y0: number, x1: number, y1: number, x: number, y: number) : Point {
-          function lerp(a: number, b: number, x: number):number{ return(a+x* (b-a)); };
-          let dx: number=x1-x0;
-          let dy: number=y1-y0;
-          let t: number = ((x-x0)* dx+(y-y0)* dy)/(dx* dx+dy* dy);
-          let lineX: number = lerp(x0, x1, t);
-        let lineY: number = lerp(y0, y1, t);
+        void linepointNearestMouse(float x0, float y0, float x1, float y1, float x, float y) : Point {
+          function lerp(float a, float b, float x):number{ return(a+x* (b-a)); };
+          let float dx=x1-x0;
+          let float dy=y1-y0;
+          let float t = ((x-x0)* dx+(y-y0)* dy)/(dx* dx+dy* dy);
+          let float lineX = lerp(x0, x1, t);
+        let float lineY = lerp(y0, y1, t);
           return new Point(lineX, lineY);
         }
 
-        void inLine(mouseX: number, mouseY: number, x0: number, y0: number, x1: number, y1: number) : boolean {
+        void inLine(float mouseX, float mouseY, float x0, float y0, float x1, float y1) : boolean {
 
-          let threshold: number = 4;
+          let float threshold = 4;
 
-          let small_x: number = Math.min(x0, x1);
-          let big_x: number = Math.max(x0, x1);
+          let float small_x = Math.min(x0, x1);
+          let float big_x = Math.max(x0, x1);
 
           if(mouseX<small_x - (threshold*0.5) || mouseX > big_x + (threshold*0.5)){
             return false;
           }
 
           let linepoint: Point = linepointNearestMouse(x0, y0, x1, y1, mouseX, mouseY);
-        let dx: number = mouseX - linepoint.x;
-          let dy: number = mouseY - linepoint.y;
-          let distance: number = Math.abs(Math.sqrt(dx* dx+dy* dy));
+        let float dx = mouseX - linepoint.x;
+          let float dy = mouseY - linepoint.y;
+          let float distance = Math.abs(Math.sqrt(dx* dx+dy* dy));
           if(distance<threshold) {
             return true;
           }
@@ -431,7 +523,7 @@ namespace LevelEditor_CS.Editor
             return bisectingPoint.normalize();
         }
 
-        void keyCodeToString(charCode: number)
+        void keyCodeToString(float charCode)
         {
 
             if (charCode === 0) return "left mouse";
@@ -508,7 +600,6 @@ namespace LevelEditor_CS.Editor
 
         void deserializeES6(obj: any)
         {
-
             if (Array.isArray(obj))
             {
                 for (var i = 0; i < obj.length; i++)
@@ -605,177 +696,6 @@ namespace LevelEditor_CS.Editor
 
         }
 
-        class PixelData
-        {
-            x: number;
-          y: number;
-          rgb: Color;
-          neighbors: PixelData[];
-          constructor(x: number, y: number, rgb: Color, neighbors: PixelData[])
-            {
-                this.x = x;
-                this.y = y;
-                this.rgb = rgb;
-                this.neighbors = neighbors;
-            }
-        }
-
-        void get2DArrayFromImage(imageData: ImageData)
-        {
-            let data = imageData.data;
-            let arr = [];
-            let row = [];
-            for (let i = 0; i < data.length; i += 4)
-            {
-
-                if (i % (imageData.width * 4) === 0)
-                {
-                    if (i > 0)
-                    {
-                        arr.push(row);
-                    }
-                    row = [];
-                }
-
-                let red = data[i];
-                let green = data[i + 1];
-                let blue = data[i + 2];
-                let alpha = data[i + 3];
-
-                row.push(new PixelData(-1, -1, new Color(red, green, blue, alpha), []));
-
-                if (i === data.length - 4)
-                {
-                    arr.push(row);
-                }
-            }
-
-            for (let i = 0; i < arr.length; i++)
-            {
-                for (let j = 0; j < arr[i].length; j++)
-                {
-                    arr[i][j].x = j;
-                    arr[i][j].y = i;
-                }
-            }
-
-            for (let i = 0; i < arr.length; i++)
-            {
-                for (let j = 0; j < arr[i].length; j++)
-                {
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i - 1, j - 1));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i - 1, j));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i - 1, j + 1));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i, j - 1));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i, j));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i, j + 1));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i + 1, j - 1));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i + 1, j));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i + 1, j + 1));
-                    _.pull(arr[i][j].neighbors, undefined);
-                }
-            }
-
-            return arr;
-        }
-
-        void getPixelClumpRect(x: number, y: number, imageArr: PixelData[][])
-        {
-            x = Math.round(x);
-            y = Math.round(y);
-            var selectedNode = imageArr[y][x];
-            if (!selectedNode)
-            {
-                return undefined;
-            }
-            if (selectedNode.rgb.a === 0)
-            {
-                console.log("Clicked transparent pixel");
-                return undefined;
-            }
-
-            var queue = [];
-            queue.push(selectedNode);
-
-            var minX = Infinity;
-            var minY = Infinity;
-            var maxX = -1;
-            var maxY = -1;
-
-            var num = 0;
-            var visitedNodes = new Set();
-            while (queue.length > 0)
-            {
-                var node = queue.shift();
-                num++;
-                if (node.x < minX) minX = node.x;
-                if (node.y < minY) minY = node.y;
-                if (node.x > maxX) maxX = node.x;
-                if (node.y > maxY) maxY = node.y;
-
-                for (var neighbor of node.neighbors)
-                {
-                    if (visitedNodes.has(neighbor)) continue;
-                    if (queue.indexOf(neighbor) === -1)
-                    {
-                        queue.push(neighbor);
-                    }
-                }
-                visitedNodes.add(node);
-            }
-            //console.log(num);
-            return new Rect(Math.round(minX), Math.round(minY), Math.round(maxX + 1), Math.round(maxY + 1));
-
-        }
-
-        void getSelectedPixelRect(x: number, y: number, endX: number, endY: number, imageArr: PixelData[][])
-        {
-
-            x = Math.round(x);
-            y = Math.round(y);
-
-            var minX = Infinity;
-            var minY = Infinity;
-            var maxX = -1;
-            var maxY = -1;
-
-            for (var i = y; i <= endY; i++)
-            {
-                for (var j = x; j <= endX; j++)
-                {
-                    if (imageArr[i][j].rgb.a !== 0)
-                    {
-                        if (i < minY) minY = i;
-                        if (i > maxY) maxY = i;
-                        if (j < minX) minX = j;
-                        if (j > maxX) maxX = j;
-                    }
-                }
-            }
-
-            if (!isFinite(minX) || !isFinite(minY) || maxX === -1 || maxY === -1) return;
-
-            return new Rect(Math.round(minX), Math.round(minY), Math.round(maxX + 1), Math.round(maxY + 1));
-        }
-
-        void get2DArrayEl(arr: PixelData[][], i: number, j: number)
-        {
-            if (i < 0 || i >= arr.length) return undefined;
-            if (j < 0 || j >= arr[0].length) return undefined;
-            if (arr[i][j].rgb.a === 0) return undefined;
-            return arr[i][j];
-        }
-
-        void make2DArray(w: number, h: number, val: any) : any {
-          var arr = [];
-          for(let i = 0; i<h; i++) {
-              arr[i] = [];
-              for(let j = 0; j<w; j++) {
-                  arr[i][j] = val;
-              }
-          }
-          return arr;
-        }
         */
 
         public static string baseName(string filepath)

@@ -80,6 +80,8 @@
     <Compile Include="Editor\Helpers.cs" />
     <Compile Include="Editor\Mathf.cs" />
     <Compile Include="Editor\Selectable.cs" />
+    <Compile Include="Editor\SpriteCanvasUI.cs" />
+    <Compile Include="Editor\SpritesheetCanvasUI.cs" />
     <Compile Include="Models\Collider.cs" />
     <Compile Include="Models\Frame.cs" />
     <Compile Include="Models\GridCoords.cs" />

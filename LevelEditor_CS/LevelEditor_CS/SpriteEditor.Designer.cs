@@ -32,7 +32,7 @@
             this.Sprites = new System.Windows.Forms.Label();
             this.newSpriteBtn = new System.Windows.Forms.Button();
             this.spriteCanvas = new System.Windows.Forms.PictureBox();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.spritesheetCanvas = new System.Windows.Forms.PictureBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
@@ -60,9 +60,11 @@
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.spriteCanvasPanel = new System.Windows.Forms.Panel();
+            this.spritesheetCanvasPanel = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.spriteCanvas)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.spritesheetCanvas)).BeginInit();
             this.spriteCanvasPanel.SuspendLayout();
+            this.spritesheetCanvasPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // spriteListBox
@@ -106,14 +108,14 @@
             this.spriteCanvas.TabIndex = 3;
             this.spriteCanvas.TabStop = false;
             // 
-            // pictureBox2
+            // spritesheetCanvas
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(1472, 23);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(718, 966);
-            this.pictureBox2.TabIndex = 4;
-            this.pictureBox2.TabStop = false;
+            this.spritesheetCanvas.Location = new System.Drawing.Point(9, 14);
+            this.spritesheetCanvas.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.spritesheetCanvas.Name = "spritesheetCanvas";
+            this.spritesheetCanvas.Size = new System.Drawing.Size(695, 935);
+            this.spritesheetCanvas.TabIndex = 4;
+            this.spritesheetCanvas.TabStop = false;
             // 
             // button1
             // 
@@ -375,11 +377,20 @@
             this.spriteCanvasPanel.Size = new System.Drawing.Size(1163, 738);
             this.spriteCanvasPanel.TabIndex = 31;
             // 
+            // spritesheetCanvasPanel
+            // 
+            this.spritesheetCanvasPanel.Controls.Add(this.spritesheetCanvas);
+            this.spritesheetCanvasPanel.Location = new System.Drawing.Point(1472, 21);
+            this.spritesheetCanvasPanel.Name = "spritesheetCanvasPanel";
+            this.spritesheetCanvasPanel.Size = new System.Drawing.Size(718, 954);
+            this.spritesheetCanvasPanel.TabIndex = 32;
+            // 
             // SpriteEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(2856, 1515);
+            this.Controls.Add(this.spritesheetCanvasPanel);
             this.Controls.Add(this.spriteCanvasPanel);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.button5);
@@ -407,7 +418,6 @@
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.newSpriteBtn);
             this.Controls.Add(this.Sprites);
             this.Controls.Add(this.spriteListBox);
@@ -416,8 +426,9 @@
             this.Text = "SpriteEditor";
             this.Load += new System.EventHandler(this.SpriteEditor_Load);
             ((System.ComponentModel.ISupportInitialize)(this.spriteCanvas)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.spritesheetCanvas)).EndInit();
             this.spriteCanvasPanel.ResumeLayout(false);
+            this.spritesheetCanvasPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -429,7 +440,7 @@
         private System.Windows.Forms.Label Sprites;
         private System.Windows.Forms.Button newSpriteBtn;
         private System.Windows.Forms.PictureBox spriteCanvas;
-        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.PictureBox spritesheetCanvas;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
@@ -457,6 +468,7 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Panel spriteCanvasPanel;
+        private System.Windows.Forms.Panel spritesheetCanvasPanel;
     }
 }
 

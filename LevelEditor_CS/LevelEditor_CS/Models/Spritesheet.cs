@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,12 +10,13 @@ namespace LevelEditor_CS.Models
 {
     public class Spritesheet
     {
-        //imgEl: HTMLImageElement = undefined;
+        public Bitmap image;
         public string path = "";
 
         public Spritesheet(string path)
         {
             this.path = path;
+            image = new Bitmap(path);
         }
 
         public string getName()
