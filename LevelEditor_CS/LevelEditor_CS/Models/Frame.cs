@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace LevelEditor_CS.Models
 {
+    [Serializable]
     public class Frame
     {
         public Rect rect;
@@ -14,10 +15,10 @@ namespace LevelEditor_CS.Models
         public List<Hitbox> hitboxes;
         public List<POI> POIs;
         public List<Frame> childFrames;
-        public float parentFrameIndex;
+        public int parentFrameIndex;
         public float zIndex = 0;
-        public float xDir = 1;
-        public float yDir = 1;
+        public int xDir = 1;
+        public int yDir = 1;
         public string tags = "";
 
         public Frame(Rect rect, float duration, Point offset)

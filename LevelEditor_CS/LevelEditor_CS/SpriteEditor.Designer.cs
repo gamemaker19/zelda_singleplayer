@@ -45,9 +45,9 @@
             this.alignmentSelect = new System.Windows.Forms.ComboBox();
             this.wrapModeSelect = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.globalHitboxGroup = new System.Windows.Forms.GroupBox();
+            this.frameHitboxGroup = new System.Windows.Forms.GroupBox();
+            this.framePOIGroup = new System.Windows.Forms.GroupBox();
             this.tileModeCheckBox = new System.Windows.Forms.CheckBox();
             this.offsetXCheckBox = new System.Windows.Forms.CheckBox();
             this.offsetYCheckBox = new System.Windows.Forms.CheckBox();
@@ -238,38 +238,38 @@
             this.label3.TabIndex = 15;
             this.label3.Text = "Wrap mode";
             // 
-            // groupBox1
+            // globalHitboxGroup
             // 
-            this.groupBox1.Location = new System.Drawing.Point(256, 982);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox1.Size = new System.Drawing.Size(934, 98);
-            this.groupBox1.TabIndex = 17;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Global Hitboxes";
+            this.globalHitboxGroup.Location = new System.Drawing.Point(256, 982);
+            this.globalHitboxGroup.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.globalHitboxGroup.Name = "globalHitboxGroup";
+            this.globalHitboxGroup.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.globalHitboxGroup.Size = new System.Drawing.Size(934, 98);
+            this.globalHitboxGroup.TabIndex = 17;
+            this.globalHitboxGroup.TabStop = false;
+            this.globalHitboxGroup.Text = "Global Hitboxes";
             // 
-            // groupBox2
+            // frameHitboxGroup
             // 
-            this.groupBox2.Location = new System.Drawing.Point(256, 1092);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox2.Size = new System.Drawing.Size(934, 98);
-            this.groupBox2.TabIndex = 18;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Frame Hitboxes";
+            this.frameHitboxGroup.Location = new System.Drawing.Point(256, 1092);
+            this.frameHitboxGroup.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.frameHitboxGroup.Name = "frameHitboxGroup";
+            this.frameHitboxGroup.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.frameHitboxGroup.Size = new System.Drawing.Size(934, 98);
+            this.frameHitboxGroup.TabIndex = 18;
+            this.frameHitboxGroup.TabStop = false;
+            this.frameHitboxGroup.Text = "Frame Hitboxes";
             // 
-            // groupBox3
+            // framePOIGroup
             // 
-            this.groupBox3.Location = new System.Drawing.Point(256, 1206);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupBox3.Size = new System.Drawing.Size(934, 98);
-            this.groupBox3.TabIndex = 19;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Frame POIs";
+            this.framePOIGroup.Location = new System.Drawing.Point(256, 1206);
+            this.framePOIGroup.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.framePOIGroup.Name = "framePOIGroup";
+            this.framePOIGroup.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.framePOIGroup.Size = new System.Drawing.Size(934, 98);
+            this.framePOIGroup.TabIndex = 19;
+            this.framePOIGroup.TabStop = false;
+            this.framePOIGroup.Text = "Frame POIs";
             // 
             // tileModeCheckBox
             // 
@@ -403,9 +403,9 @@
             this.Controls.Add(this.offsetYCheckBox);
             this.Controls.Add(this.offsetXCheckBox);
             this.Controls.Add(this.tileModeCheckBox);
-            this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.framePOIGroup);
+            this.Controls.Add(this.frameHitboxGroup);
+            this.Controls.Add(this.globalHitboxGroup);
             this.Controls.Add(this.wrapModeSelect);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.alignmentSelect);
@@ -453,9 +453,9 @@
         private System.Windows.Forms.ComboBox alignmentSelect;
         private System.Windows.Forms.ComboBox wrapModeSelect;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox globalHitboxGroup;
+        private System.Windows.Forms.GroupBox frameHitboxGroup;
+        private System.Windows.Forms.GroupBox framePOIGroup;
         private System.Windows.Forms.CheckBox tileModeCheckBox;
         private System.Windows.Forms.CheckBox offsetXCheckBox;
         private System.Windows.Forms.CheckBox offsetYCheckBox;

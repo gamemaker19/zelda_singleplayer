@@ -30,9 +30,9 @@ namespace LevelEditor_CS.Editor
                 else if (key == Keys.C && spriteEditor.selectedSprite.frames.Count > 0)
                 {
                     spriteEditor.selectedFrame.parentFrameIndex = spriteEditor.lastSelectedFrameIndex;
-                    spriteEditor.selectedSprite.frames[spriteEditor.lastSelectedFrameIndex].childFrames.push(spriteEditor.selectedFrame);
-                    spriteCanvas.redraw();
-                    spriteSheetCanvas.redraw();
+                    spriteEditor.selectedSprite.frames[spriteEditor.lastSelectedFrameIndex].childFrames.Add(spriteEditor.selectedFrame);
+                    spriteEditor.spriteCanvasUI.redraw();
+                    spriteEditor.spritesheetCanvasUI.redraw();
                 }
             }
 
@@ -55,7 +55,7 @@ namespace LevelEditor_CS.Editor
                 {
                     spriteEditor.selectedFrame = frame;
                     this.redraw();
-                    spriteCanvas.redraw();
+                    spriteEditor.spriteCanvasUI.redraw();
                     return;
                 }
             }
@@ -100,10 +100,10 @@ namespace LevelEditor_CS.Editor
             {
                 spriteEditor.selectedFrame = new Frame(rect, 0.066f, new Models.Point(0, 0));
                 this.redraw();
-                spriteCanvas.redraw();
+                spriteEditor.spriteCanvasUI.redraw();
             }
 
-            spriteCanvas.redraw();
+            spriteEditor.spriteCanvasUI.redraw();
         }
 
         public override void onLeftMouseUp()
@@ -113,7 +113,7 @@ namespace LevelEditor_CS.Editor
             {
                 if (!spriteEditor.tileMode)
                 {
-                    getSelectedPixels();
+                    spriteEditor.getSelectedPixels();
                 }
                 else
                 {
@@ -122,7 +122,7 @@ namespace LevelEditor_CS.Editor
                     var rect = new Rect(topLeft.j * spriteEditor.tileWidth, topLeft.i * spriteEditor.tileWidth, (botRight.j + 1) * spriteEditor.tileWidth, (botRight.i + 1) * spriteEditor.tileWidth);
                     spriteEditor.selectedFrame = new Frame(rect, 0.066f, new Models.Point(0, 0));
                     this.redraw();
-                    spriteCanvas.redraw();
+                    spriteEditor.spriteCanvasUI.redraw();
                 }
             }
         }
@@ -151,28 +151,28 @@ namespace LevelEditor_CS.Editor
             base.redraw();
             canvas.Clear(Color.Transparent);
 
-            if (spriteEditor.selectedSpritesheet && spriteEditor.selectedSpritesheet.imgEl)
+            if (spriteEditor.selectedSpritesheet != null && spriteEditor.selectedSpritesheet.image != null)
             {
-                canvas.drawImage(spriteEditor.selectedSpritesheet.imgEl, 0, 0);
+                Helpers.drawImage(canvas, spriteEditor.selectedSpritesheet.image, 0, 0);
             }
 
             if (spriteEditor.tileMode)
             {
                 //Draw columns
-                for (var i = 1; i < this.canvas.width / spriteEditor.tileWidth; i++)
+                for (var i = 1; i < CanvasWidth / spriteEditor.tileWidth; i++)
                 {
-                    Helpers.drawLine(canvas, i * spriteEditor.tileWidth, 0, i * spriteEditor.tileWidth, this.canvas.height, "red", 1);
+                    Helpers.drawLine(canvas, i * spriteEditor.tileWidth, 0, i * spriteEditor.tileWidth, CanvasHeight, Color.Red, 1);
                 }
                 //Draw rows
-                for (var i = 1; i < this.canvas.height / spriteEditor.tileWidth; i++)
+                for (var i = 1; i < CanvasHeight / spriteEditor.tileWidth; i++)
                 {
-                    Helpers.drawLine(canvas, 0, i * spriteEditor.tileWidth, this.canvas.width, i * spriteEditor.tileWidth, "red", 1);
+                    Helpers.drawLine(canvas, 0, i * spriteEditor.tileWidth, CanvasWidth, i * spriteEditor.tileWidth, Color.Red, 1);
                 }
             }
 
             if (this.mousedown)
             {
-                Helpers.drawRect(canvas, new Rect(this.dragLeftX, this.dragTopY, this.dragRightX, this.dragBotY), "", "blue", 1);
+                Helpers.drawRect(canvas, new Rect(this.dragLeftX, this.dragTopY, this.dragRightX, this.dragBotY), null, Color.Blue, 1);
             }
 
             if (spriteEditor.selectedSprite != null)
@@ -180,15 +180,15 @@ namespace LevelEditor_CS.Editor
                 var i = 0;
                 foreach (var frame in spriteEditor.selectedSprite.frames)
                 {
-                    Helpers.drawRect(canvas, frame.rect, "", "blue", 1);
-                    Helpers.drawText(canvas, String(i + 1), frame.rect.x1, frame.rect.y1, "red", null, 12, "left", "Top", "Arial");
+                    Helpers.drawRect(canvas, frame.rect, null, Color.Blue, 1);
+                    Helpers.drawText(canvas, (i + 1).ToString(), frame.rect.x1, frame.rect.y1, Color.Red, null, 12, "left", "Top");
                     i++;
                 }
             }
 
             if (spriteEditor.selectedFrame != null)
             {
-                Helpers.drawRect(canvas, spriteEditor.selectedFrame.rect, "", "green", 2);
+                Helpers.drawRect(canvas, spriteEditor.selectedFrame.rect, null, Color.Green, 2);
             }
         }
     }

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,8 +28,7 @@ namespace LevelEditor_CS.Editor
         }
     }
 
-
-    public class Helpers
+    public static class Helpers
     {
         public static List<Spritesheet> getSpritesheets()
         {
@@ -52,6 +53,46 @@ namespace LevelEditor_CS.Editor
                 sprites.Add(sprite);
             }
             return sprites;
+        }
+
+        public static void saveSprite(Sprite sprite)
+        {
+            string path = Consts.ASSETS_PATH + "/sprites/" + sprite.name + ".json";
+            string json = JsonConvert.SerializeObject(sprite);
+            File.WriteAllText(path, json);
+        }
+
+        public static bool IsBinaryEqualTo(this object obj, object obj1)
+        {
+            using (MemoryStream memStream = new MemoryStream())
+            {
+                if (obj == null || obj1 == null)
+                {
+                    if (obj == null && obj1 == null)
+                        return true;
+                    else
+                        return false;
+                }
+
+                BinaryFormatter binaryFormatter = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.Clone));
+                binaryFormatter.Serialize(memStream, obj);
+                byte[] b1 = memStream.ToArray();
+                memStream.SetLength(0);
+
+                binaryFormatter.Serialize(memStream, obj1);
+                byte[] b2 = memStream.ToArray();
+
+                if (b1.Length != b2.Length)
+                    return false;
+
+                for (int i = 0; i < b1.Length; i++)
+                {
+                    if (b1[i] != b2[i])
+                        return false;
+                }
+
+                return true;
+            }
         }
 
         public static Dictionary<string, string> storageKeys = null;
@@ -84,86 +125,89 @@ namespace LevelEditor_CS.Editor
             storageKeys[key] = val;
         }
 
-        public static void drawRect(Graphics canvas, Rect rect, Color fillColor, Color strokeColor, int strokeWidth, int fillAlpha) 
+        public static void drawRect(Graphics canvas, Rect rect, Color? fillColor, Color? strokeColor = null, int strokeWidth = 0, float fillAlpha = 1) 
         {
-          
-        }
-
-        public static void drawText(Graphics canvas, string text, float x, float y, string fillColor, string outlineColor, int size, string hAlign, string vAlign, string font)
-        {
-        }
-
-        public static void drawCircle(Graphics canvas, float x, float y, float r, Color fillColor, Color lineColor, int lineThicknessfloat)
-        {
-        }
-
-        public static void drawLine(Graphics canvas, float x, float y, float x2, float y2, Color color, int thickness)
-        {
-        }
-
-        public static void drawImage(Graphics canvas, Bitmap bitmap, float sX, float sY, float sW = -1, float sH, float x, float y, int flipX, int flipY, string options, float alpha, float scaleX, float scaleY) 
-        {
-        }
-
-        public static void get2DArrayFromImage(Bitmap bitmap)
-        {
-            var data = imageData.data;
-            var arr = [];
-            var row = [];
-            for (var i = 0; i < data.length; i += 4)
+            if (fillColor != null)
             {
-                if (i % (imageData.width * 4) === 0)
+                SolidBrush fillBrush = new SolidBrush((Color)fillColor);
+                canvas.FillRectangle(fillBrush, rect.x1, rect.y1, rect.w, rect.h);
+            }
+
+            if (strokeColor != null)
+            {
+                SolidBrush strokeBrush = new SolidBrush((Color)strokeColor);
+                canvas.DrawRectangle(new Pen(strokeBrush), rect.x1, rect.y1, rect.w, rect.h);
+            }
+        }
+
+        public static void drawText(Graphics canvas, string text, float x, float y, Color? fillColor, Color? outlineColor, int size, string hAlign, string vAlign)
+        {
+            FontFamily fontFamily = new FontFamily("Arial");
+            Font font = new Font(fontFamily, 16, FontStyle.Regular, GraphicsUnit.Pixel);
+            canvas.DrawString(text, font, new SolidBrush(Color.Black), new PointF(x, y));
+        }
+
+        public static void drawCircle(Graphics canvas, float x, float y, float r, Color? fillColor, Color? lineColor = null, int lineThicknessfloat = 0)
+        {
+            if (fillColor != null)
+            {
+                SolidBrush fillBrush = new SolidBrush((Color)fillColor);
+                canvas.FillEllipse(fillBrush, new Rectangle((int)(x - r), (int)(y - r), (int)(r * 2), (int)(r * 2)));
+            }
+
+            if (lineColor != null)
+            {
+                SolidBrush strokeBrush = new SolidBrush((Color)lineColor);
+                canvas.DrawEllipse(new Pen(strokeBrush), new Rectangle((int)(x - r), (int)(y - r), (int)(r * 2), (int)(r * 2)));
+            }
+        }
+
+        public static void drawLine(Graphics canvas, float x, float y, float x2, float y2, Color? color, int thickness)
+        {
+            canvas.DrawLine(new Pen(new SolidBrush((Color)color)), x, y, x2, y2);
+        }
+
+        public static void drawImage(Graphics canvas, Bitmap bitmap, float sX, float sY, float sW = -1, float sH = -1, float x = -1, float y = -1, int flipX = 1, int flipY = 1, string options = "", float alpha = 1, float scaleX = 1, float scaleY = 1) 
+        {
+            canvas.DrawImage(bitmap, sX, sY);
+        }
+
+        public static List<List<PixelData>> get2DArrayFromImage(Bitmap bitmap)
+        {
+            var arr = new List<List<PixelData>>();
+
+            for (int i = 0; i < bitmap.Height; i++)
+            {
+                var row = new List<PixelData>();
+                arr.Add(row);
+                for (int j = 0; j < bitmap.Width; j++)
                 {
-                    if (i > 0)
-                    {
-                        arr.push(row);
-                    }
-                    row = [];
-                }
-
-                var red = data[i];
-                var green = data[i + 1];
-                var blue = data[i + 2];
-                var alpha = data[i + 3];
-
-                row.push(new PixelData(-1, -1, new Color(red, green, blue, alpha), []));
-
-                if (i == data.length - 4)
-                {
-                    arr.push(row);
+                    var pixel = bitmap.GetPixel(j, i);
+                    row.Add(new PixelData(j, i, pixel, new List<PixelData>()));
                 }
             }
 
-            for (var i = 0; i < arr.length; i++)
+            for (var i = 0; i < arr.Count; i++)
             {
-                for (var j = 0; j < arr[i].length; j++)
+                for (var j = 0; j < arr[i].Count; j++)
                 {
-                    arr[i][j].x = j;
-                    arr[i][j].y = i;
-                }
-            }
-
-            for (var i = 0; i < arr.length; i++)
-            {
-                for (var j = 0; j < arr[i].length; j++)
-                {
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i - 1, j - 1));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i - 1, j));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i - 1, j + 1));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i, j - 1));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i, j));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i, j + 1));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i + 1, j - 1));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i + 1, j));
-                    arr[i][j].neighbors.push(get2DArrayEl(arr, i + 1, j + 1));
-                    _.pull(arr[i][j].neighbors, undefined);
+                    arr[i][j].neighbors.Add(get2DArrayEl(arr, i - 1, j - 1));
+                    arr[i][j].neighbors.Add(get2DArrayEl(arr, i - 1, j));
+                    arr[i][j].neighbors.Add(get2DArrayEl(arr, i - 1, j + 1));
+                    arr[i][j].neighbors.Add(get2DArrayEl(arr, i, j - 1));
+                    arr[i][j].neighbors.Add(get2DArrayEl(arr, i, j));
+                    arr[i][j].neighbors.Add(get2DArrayEl(arr, i, j + 1));
+                    arr[i][j].neighbors.Add(get2DArrayEl(arr, i + 1, j - 1));
+                    arr[i][j].neighbors.Add(get2DArrayEl(arr, i + 1, j));
+                    arr[i][j].neighbors.Add(get2DArrayEl(arr, i + 1, j + 1));
+                    arr[i][j].neighbors.RemoveAll(p => p == null);
                 }
             }
 
             return arr;
         }
 
-        public Rect getPixelClumpRect(float x, float y, List<List<PixelData>> imageArr)
+        public static Rect getPixelClumpRect(float x, float y, List<List<PixelData>> imageArr)
         {
             int ix = Mathf.Round(x);
             int iy = Mathf.Round(y);
@@ -213,7 +257,7 @@ namespace LevelEditor_CS.Editor
 
         }
 
-        public Rect getSelectedPixelRect(float x, float y, float endX, float endY, List<List<PixelData>> imageArr)
+        public static Rect getSelectedPixelRect(float x, float y, float endX, float endY, List<List<PixelData>> imageArr)
         {
             x = Mathf.Round(x);
             y = Mathf.Round(y);
@@ -266,6 +310,17 @@ namespace LevelEditor_CS.Editor
                 return true;
             }
             return false;
+        }
+
+        public static T DeepClone<T>(this T a)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, a);
+                stream.Position = 0;
+                return (T)formatter.Deserialize(stream);
+            }
         }
 
         /*

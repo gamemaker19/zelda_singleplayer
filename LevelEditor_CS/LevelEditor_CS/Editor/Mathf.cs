@@ -15,7 +15,7 @@ namespace LevelEditor_CS.Editor
 
         public static float Ceil(float val)
         {
-            return (float)Math.Ceil(val);
+            return (float)Math.Ceiling(val);
         }
 
         public static int Round(float val)

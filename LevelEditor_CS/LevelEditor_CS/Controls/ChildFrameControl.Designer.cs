@@ -1,6 +1,6 @@
 ﻿namespace LevelEditor_CS.Controls
 {
-    partial class ChildFrame
+    partial class ChildFrameControl
     {
         /// <summary> 
         /// Required designer variable.

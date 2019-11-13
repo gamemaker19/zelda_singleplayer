@@ -1,4 +1,5 @@
-﻿using LevelEditor_CS.Editor;
+﻿using LevelEditor_CS.Controls;
+using LevelEditor_CS.Editor;
 using LevelEditor_CS.Models;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,8 @@ namespace LevelEditor_CS
     {
         public Dictionary<string, Sprite> origSprites = new Dictionary<string, Sprite>();
         public List<Sprite> sprites = new List<Sprite>();
-        public Sprite selectedSprite;
         public List<Spritesheet> spritesheets;
-        public Spritesheet selectedSpritesheet;
-        public Selectable selection;
-        public Frame selectedFrame;
+
         public bool isAnimPlaying = false;
         public bool addPOIMode = false;
         public List<string> alignments = new List<string> { "topleft", "topmid", "topright", "midleft", "center", "midright", "botleft", "botmid", "botright" };
@@ -33,20 +31,50 @@ namespace LevelEditor_CS
         public float bulkDuration = 0;
         public string newSpriteName = "";
         public Ghost ghost;
-        public float lastSelectedFrameIndex = 0;
+        public int lastSelectedFrameIndex = 0;
         public bool tileMode = false;
         public bool tileModeOffsetX = false;
         public bool tileModeOffsetY = false;
         public string spriteFilter = "";
         public string selectedFilterMode = "contains";
         public float tileWidth = 8;
+        public int animFrameIndex = 0;
+        public float animTime = 0;
 
         public SpriteCanvasUI spriteCanvasUI;
         public SpritesheetCanvasUI spritesheetCanvasUI;
 
+        public Sprite selectedSprite
+        {
+            get
+            {
+                if (spriteListBox.SelectedIndex == -1) return null;
+                return sprites[spriteListBox.SelectedIndex];
+            }
+            set
+            {
+                spriteListBox.SelectedIndex = sprites.IndexOf(value);
+            }
+        }
+
+        public Spritesheet selectedSpritesheet
+        {
+            get
+            {
+                return spritesheets[spritesheetSelect.SelectedIndex];
+            }
+        }
+
+        public Selectable selection;
+        public Frame selectedFrame;
+
         public SpriteEditor()
         {
             InitializeComponent();
+
+            spriteCanvasUI = new SpriteCanvasUI(spriteCanvas, spriteCanvasPanel, this);
+            spritesheetCanvasUI = new SpritesheetCanvasUI(spritesheetCanvas, spritesheetCanvasPanel, this);
+
             spritesheets = Helpers.getSpritesheets();
             sprites = Helpers.getSprites();
 
@@ -59,8 +87,6 @@ namespace LevelEditor_CS
             setSelect(alignmentSelect, alignments);
             setSelect(wrapModeSelect, wrapModes);
 
-            spriteCanvasUI = new SpriteCanvasUI(spriteCanvas, spriteCanvasPanel, this);
-            spritesheetCanvasUI = new SpritesheetCanvasUI(spritesheetCanvas, spritesheetCanvasPanel, this);
         }
 
         public void setSelect(ComboBox select, List<string> items)
@@ -79,17 +105,23 @@ namespace LevelEditor_CS
 
         private void spritesheetSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            onSpritesheetChange(selectedSpritesheet);
         }
 
         private void spriteListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            alignmentSelect.SelectedItem = selectedSprite.alignment;
+            wrapModeSelect.SelectedItem = selectedSprite.wrapMode;
+            
+            foreach (Hitbox hitbox in selectedSprite.hitboxes)
+            {
+                globalHitboxGroup.Controls.Add(new HitboxControl(hitbox));
+            }
         }
 
         public List<Sprite> getFilteredSprites()
         {
-            var filters = spriteFilter.Split(',');
+            var filters = spriteFilter.Split(',').ToList();
             if (filters[0] == "") return sprites;
             return sprites.Where((sprite) => {
                 if (selectedFilterMode == "exactmatch")
@@ -127,73 +159,46 @@ namespace LevelEditor_CS
                     }
                 }
                 return false;
-            });
+            }).ToList();
         }
         
-        public void onSpritesheetChange(Spritesheet newSheet, bool isNew)
+        public void onSpritesheetChange(Spritesheet newSheet)
         {
-            var newSpriteAndSheetSel = isNew && (selectedSpritesheet != null);
-
-            if (newSpriteAndSheetSel)
-            {
-                selectedSprite.spritesheet = selectedSpritesheet;
-                return;
-            }
-
-            /*
-            if(newSheet == selectedSpritesheet) {
-              return;
-            }
-            */
-
-            selectedSpritesheet = newSheet;
-
-            if (selectedSpritesheet == null)
-            {
-                spriteCanvasUI.redraw();
-                spritesheetCanvasUI.redraw();
-                return;
-            }
+            newSheet.init();
 
             if (selectedSprite != null)
             {
                 selectedSprite.spritesheet = newSheet;
             }
 
-            if (newSheet.image == null)
-            {
-                return;
-            }
-
-            spritesheetCanvasUI.setSize(selectedSpritesheet.image.Width, selectedSpritesheet.image.Height);
-            Helpers.drawImage(spritesheetCanvasUI.canvas, selectedSpritesheet.image, 0, 0);
-            var imageData = spritesheetCanvasUI.ctx.getImageData(0, 0, spritesheetCanvasUI.canvas.width, spritesheetCanvasUI.canvas.height);
-            newSheet.imgArr = Helpers.get2DArrayFromImage(imageData);
-            newSheet.image == null = spritesheetImg;
+            spritesheetCanvasUI.setSize(newSheet.image.Width, newSheet.image.Height);
+            Helpers.drawImage(spritesheetCanvasUI.canvas, newSheet.image, 0, 0);
             spriteCanvasUI.redraw();
             spritesheetCanvasUI.redraw();
-
         }
 
         public string getSpriteDisplayName(Sprite sprite)
         {
-            return sprite.name + (app1.isSpriteChanged(sprite) ? '*' : '');
+            return sprite.name + (isSpriteChanged(sprite) ? "*" : "");
         }
         
         public void addSprite()
         {
-            var spritename = prompt("Enter a sprite name");
+            string spritename = Prompt.ShowDialog("Enter sprite name", "Enter a sprite name");
             var newSprite = new Sprite(spritename, null);
-            this.changeSprite(newSprite, true);
+            this.changeSprite(newSprite);
             sprites.Add(newSprite);
             selectedFrame = null;
             selection = null;
         }
         
-        public void changeSprite(Sprite newSprite, bool isNew)
+        public void changeSprite(Sprite newSprite)
         {
             selectedSprite = newSprite;
-            this.onSpritesheetChange(newSprite.spritesheet, isNew);
+            if(newSprite.spritesheet != selectedSpritesheet)
+            {
+                this.onSpritesheetChange(newSprite.spritesheet);
+            }
             selection = null;
             selectedFrame = selectedSprite.frames[0];
             lastSelectedFrameIndex = 0;
@@ -224,24 +229,23 @@ namespace LevelEditor_CS
         public void selectHitbox(Hitbox hitbox)
         {
             selection = hitbox;
-            spriteCanvasUI.wrapper.focus();
             spriteCanvasUI.redraw();
         }
         
-        public void devareHitbox(List<Hitbox> hitboxArr, Hitbox hitbox)
+        public void deleteHitbox(List<Hitbox> hitboxArr, Hitbox hitbox)
         {
-            _.pull(hitboxArr, hitbox);
+            hitboxArr.Remove(hitbox);
             spriteCanvasUI.redraw();
         }
         
-        public List<Frame> isSelectedFrameAdded()
+        public bool isSelectedFrameAdded()
         {
-            return _.includes(selectedSprite.frames, selectedFrame);
+            return selectedSprite.frames.Contains(selectedFrame);
         }
 
         public void addPendingFrame(int index = -1)
         {
-            selectedFrame = _.cloneDeep(selectedFrame);
+            selectedFrame = selectedFrame.DeepClone();
             if (index == -1)
             {
                 selectedSprite.frames.Add(selectedFrame);
@@ -269,27 +273,27 @@ namespace LevelEditor_CS
             spritesheetCanvasUI.redraw();
         }
         
-        public void copyFrame(Frame frame, float dir)
+        public void copyFrame(Frame frame, int dir)
         {
             var index = selectedSprite.frames.IndexOf(frame);
             if (dir == -1) dir = 0;
-            selectedSprite.frames.splice(index + dir, 0, _.cloneDeep(frame));
+            selectedSprite.frames.Insert(index + dir, frame.DeepClone());
         }
 
-        public void moveFrame(Frame frame, float dir)
+        public void moveFrame(Frame frame, int dir)
         {
             var index = selectedSprite.frames.IndexOf(frame);
-            if (index + dir < 0 || index + dir >= selectedSprite.frames.length) return;
+            if (index + dir < 0 || index + dir >= selectedSprite.frames.Count) return;
             var temp = selectedSprite.frames[index];
             selectedSprite.frames[index] = selectedSprite.frames[index + dir];
             selectedSprite.frames[index + dir] = temp;
         }
         
-        public void devareFrame(Frame frame)
+        public void deleteFrame(Frame frame)
         {
             if (frame.parentFrameIndex == -1)
             {
-                _.pull(selectedSprite.frames, frame);
+                selectedSprite.frames.Remove(frame);
                 selectedFrame = selectedSprite.frames[0];
                 lastSelectedFrameIndex = 0;
             }
@@ -297,7 +301,7 @@ namespace LevelEditor_CS
             {
                 var parentFrame = selectedSprite.frames[frame.parentFrameIndex];
                 if (parentFrame != null) parentFrame = selectedSprite.frames[0];
-                _.pull(parentFrame.childFrames, frame);
+                parentFrame.childFrames.Remove(frame);
             }
             spriteCanvasUI.redraw();
             spritesheetCanvasUI.redraw();
@@ -307,18 +311,18 @@ namespace LevelEditor_CS
         {
             selection = null;
             var frameIndex = selectedSprite.frames.IndexOf(selectedFrame);
-            var selectedFrame = selectedSprite.frames[frameIndex + 1];
-            if (selectedFrame != null) selectedFrame = selectedSprite.frames[0] || null;
-            this.selectFrame(selectedFrame);
+            var selFrame = selectedSprite.frames[frameIndex + 1];
+            if (selFrame != null) selFrame = selectedSprite.frames[0];
+            this.selectFrame(selFrame);
         }
 
         public void selectPrevFrame()
         {
             selection = null;
             var frameIndex = selectedSprite.frames.IndexOf(selectedFrame);
-            var selectedFrame = selectedSprite.frames[frameIndex - 1];
-            if (selectedFrame != null) selectedFrame = selectedSprite.frames[selectedSprite.frames.length - 1] || null;
-            this.selectFrame(selectedFrame);
+            var selFrame = selectedSprite.frames[frameIndex - 1];
+            if (selFrame != null) selFrame = selectedSprite.frames[selectedSprite.frames.Count - 1];
+            this.selectFrame(selFrame);
         }
         
         public void playAnim()
@@ -332,43 +336,20 @@ namespace LevelEditor_CS
 
         public void saveSprite()
         {
-            var jsonStr = Helpers.serializeES6(selectedSprite);
-            $.post("save-sprite", JSON.parse(jsonStr)).then(response => {
-                Console.WriteLine("Successfully saved sprite");
-                origSprites[selectedSprite.name] = _.clone(selectedSprite);
-            }, error => {
-                Console.WriteLine("Failed to save sprite");
-            });
+            Helpers.saveSprite(selectedSprite);
+            origSprites[selectedSprite.name] = selectedSprite.DeepClone();
         }
   
         public void saveSprites()
         {
-            var jsonStr = "[";
-            Console.WriteLine("Saving sprites:");
             foreach (var sprite in sprites)
             {
                 if (isSpriteChanged(sprite))
                 {
-                    jsonStr += Helpers.serializeES6(sprite);
-                    jsonStr += ",";
-                    Console.WriteLine(sprite.name);
+                    Helpers.saveSprite(sprite);
+                    origSprites[sprite.name] = sprite.DeepClone();
                 }
             }
-            if (jsonStr[jsonStr.length - 1] == ",") jsonStr = jsonStr.slice(0, -1);
-            jsonStr += "]";
-            //Console.WriteLine(jsonStr);
-            $.post("save-sprites", { "data": JSON.parse(jsonStr) }).then(response => {
-                Console.WriteLine("Successfully saved sprites");
-                for (var sprite of sprites)
-                {
-                    if (app1.isSpriteChanged(sprite))
-                    {
-                        origSprites[sprite.name] = _.clone(sprite);
-                    }
-                }
-            }, error => {
-                Console.WriteLine("Failed to save sprites");
-            });
         }
 
         public void onSpriteAlignmentChange()
@@ -401,7 +382,7 @@ namespace LevelEditor_CS
 
         public void reverseFrames()
         {
-            _.reverse(selectedSprite.frames);
+            selectedSprite.frames.Reverse();
             spriteCanvasUI.redraw();
         }
 
@@ -416,13 +397,12 @@ namespace LevelEditor_CS
         public void selectPOI(POI poi)
         {
             this.selection = poi;
-            spriteCanvasUI.wrapper.focus();
             spriteCanvasUI.redraw();
         }
 
-        public void devarePOI(POI poi)
+        public void deletePOI(POI poi)
         {
-            _.pull(selectedFrame.POIs, poi);
+            selectedFrame.POIs.Remove(poi);
             spriteCanvasUI.redraw();
         }
 
@@ -440,9 +420,9 @@ namespace LevelEditor_CS
             }
             return selectables;
         }
-        public void isSpriteChanged(Sprite sprite)
+        public bool isSpriteChanged(Sprite sprite)
         {
-            return !_.isEqual(sprite, origSprites[sprite.name]);
+            return sprite.IsBinaryEqualTo(origSprites[sprite.name]);
         }
 
         public void getSelectedPixels()
@@ -461,12 +441,12 @@ namespace LevelEditor_CS
         {
             if (isAnimPlaying)
             {
-                animTime += 1000 / 60;
+                animTime += 1000 / 60f;
                 var frames = selectedSprite.frames;
                 if (animTime >= frames[animFrameIndex].duration * 1000)
                 {
                     animFrameIndex++;
-                    if (animFrameIndex >= frames.length)
+                    if (animFrameIndex >= frames.Count)
                     {
                         animFrameIndex = 0;
                     }
@@ -476,16 +456,16 @@ namespace LevelEditor_CS
             }
         }
 
-        public void getVisibleHitboxes()
+        public List<Hitbox> getVisibleHitboxes()
         {
             List<Hitbox> hitboxes = new List<Hitbox>();
             if (selectedSprite != null)
             {
-                hitboxes = hitboxes.AddRange(selectedSprite.hitboxes);
+                hitboxes.AddRange(selectedSprite.hitboxes);
             }
             if (selectedFrame != null)
             {
-                hitboxes = hitboxes.AddRange(selectedFrame.hitboxes);
+                hitboxes.AddRange(selectedFrame.hitboxes);
             }
             return hitboxes;
         }

@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace LevelEditor_CS.Controls
 {
-    public partial class Frame : UserControl
+    public partial class POIControl : UserControl
     {
-        public Frame()
+        public POIControl()
         {
             InitializeComponent();
         }

@@ -1,6 +1,6 @@
 ﻿namespace LevelEditor_CS.Controls
 {
-    partial class Hitbox
+    partial class HitboxControl
     {
         /// <summary> 
         /// Required designer variable.

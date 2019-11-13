@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace LevelEditor_CS.Controls
 {
-    public partial class Hitbox : UserControl
+    public partial class ChildFrameControl : UserControl
     {
-        public Hitbox()
+        public ChildFrameControl()
         {
             InitializeComponent();
         }

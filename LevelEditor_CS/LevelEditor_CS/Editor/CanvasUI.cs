@@ -16,8 +16,6 @@ namespace LevelEditor_CS.Editor
         public Graphics canvas;
 
         public bool ctrlHeld = false;
-        public float baseWidth = 0;
-        public float baseHeight = 0;
         public float zoom = 1;
         public float noScrollZoom = 1;
         public bool mousedown = false;
@@ -46,25 +44,22 @@ namespace LevelEditor_CS.Editor
         public float dragTopY { get { return Math.Min(this.dragStartY, this.dragEndY); } }
         public float dragBotY { get { return Math.Max(this.dragStartY, this.dragEndY); } }
 
-        public CanvasUI(PictureBox pictureBox, Panel panel, int baseWidth, int baseHeight, Color color)
+        public int PanelWidth { get { return panel.Width; } }
+        public int PanelHeight { get { return panel.Height; } }
+        public int CanvasWidth { get { return pictureBox.Width; } }
+        public int CanvasHeight { get { return pictureBox.Height; } }
+
+        public CanvasUI(PictureBox pictureBox, Panel panel, int canvasWidth, int canvasHeight, Color color)
         {
             this.color = color;
-
             this.pictureBox = pictureBox;
-
-            if (baseWidth > 0) pictureBox.Width = baseWidth;
-            else pictureBox.Width = panel.Width;
-
-            if (baseHeight > 0) pictureBox.Height = baseHeight;
-            else pictureBox.Height = panel.Height;
+            pictureBox.Width = canvasWidth;
+            pictureBox.Height = canvasHeight;
 
             this.panel = panel;
             panel.AutoScroll = true;
             pictureBox.Parent = panel;
             this.canvas = pictureBox.CreateGraphics();
-
-            this.baseWidth = pictureBox.Width;
-            this.baseHeight = pictureBox.Height;
 
             pictureBox.MouseMove += mouseMoveEvent;
             pictureBox.MouseDown += mouseDownEvent;
@@ -72,6 +67,12 @@ namespace LevelEditor_CS.Editor
             pictureBox.MouseWheel += mouseWheelEvent;
             pictureBox.MouseLeave += mouseLeaveEvent;
 
+        }
+
+        public void setSize(int width, int height)
+        {
+            this.pictureBox.Width = width;
+            this.pictureBox.Height = height;
         }
 
         public void mouseMoveEvent(object sender, MouseEventArgs e)
@@ -195,9 +196,7 @@ namespace LevelEditor_CS.Editor
             Helpers.drawRect(this.ctx, new Rect(0, 0, this.canvas.width, this.canvas.height), this.color, "", null);
             */
             canvas.Clear(Color.Transparent);
-
-            SolidBrush brush = new SolidBrush(color);
-            canvas.DrawRectangle(new Pen(brush), 0, 0, this.baseWidth, this.baseHeight);
+            Helpers.drawRect(canvas, new Rect(0, 0, CanvasWidth, CanvasHeight), color);
         }
 
         public GridRect getDragGridRect()
@@ -214,14 +213,6 @@ namespace LevelEditor_CS.Editor
         public GridCoords getMouseGridCoordsCustomWidth(float width)
         {
             return new GridCoords(Mathf.Floor(this.mouseY / width), Mathf.Floor(this.mouseX / width));
-        }
-
-        public void setSize(int width, int height)
-        {
-            this.pictureBox.Width = width;
-            this.pictureBox.Height = height;
-            this.baseWidth = width;
-            this.baseHeight = height;
         }
 
         public void saveScrollPos(string imageKey)

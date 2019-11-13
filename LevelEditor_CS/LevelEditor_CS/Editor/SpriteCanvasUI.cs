@@ -30,7 +30,7 @@ namespace LevelEditor_CS.Editor
 
             if (!spriteEditor.isAnimPlaying)
             {
-                if (spriteEditor.selectedFrame != null && spriteEditor.selectedSpritesheet != null && spriteEditor.selectedSpritesheet.imgEl)
+                if (spriteEditor.selectedFrame != null && spriteEditor.selectedSpritesheet != null && spriteEditor.selectedSpritesheet.image != null)
                 {
                     frame = spriteEditor.selectedFrame;
                 }
@@ -42,8 +42,8 @@ namespace LevelEditor_CS.Editor
 
             if (frame == null) return;
 
-            var cX = this.canvas.width / 2;
-            var cY = this.canvas.height / 2;
+            int cX = CanvasWidth / 2;
+            int cY = CanvasHeight / 2;
 
             var frameIndex = spriteEditor.selectedSprite.frames.IndexOf(frame);
             /*
@@ -63,20 +63,19 @@ namespace LevelEditor_CS.Editor
 
             if (spriteEditor.ghost != null)
             {
-                spriteEditor.ghost.sprite.draw(canvas, spriteEditor.ghost.sprite.frames.IndexOf(spriteEditor.ghost.frame), cX, cY, frame.xDir, frame.yDir, "", 0.5);
+                spriteEditor.ghost.sprite.draw(canvas, spriteEditor.ghost.sprite.frames.IndexOf(spriteEditor.ghost.frame), cX, cY, frame.xDir, frame.yDir, "", 0.5f);
             }
 
             if (!spriteEditor.hideGizmos)
             {
                 foreach (var hitbox in spriteEditor.getVisibleHitboxes())
                 {
-
                     float hx = 0; 
                     float hy = 0;
-                    var halfW = hitbox.width * 0.5;
-                    var halfH = hitbox.height * 0.5;
-                    var w = halfW * 2;
-                    var h = halfH * 2;
+                    float halfW = hitbox.width * 0.5f;
+                    float halfH = hitbox.height * 0.5f;
+                    float w = halfW * 2;
+                    float h = halfH * 2;
                     if (spriteEditor.selectedSprite.alignment == "topleft")
                     {
                         hx = cX; hy = cY;
@@ -118,11 +117,11 @@ namespace LevelEditor_CS.Editor
                       hx + hitbox.offset.x, hy + hitbox.offset.y, hx + hitbox.width + hitbox.offset.x, hy + hitbox.height + hitbox.offset.y
                     );
 
-                    string strokeColor;
-                    int strokeWidth;
+                    Color? strokeColor = null;
+                    int strokeWidth = 0;
                     if (spriteEditor.selection == hitbox)
                     {
-                        strokeColor = "blue";
+                        strokeColor = Color.Blue;
                         strokeWidth = 2;
                     }
 
@@ -130,14 +129,14 @@ namespace LevelEditor_CS.Editor
                 }
 
                 var len = 1000;
-                Helpers.drawLine(canvas, cX, cY - len, cX, cY + len, "red", 1);
-                Helpers.drawLine(canvas, cX - len, cY, cX + len, cY, "red", 1);
-                Helpers.drawCircle(canvas, cX, cY, 1, "red");
+                Helpers.drawLine(canvas, cX, cY - len, cX, cY + len, Color.Red, 1);
+                Helpers.drawLine(canvas, cX - len, cY, cX + len, cY, Color.Red, 1);
+                Helpers.drawCircle(canvas, cX, cY, 1, Color.Red);
                 //drawStroked(c1, "+", cX, cY);
 
                 foreach (var poi in frame.POIs)
                 {
-                    Helpers.drawCircle(canvas, cX + poi.x, cY + poi.y, 1, "green");
+                    Helpers.drawCircle(canvas, cX + poi.x, cY + poi.y, 1, Color.Green);
                 }
 
             }

@@ -1,6 +1,6 @@
 ﻿namespace LevelEditor_CS.Controls
 {
-    partial class POI
+    partial class POIControl
     {
         /// <summary> 
         /// Required designer variable.

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LevelEditor_CS.Editor;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -12,41 +13,25 @@ namespace LevelEditor_CS.Models
     {
         public Bitmap image;
         public string path = "";
+        public List<List<PixelData>> imgArr;
 
         public Spritesheet(string path)
         {
-            this.path = path;
-            image = new Bitmap(path);
+            this.path = path;       
+        }
+
+        public void init()
+        {
+            if (image == null)
+            {
+                image = new Bitmap(path);
+                imgArr = Helpers.get2DArrayFromImage(image);
+            }
         }
 
         public string getName()
         {
             return Path.GetFileNameWithoutExtension(path);
         }
-
-        /*
-        get imgArr()
-        {
-            //@ts-ignore
-            return window.imgArrMap[this.path];
-        }
-
-        set imgArr(imgArr: any)
-        {
-            //@ts-ignore
-            if (!window.imgArrMap) window.imgArrMap = { };
-            //@ts-ignore
-            window.imgArrMap[this.path] = imgArr;
-        }
-
-        loadImage(callback: Function)
-        {
-            this.imgEl = document.createElement("img");
-            this.imgEl.onload = () => {
-                callback();
-            };
-            this.imgEl.src = this.path;
-        }
-        */
     }
 }

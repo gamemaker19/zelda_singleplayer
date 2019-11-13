@@ -49,29 +49,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\ChildFrame.cs">
+    <Compile Include="Controls\ChildFrameControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\ChildFrame.Designer.cs">
-      <DependentUpon>ChildFrame.cs</DependentUpon>
+    <Compile Include="Controls\ChildFrameControl.Designer.cs">
+      <DependentUpon>ChildFrameControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Frame.cs">
+    <Compile Include="Controls\FrameControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\Frame.Designer.cs">
-      <DependentUpon>Frame.cs</DependentUpon>
+    <Compile Include="Controls\FrameControl.Designer.cs">
+      <DependentUpon>FrameControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Hitbox.cs">
+    <Compile Include="Controls\HitboxControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\Hitbox.Designer.cs">
-      <DependentUpon>Hitbox.cs</DependentUpon>
+    <Compile Include="Controls\HitboxControl.Designer.cs">
+      <DependentUpon>HitboxControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\POI.cs">
+    <Compile Include="Controls\POIControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\POI.Designer.cs">
-      <DependentUpon>POI.cs</DependentUpon>
+    <Compile Include="Controls\POIControl.Designer.cs">
+      <DependentUpon>POIControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Editor\CanvasUI.cs" />
     <Compile Include="Editor\Consts.cs" />
@@ -79,6 +79,7 @@
     <Compile Include="Editor\GlobalInput.cs" />
     <Compile Include="Editor\Helpers.cs" />
     <Compile Include="Editor\Mathf.cs" />
+    <Compile Include="Editor\Prompt.cs" />
     <Compile Include="Editor\Selectable.cs" />
     <Compile Include="Editor\SpriteCanvasUI.cs" />
     <Compile Include="Editor\SpritesheetCanvasUI.cs" />
@@ -108,17 +109,17 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Controls\ChildFrame.resx">
-      <DependentUpon>ChildFrame.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\ChildFrameControl.resx">
+      <DependentUpon>ChildFrameControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Frame.resx">
-      <DependentUpon>Frame.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\FrameControl.resx">
+      <DependentUpon>FrameControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Hitbox.resx">
-      <DependentUpon>Hitbox.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\HitboxControl.resx">
+      <DependentUpon>HitboxControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\POI.resx">
-      <DependentUpon>POI.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\POIControl.resx">
+      <DependentUpon>POIControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SpriteEditor.resx">
       <DependentUpon>SpriteEditor.cs</DependentUpon>
