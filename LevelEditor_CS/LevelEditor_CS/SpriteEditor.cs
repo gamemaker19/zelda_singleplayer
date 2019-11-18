@@ -61,6 +61,7 @@ namespace LevelEditor_CS
         {
             get
             {
+                if (spritesheets.Count == 0 || spritesheetSelect.SelectedIndex < 0) return null;
                 return spritesheets[spritesheetSelect.SelectedIndex];
             }
         }
@@ -81,21 +82,32 @@ namespace LevelEditor_CS
             foreach (var sprite in sprites)
             {
                 spriteListBox.Items.Add(sprite.name ?? "");
+                sprite.spritesheets = spritesheets;
             }
 
-            setSelect(spritesheetSelect, spritesheets.Select(s => s.getName()).ToList());
+            setSelect(spritesheetSelect, spritesheets.Select(s => s.getName()).ToList(), false);
             setSelect(alignmentSelect, alignments);
             setSelect(wrapModeSelect, wrapModes);
 
+            spritesheetCanvasPanel.Scroll += spritesheetCanvasPanel_Scroll;
+
         }
 
-        public void setSelect(ComboBox select, List<string> items)
+        private void spritesheetCanvasPanel_Scroll(Object sender, ScrollEventArgs e)
+        {
+            spritesheetCanvasUI.redraw();
+        }
+
+        public void setSelect(ComboBox select, List<string> items, bool setIndex = true)
         {
             foreach (var item in items)
             {
                 select.Items.Add(item);
             }
-            select.SelectedIndex = 0;
+            if (setIndex)
+            {
+                select.SelectedIndex = 0;
+            }
         }
 
         private void SpriteEditor_Load(object sender, EventArgs e)
@@ -110,13 +122,25 @@ namespace LevelEditor_CS
 
         private void spriteListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            spritesheetSelect.SelectedIndex = spritesheetSelect.Items.IndexOf(selectedSprite.spritesheet.getName());
+            
             alignmentSelect.SelectedItem = selectedSprite.alignment;
             wrapModeSelect.SelectedItem = selectedSprite.wrapMode;
-            
+            selectedFrame = selectedSprite.frames.FirstOrDefault();
+
+            globalHitboxGroup.Controls.Clear();
+
+            int yPos = 20;
             foreach (Hitbox hitbox in selectedSprite.hitboxes)
             {
-                globalHitboxGroup.Controls.Add(new HitboxControl(hitbox));
+                var hitboxControl = new HitboxControl(hitbox);
+                hitboxControl.Location = new System.Drawing.Point(0, yPos);
+                yPos += 20;
+                globalHitboxGroup.Controls.Add(hitboxControl);
             }
+
+            spriteCanvasUI.redraw();
+            spritesheetCanvasUI.redraw();
         }
 
         public List<Sprite> getFilteredSprites()
@@ -168,11 +192,10 @@ namespace LevelEditor_CS
 
             if (selectedSprite != null)
             {
-                selectedSprite.spritesheet = newSheet;
+                selectedSprite.spritesheetPath = newSheet.getBasePath();
             }
 
-            spritesheetCanvasUI.setSize(newSheet.image.Width, newSheet.image.Height);
-            Helpers.drawImage(spritesheetCanvasUI.canvas, newSheet.image, 0, 0);
+            spritesheetCanvasUI.setImage(newSheet.image);
             spriteCanvasUI.redraw();
             spritesheetCanvasUI.redraw();
         }
@@ -469,5 +492,6 @@ namespace LevelEditor_CS
             }
             return hitboxes;
         }
+
     }
 }

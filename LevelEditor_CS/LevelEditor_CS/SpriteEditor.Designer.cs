@@ -101,16 +101,16 @@
             // 
             // spriteCanvas
             // 
-            this.spriteCanvas.Location = new System.Drawing.Point(22, 24);
-            this.spriteCanvas.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.spriteCanvas.Location = new System.Drawing.Point(0, 0);
+            this.spriteCanvas.Margin = new System.Windows.Forms.Padding(0);
             this.spriteCanvas.Name = "spriteCanvas";
-            this.spriteCanvas.Size = new System.Drawing.Size(1118, 692);
+            this.spriteCanvas.Size = new System.Drawing.Size(615, 403);
             this.spriteCanvas.TabIndex = 3;
             this.spriteCanvas.TabStop = false;
             // 
             // spritesheetCanvas
             // 
-            this.spritesheetCanvas.Location = new System.Drawing.Point(9, 14);
+            this.spritesheetCanvas.Location = new System.Drawing.Point(0, 0);
             this.spritesheetCanvas.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.spritesheetCanvas.Name = "spritesheetCanvas";
             this.spritesheetCanvas.Size = new System.Drawing.Size(695, 935);
@@ -373,13 +373,17 @@
             // 
             this.spriteCanvasPanel.Controls.Add(this.spriteCanvas);
             this.spriteCanvasPanel.Location = new System.Drawing.Point(254, 94);
+            this.spriteCanvasPanel.Margin = new System.Windows.Forms.Padding(0);
             this.spriteCanvasPanel.Name = "spriteCanvasPanel";
             this.spriteCanvasPanel.Size = new System.Drawing.Size(1163, 738);
             this.spriteCanvasPanel.TabIndex = 31;
             // 
             // spritesheetCanvasPanel
             // 
+            this.spritesheetCanvasPanel.AutoScroll = true;
+            this.spritesheetCanvasPanel.BackColor = System.Drawing.SystemColors.Control;
             this.spritesheetCanvasPanel.Controls.Add(this.spritesheetCanvas);
+            this.spritesheetCanvasPanel.ForeColor = System.Drawing.SystemColors.ActiveBorder;
             this.spritesheetCanvasPanel.Location = new System.Drawing.Point(1472, 21);
             this.spritesheetCanvasPanel.Name = "spritesheetCanvasPanel";
             this.spritesheetCanvasPanel.Size = new System.Drawing.Size(718, 954);

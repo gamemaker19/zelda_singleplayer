@@ -8,8 +8,8 @@ namespace LevelEditor_CS.Models
 {
     public class Rect
     {
-        Point topLeftPoint;
-        Point botRightPoint;
+        public Point topLeftPoint;
+        public Point botRightPoint;
 
         public static Rect Create(Point topLeftPoint, Point botRightPoint)
         {

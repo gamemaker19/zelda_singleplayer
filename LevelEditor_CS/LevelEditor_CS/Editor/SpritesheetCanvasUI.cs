@@ -12,10 +12,12 @@ namespace LevelEditor_CS.Editor
     public class SpritesheetCanvasUI : CanvasUI
     {
         public SpriteEditor spriteEditor;
+        public Bitmap spritesheetImage;
 
-        public SpritesheetCanvasUI(PictureBox pictureBox, Panel panel, SpriteEditor spriteEditor) : base(pictureBox, panel, 1000, 800, Color.LightGray)
+        public SpritesheetCanvasUI(PictureBox pictureBox, Panel panel, SpriteEditor spriteEditor) : base(pictureBox, panel, panel.Width, panel.Height, Color.LightGray)
         {
             this.spriteEditor = spriteEditor;
+            zoom = 2;
         }
 
         public override void onKeyDown(Keys key, bool firstFrame)
@@ -146,14 +148,18 @@ namespace LevelEditor_CS.Editor
             base.onMouseWheel(delta);
         }
 
-        public override void redraw()
+        public override void pictureBox_Paint(object sender, PaintEventArgs e)
         {
-            base.redraw();
-            canvas.Clear(Color.Transparent);
+            base.pictureBox_Paint(sender, e);
+
+            if (spritesheetImage != null)
+            {
+                Helpers.drawImage(e.Graphics, spritesheetImage, 0, 0);
+            }
 
             if (spriteEditor.selectedSpritesheet != null && spriteEditor.selectedSpritesheet.image != null)
             {
-                Helpers.drawImage(canvas, spriteEditor.selectedSpritesheet.image, 0, 0);
+                Helpers.drawImage(e.Graphics, spriteEditor.selectedSpritesheet.image, 0, 0);
             }
 
             if (spriteEditor.tileMode)
@@ -161,18 +167,18 @@ namespace LevelEditor_CS.Editor
                 //Draw columns
                 for (var i = 1; i < CanvasWidth / spriteEditor.tileWidth; i++)
                 {
-                    Helpers.drawLine(canvas, i * spriteEditor.tileWidth, 0, i * spriteEditor.tileWidth, CanvasHeight, Color.Red, 1);
+                    Helpers.drawLine(e.Graphics, i * spriteEditor.tileWidth, 0, i * spriteEditor.tileWidth, CanvasHeight, Color.Red, 1);
                 }
                 //Draw rows
                 for (var i = 1; i < CanvasHeight / spriteEditor.tileWidth; i++)
                 {
-                    Helpers.drawLine(canvas, 0, i * spriteEditor.tileWidth, CanvasWidth, i * spriteEditor.tileWidth, Color.Red, 1);
+                    Helpers.drawLine(e.Graphics, 0, i * spriteEditor.tileWidth, CanvasWidth, i * spriteEditor.tileWidth, Color.Red, 1);
                 }
             }
 
             if (this.mousedown)
             {
-                Helpers.drawRect(canvas, new Rect(this.dragLeftX, this.dragTopY, this.dragRightX, this.dragBotY), null, Color.Blue, 1);
+                Helpers.drawRect(e.Graphics, new Rect(this.dragLeftX, this.dragTopY, this.dragRightX, this.dragBotY), null, Color.Blue, 1);
             }
 
             if (spriteEditor.selectedSprite != null)
@@ -180,16 +186,22 @@ namespace LevelEditor_CS.Editor
                 var i = 0;
                 foreach (var frame in spriteEditor.selectedSprite.frames)
                 {
-                    Helpers.drawRect(canvas, frame.rect, null, Color.Blue, 1);
-                    Helpers.drawText(canvas, (i + 1).ToString(), frame.rect.x1, frame.rect.y1, Color.Red, null, 12, "left", "Top");
+                    Helpers.drawRect(e.Graphics, frame.rect, null, Color.Blue, 1);
+                    Helpers.drawText(e.Graphics, (i + 1).ToString(), frame.rect.x1, frame.rect.y1, Color.Red, null, 12, "left", "Top");
                     i++;
                 }
             }
 
             if (spriteEditor.selectedFrame != null)
             {
-                Helpers.drawRect(canvas, spriteEditor.selectedFrame.rect, null, Color.Green, 2);
+                Helpers.drawRect(e.Graphics, spriteEditor.selectedFrame.rect, null, Color.Green, 2);
             }
+        }
+
+        public void setImage(Bitmap image)
+        {
+            setSize(image.Width, image.Height);
+            spritesheetImage = image;
         }
     }
 }

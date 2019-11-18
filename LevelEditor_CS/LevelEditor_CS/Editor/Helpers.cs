@@ -36,7 +36,8 @@ namespace LevelEditor_CS.Editor
             List<Spritesheet> spritesheets = new List<Spritesheet>();
             foreach(string spritesheetFile in spritesheetsFiles)
             {
-                var spritesheet = new Spritesheet(spritesheetFile);
+                string path = spritesheetFile.Replace('\\', '/');
+                var spritesheet = new Spritesheet(path);
                 spritesheets.Add(spritesheet);
             }
             return spritesheets;
@@ -129,12 +130,14 @@ namespace LevelEditor_CS.Editor
         {
             if (fillColor != null)
             {
+                fillColor = Color.FromArgb((byte)(int)(255 * fillAlpha), fillColor.Value.R, fillColor.Value.G, fillColor.Value.B);
                 SolidBrush fillBrush = new SolidBrush((Color)fillColor);
                 canvas.FillRectangle(fillBrush, rect.x1, rect.y1, rect.w, rect.h);
             }
 
             if (strokeColor != null)
             {
+                strokeColor = Color.FromArgb((byte)(int)(255 * fillAlpha), strokeColor.Value.R, strokeColor.Value.G, strokeColor.Value.B);
                 SolidBrush strokeBrush = new SolidBrush((Color)strokeColor);
                 canvas.DrawRectangle(new Pen(strokeBrush), rect.x1, rect.y1, rect.w, rect.h);
             }
@@ -167,9 +170,13 @@ namespace LevelEditor_CS.Editor
             canvas.DrawLine(new Pen(new SolidBrush((Color)color)), x, y, x2, y2);
         }
 
-        public static void drawImage(Graphics canvas, Bitmap bitmap, float sX, float sY, float sW = -1, float sH = -1, float x = -1, float y = -1, int flipX = 1, int flipY = 1, string options = "", float alpha = 1, float scaleX = 1, float scaleY = 1) 
+        public static void drawImage(Graphics canvas, Bitmap bitmap, float dx, float dy, float sx = 0, float sy = 0, float sw = -1, float sh = -1, int flipX = 1, int flipY = 1, string options = "", float alpha = 1, float scaleX = 1, float scaleY = 1) 
         {
-            canvas.DrawImage(bitmap, sX, sY);
+            if (sw == -1) sw = bitmap.Width;
+            if (sh == -1) sh = bitmap.Height;
+
+            Rectangle destRect = new Rectangle((int)dx, (int)dy, (int)sw, (int)sh);
+            canvas.DrawImage(bitmap, destRect, sx, sy, sw, sh, GraphicsUnit.Pixel);
         }
 
         public static List<List<PixelData>> get2DArrayFromImage(Bitmap bitmap)
@@ -322,6 +329,8 @@ namespace LevelEditor_CS.Editor
                 return (T)formatter.Deserialize(stream);
             }
         }
+
+
 
         /*
         void toZero(float num, float inc, float dir)

@@ -29,8 +29,10 @@ namespace LevelEditor_CS.Controls
             set
             {
                 _hitbox = value;
-                widthTextBox.DataBindings.Add("Text", new BindingSource(_hitbox, "width"), "width");
-                heightText.DataBindings.Add("Text", new BindingSource(_hitbox, "height"), "width");
+                widthTextBox.DataBindings.Add("Text", _hitbox, "width", false, DataSourceUpdateMode.OnPropertyChanged);
+                heightTextBox.DataBindings.Add("Text", _hitbox, "height", false, DataSourceUpdateMode.OnPropertyChanged);
+                xOffTextBox.DataBindings.Add("Text", _hitbox.offset, "x", false, DataSourceUpdateMode.OnPropertyChanged);
+                yOffTextBox.DataBindings.Add("Text", _hitbox.offset, "y", false, DataSourceUpdateMode.OnPropertyChanged);
             }
         }
 

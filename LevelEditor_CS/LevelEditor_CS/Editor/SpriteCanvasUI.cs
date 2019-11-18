@@ -13,16 +13,16 @@ namespace LevelEditor_CS.Editor
     {
         public SpriteEditor spriteEditor;
 
-        public SpriteCanvasUI(PictureBox pictureBox, Panel panel, SpriteEditor spriteEditor) : base(pictureBox, panel, 1000, 800, Color.LightGray)
+        public SpriteCanvasUI(PictureBox pictureBox, Panel panel, SpriteEditor spriteEditor) : base(pictureBox, panel, panel.Width, panel.Height, Color.LightGray)
         {
             isNoScrollZoom = true;
             zoom = 5;
             this.spriteEditor = spriteEditor;
         }
 
-        public override void redraw()
+        public override void pictureBox_Paint(object sender, PaintEventArgs e)
         {
-            base.redraw();
+            base.pictureBox_Paint(sender, e);
 
             if (spriteEditor.selectedSprite == null) return;
 
@@ -54,16 +54,16 @@ namespace LevelEditor_CS.Editor
 
             if (frameIndex < 0)
             {
-                spriteEditor.selectedSprite.drawFrame(canvas, frame, cX, cY, frame.xDir, frame.yDir);
+                spriteEditor.selectedSprite.drawFrame(e.Graphics, frame, cX, cY, frame.xDir, frame.yDir);
             }
             else
             {
-                spriteEditor.selectedSprite.draw(canvas, frameIndex, cX, cY, frame.xDir, frame.yDir);
+                spriteEditor.selectedSprite.draw(e.Graphics, frameIndex, cX, cY, frame.xDir, frame.yDir);
             }
 
             if (spriteEditor.ghost != null)
             {
-                spriteEditor.ghost.sprite.draw(canvas, spriteEditor.ghost.sprite.frames.IndexOf(spriteEditor.ghost.frame), cX, cY, frame.xDir, frame.yDir, "", 0.5f);
+                spriteEditor.ghost.sprite.draw(e.Graphics, spriteEditor.ghost.sprite.frames.IndexOf(spriteEditor.ghost.frame), cX, cY, frame.xDir, frame.yDir, "", 0.5f);
             }
 
             if (!spriteEditor.hideGizmos)
@@ -125,20 +125,19 @@ namespace LevelEditor_CS.Editor
                         strokeWidth = 2;
                     }
 
-                    Helpers.drawRect(canvas, offsetRect, Color.Blue, strokeColor, strokeWidth, 0.25f);
+                    Helpers.drawRect(e.Graphics, offsetRect, Color.Blue, strokeColor, strokeWidth, 0.25f);
                 }
 
                 var len = 1000;
-                Helpers.drawLine(canvas, cX, cY - len, cX, cY + len, Color.Red, 1);
-                Helpers.drawLine(canvas, cX - len, cY, cX + len, cY, Color.Red, 1);
-                Helpers.drawCircle(canvas, cX, cY, 1, Color.Red);
+                Helpers.drawLine(e.Graphics, cX, cY - len, cX, cY + len, Color.Red, 1);
+                Helpers.drawLine(e.Graphics, cX - len, cY, cX + len, cY, Color.Red, 1);
+                Helpers.drawCircle(e.Graphics, cX, cY, 1, Color.Red);
                 //drawStroked(c1, "+", cX, cY);
 
                 foreach (var poi in frame.POIs)
                 {
-                    Helpers.drawCircle(canvas, cX + poi.x, cY + poi.y, 1, Color.Green);
+                    Helpers.drawCircle(e.Graphics, cX + poi.x, cY + poi.y, 1, Color.Green);
                 }
-
             }
         }
 

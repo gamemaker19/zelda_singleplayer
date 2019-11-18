@@ -33,5 +33,11 @@ namespace LevelEditor_CS.Models
         {
             return Path.GetFileNameWithoutExtension(path);
         }
+
+        public string getBasePath()
+        {
+            string basePath = "assets/" + this.path.Split(new string[] { "assets/" }, StringSplitOptions.None)[1];
+            return basePath;
+        }
     }
 }

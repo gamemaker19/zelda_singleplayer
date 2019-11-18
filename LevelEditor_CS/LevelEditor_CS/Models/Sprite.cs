@@ -22,31 +22,21 @@ namespace LevelEditor_CS.Models
         public string spritesheetPath;
 
         [JsonIgnore]
-        public Spritesheet spritesheet;
+        public List<Spritesheet> spritesheets;
 
-        public Sprite(string name, Spritesheet spritesheet)
+        [JsonIgnore]
+        public Spritesheet spritesheet
+        {
+            get
+            {
+                return spritesheets.Where(spritesheet => spritesheet.getBasePath() == spritesheetPath).FirstOrDefault();
+            }
+        }
+
+        public Sprite(string name, List<Spritesheet> spritesheets)
         {
             this.name = name;
-            this.spritesheet = spritesheet;
-        }
-
-        [OnSerializing]
-        public void onSerialize(StreamingContext context)
-        {
-            this.spritesheetPath = this.spritesheet.path;
-        }
-
-        [OnDeserialized]
-        public void onDeserialize(StreamingContext context)
-        {
-            //this.spritesheet = new Spritesheet(this.spritesheetPath);
-        }
-
-        public void setSpritesheet(List<Spritesheet> spritesheets)
-        {
-            this.spritesheet = spritesheets.Where((spritesheet) => {
-                return this.spritesheetPath == spritesheet.path;
-            }).FirstOrDefault();
+            this.spritesheets = spritesheets;
         }
 
         //Given the sprite's alignment, get the offset x and y on where to actually draw the sprite
@@ -88,6 +78,8 @@ namespace LevelEditor_CS.Models
             var frame = this.frames[frameIndex];
             var rect = frame.rect;
             var offset = this.getAlignOffset(frame, flipX, flipY);
+
+            Helpers.drawImage(canvas, this.spritesheet.image, x + offset.x + frame.offset.x, y + offset.y + frame.offset.y, rect.x1, rect.y1, rect.w, rect.h, flipX, flipY, options, alpha, scaleX, scaleY);
 
             /*
             var wrappers : any = [];

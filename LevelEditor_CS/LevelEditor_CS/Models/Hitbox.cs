@@ -9,10 +9,12 @@ namespace LevelEditor_CS.Models
 {
     public class Hitbox : Selectable
     {
-        public string tags;
-        public float width;
-        public float height;
-        public Point offset;
+        public string tags { get; set; }
+        public float width { get; set; }
+        public float height { get; set; }
+        public Point offset { get; set; }
+
+        public float widthProp { get { return width; } }
 
         public Hitbox() {
             this.tags = "";

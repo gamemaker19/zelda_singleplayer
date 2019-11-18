@@ -13,7 +13,6 @@ namespace LevelEditor_CS.Editor
     {
         public Panel panel;
         public PictureBox pictureBox;
-        public Graphics canvas;
 
         public bool ctrlHeld = false;
         public float zoom = 1;
@@ -38,7 +37,10 @@ namespace LevelEditor_CS.Editor
         public float dragStartY;
         public float dragEndX;
         public float dragEndY;
-        
+
+        public int baseWidth;
+        public int baseHeight;
+
         public float dragLeftX { get { return Math.Min(this.dragStartX, this.dragEndX); } }
         public float dragRightX { get { return Math.Max(this.dragStartX, this.dragEndX); } }
         public float dragTopY { get { return Math.Min(this.dragStartY, this.dragEndY); } }
@@ -56,10 +58,15 @@ namespace LevelEditor_CS.Editor
             pictureBox.Width = canvasWidth;
             pictureBox.Height = canvasHeight;
 
+            baseWidth = canvasWidth;
+            baseHeight = canvasHeight;
+
             this.panel = panel;
             panel.AutoScroll = true;
             pictureBox.Parent = panel;
-            this.canvas = pictureBox.CreateGraphics();
+
+            pictureBox.Paint += pictureBox_Paint;
+            pictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
 
             pictureBox.MouseMove += mouseMoveEvent;
             pictureBox.MouseDown += mouseDownEvent;
@@ -67,6 +74,28 @@ namespace LevelEditor_CS.Editor
             pictureBox.MouseWheel += mouseWheelEvent;
             pictureBox.MouseLeave += mouseLeaveEvent;
 
+        }
+
+        public virtual void pictureBox_Paint(object sender, PaintEventArgs e)
+        {
+            if (this.isNoScrollZoom)
+            {
+                e.Graphics.ResetTransform();
+                e.Graphics.ScaleTransform(zoom, zoom);
+                float origHalfCanvasW = (CanvasWidth / zoom) * 0.5f;
+                float origHalfCanvasH = (CanvasHeight / zoom) * 0.5f;
+                e.Graphics.TranslateTransform(origHalfCanvasW - (CanvasWidth * 0.5f), origHalfCanvasH - (CanvasHeight * 0.5f));
+            }
+            else
+            {
+                this.pictureBox.Width = (int)(this.baseWidth * this.zoom);
+                this.pictureBox.Height = (int)(this.baseHeight * this.zoom);
+                e.Graphics.ResetTransform();
+                e.Graphics.ScaleTransform(zoom, zoom);
+            }
+
+            e.Graphics.Clear(Color.Transparent);
+            Helpers.drawRect(e.Graphics, new Rect(0, 0, CanvasWidth, CanvasHeight), color);
         }
 
         public void setSize(int width, int height)
@@ -178,25 +207,11 @@ namespace LevelEditor_CS.Editor
             this.onMouseLeave();
         }
 
+        bool once = false;
+
         public virtual void redraw()
         {
-            /*
-            if (this.isNoScrollZoom)
-            {
-                this.ctx.setTransform(this.zoom, 0, 0, this.zoom, -(this.zoom - 1) * this.canvas.width / 2, -(this.zoom - 1) * this.canvas.height / 2);
-            }
-            else
-            {
-                this.canvas.width = this.baseWidth * this.zoom;
-                this.canvas.height = this.baseHeight * this.zoom;
-                this.ctx.scale(this.zoom, this.zoom);
-            }
-
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            Helpers.drawRect(this.ctx, new Rect(0, 0, this.canvas.width, this.canvas.height), this.color, "", null);
-            */
-            canvas.Clear(Color.Transparent);
-            Helpers.drawRect(canvas, new Rect(0, 0, CanvasWidth, CanvasHeight), color);
+            pictureBox.Invalidate();
         }
 
         public GridRect getDragGridRect()

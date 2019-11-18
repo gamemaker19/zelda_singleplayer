@@ -8,8 +8,8 @@ namespace LevelEditor_CS.Models
 {
     public class Point
     {
-        public float x;
-        public float y;
+        public float x { get; set; }
+        public float y { get; set; }
 
         public Point(float x, float y)
         {
