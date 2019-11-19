@@ -17,7 +17,7 @@ namespace LevelEditor_CS.Editor
         public SpritesheetCanvasUI(PictureBox pictureBox, Panel panel, SpriteEditor spriteEditor) : base(pictureBox, panel, panel.Width, panel.Height, Color.LightGray)
         {
             this.spriteEditor = spriteEditor;
-            zoom = 2;
+            zoom = 1;
         }
 
         public override void onKeyDown(Keys key, bool firstFrame)

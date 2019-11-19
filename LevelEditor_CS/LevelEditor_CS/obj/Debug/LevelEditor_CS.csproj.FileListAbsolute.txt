@@ -14,3 +14,19 @@ D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\
 D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Controls.FrameControl.resources
 D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Controls.HitboxControl.resources
 D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Controls.POIControl.resources
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\bin\Debug\LevelEditor_CS.exe.config
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\bin\Debug\LevelEditor_CS.exe
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\bin\Debug\LevelEditor_CS.pdb
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\bin\Debug\Newtonsoft.Json.dll
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\bin\Debug\Newtonsoft.Json.xml
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.csprojAssemblyReference.cache
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Controls.ChildFrameControl.resources
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Controls.FrameControl.resources
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Controls.HitboxControl.resources
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Controls.POIControl.resources
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.SpriteEditor.resources
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Properties.Resources.resources
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.csproj.GenerateResource.cache
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.csproj.CopyComplete
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.exe
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.pdb

@@ -102,6 +102,8 @@ namespace LevelEditor_CS.Editor
         {
             this.pictureBox.Width = width;
             this.pictureBox.Height = height;
+            baseWidth = width;
+            baseHeight = height;
         }
 
         public void mouseMoveEvent(object sender, MouseEventArgs e)
