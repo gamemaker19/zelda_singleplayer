@@ -40,7 +40,6 @@
             this.moveDownBtn = new System.Windows.Forms.Button();
             this.saveBtn = new System.Windows.Forms.Button();
             this.deleteBtn = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.SuspendLayout();
             // 
             // label1
@@ -151,20 +150,10 @@
             this.deleteBtn.Text = "D";
             this.deleteBtn.UseVisualStyleBackColor = true;
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Location = new System.Drawing.Point(8, 43);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(659, 24);
-            this.groupBox1.TabIndex = 12;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Child Frames";
-            // 
-            // Frame
+            // FrameControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.deleteBtn);
             this.Controls.Add(this.saveBtn);
             this.Controls.Add(this.moveDownBtn);
@@ -177,8 +166,8 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.secsTextBox);
             this.Controls.Add(this.label1);
-            this.Name = "Frame";
-            this.Size = new System.Drawing.Size(688, 83);
+            this.Name = "FrameControl";
+            this.Size = new System.Drawing.Size(688, 40);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -198,6 +187,5 @@
         private System.Windows.Forms.Button moveDownBtn;
         private System.Windows.Forms.Button saveBtn;
         private System.Windows.Forms.Button deleteBtn;
-        private System.Windows.Forms.GroupBox groupBox1;
     }
 }

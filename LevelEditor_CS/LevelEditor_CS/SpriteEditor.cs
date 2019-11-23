@@ -129,6 +129,7 @@ namespace LevelEditor_CS
             selectedFrame = selectedSprite.frames.FirstOrDefault();
 
             globalHitboxGroup.Controls.Clear();
+            framePanel.Controls.Clear();
 
             int yPos = 20;
             foreach (Hitbox hitbox in selectedSprite.hitboxes)
@@ -137,6 +138,15 @@ namespace LevelEditor_CS
                 hitboxControl.Location = new System.Drawing.Point(0, yPos);
                 yPos += 20;
                 globalHitboxGroup.Controls.Add(hitboxControl);
+            }
+
+            yPos = 20;
+            foreach (Frame frame in selectedSprite.frames)
+            {
+                var frameControl = new FrameControl(frame);
+                frameControl.Location = new System.Drawing.Point(0, yPos);
+                yPos += 40;
+                framePanel.Controls.Add(frameControl);
             }
 
             spriteCanvasUI.redraw();
@@ -493,5 +503,9 @@ namespace LevelEditor_CS
             return hitboxes;
         }
 
+        private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

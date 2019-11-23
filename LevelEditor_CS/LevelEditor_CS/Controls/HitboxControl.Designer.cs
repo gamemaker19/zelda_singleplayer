@@ -36,7 +36,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.yOffTextBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.flagTextBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.triggerCheckBox = new System.Windows.Forms.CheckBox();
             this.selectBtn = new System.Windows.Forms.Button();
@@ -107,12 +107,12 @@
             this.label3.TabIndex = 6;
             this.label3.Text = "y-off";
             // 
-            // textBox1
+            // flagTextBox
             // 
-            this.textBox1.Location = new System.Drawing.Point(434, 0);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(94, 26);
-            this.textBox1.TabIndex = 9;
+            this.flagTextBox.Location = new System.Drawing.Point(434, 0);
+            this.flagTextBox.Name = "flagTextBox";
+            this.flagTextBox.Size = new System.Drawing.Size(94, 26);
+            this.flagTextBox.TabIndex = 9;
             // 
             // label4
             // 
@@ -151,14 +151,14 @@
             this.deleteBtn.Text = "Delete";
             this.deleteBtn.UseVisualStyleBackColor = true;
             // 
-            // Hitbox
+            // HitboxControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.deleteBtn);
             this.Controls.Add(this.selectBtn);
             this.Controls.Add(this.triggerCheckBox);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.flagTextBox);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.yOffTextBox);
             this.Controls.Add(this.label3);
@@ -168,7 +168,7 @@
             this.Controls.Add(this.heightText);
             this.Controls.Add(this.widthTextBox);
             this.Controls.Add(this.label1);
-            this.Name = "Hitbox";
+            this.Name = "HitboxControl";
             this.Size = new System.Drawing.Size(896, 50);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -185,7 +185,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox yOffTextBox;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox flagTextBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.CheckBox triggerCheckBox;
         private System.Windows.Forms.Button selectBtn;

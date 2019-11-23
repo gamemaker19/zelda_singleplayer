@@ -143,11 +143,11 @@ namespace LevelEditor_CS.Editor
             }
         }
 
-        public static void drawText(Graphics canvas, string text, float x, float y, Color? fillColor, Color? outlineColor, int size, string hAlign, string vAlign)
+        public static void drawText(Graphics canvas, string text, float x, float y, Color? fillColor, int size)
         {
             FontFamily fontFamily = new FontFamily("Arial");
-            Font font = new Font(fontFamily, 16, FontStyle.Regular, GraphicsUnit.Pixel);
-            canvas.DrawString(text, font, new SolidBrush(Color.Black), new PointF(x, y));
+            Font font = new Font(fontFamily, size, FontStyle.Regular, GraphicsUnit.Pixel);
+            canvas.DrawString(text, font, new SolidBrush((Color)fillColor), new PointF(x, y));
         }
 
         public static void drawCircle(Graphics canvas, float x, float y, float r, Color? fillColor, Color? lineColor = null, int lineThicknessfloat = 0)

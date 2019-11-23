@@ -36,7 +36,5 @@ namespace LevelEditor_CS.Controls
             }
         }
 
-
-
     }
 }

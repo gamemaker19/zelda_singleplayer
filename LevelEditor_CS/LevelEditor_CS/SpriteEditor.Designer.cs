@@ -51,7 +51,6 @@
             this.tileModeCheckBox = new System.Windows.Forms.CheckBox();
             this.offsetXCheckBox = new System.Windows.Forms.CheckBox();
             this.offsetYCheckBox = new System.Windows.Forms.CheckBox();
-            this.frameContainer = new System.Windows.Forms.GroupBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
@@ -61,10 +60,14 @@
             this.button6 = new System.Windows.Forms.Button();
             this.spriteCanvasPanel = new System.Windows.Forms.Panel();
             this.spritesheetCanvasPanel = new System.Windows.Forms.Panel();
+            this.framePanel = new System.Windows.Forms.Panel();
+            this.label6 = new System.Windows.Forms.Label();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.spriteCanvas)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.spritesheetCanvas)).BeginInit();
             this.spriteCanvasPanel.SuspendLayout();
             this.spritesheetCanvasPanel.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // spriteListBox
@@ -301,18 +304,9 @@
             this.offsetYCheckBox.Text = "Offset Y";
             this.offsetYCheckBox.UseVisualStyleBackColor = true;
             // 
-            // frameContainer
-            // 
-            this.frameContainer.Location = new System.Drawing.Point(1472, 1028);
-            this.frameContainer.Name = "frameContainer";
-            this.frameContainer.Size = new System.Drawing.Size(718, 162);
-            this.frameContainer.TabIndex = 23;
-            this.frameContainer.TabStop = false;
-            this.frameContainer.Text = "Frames";
-            // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(1612, 1199);
+            this.textBox1.Location = new System.Drawing.Point(1607, 1141);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(100, 26);
             this.textBox1.TabIndex = 24;
@@ -320,7 +314,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(1477, 1202);
+            this.label4.Location = new System.Drawing.Point(1472, 1138);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(129, 20);
             this.label4.TabIndex = 25;
@@ -328,7 +322,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(1718, 1196);
+            this.button4.Location = new System.Drawing.Point(1713, 1141);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(89, 33);
             this.button4.TabIndex = 26;
@@ -338,7 +332,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(1477, 1238);
+            this.label5.Location = new System.Drawing.Point(1472, 1186);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(126, 20);
             this.label5.TabIndex = 27;
@@ -346,14 +340,14 @@
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(1610, 1238);
+            this.textBox2.Location = new System.Drawing.Point(1605, 1186);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(100, 26);
             this.textBox2.TabIndex = 28;
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(1481, 1278);
+            this.button5.Location = new System.Drawing.Point(1476, 1226);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(89, 26);
             this.button5.TabIndex = 29;
@@ -362,7 +356,7 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(1581, 1278);
+            this.button6.Location = new System.Drawing.Point(1576, 1226);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(149, 26);
             this.button6.TabIndex = 30;
@@ -389,6 +383,35 @@
             this.spritesheetCanvasPanel.Size = new System.Drawing.Size(718, 954);
             this.spritesheetCanvasPanel.TabIndex = 32;
             // 
+            // framePanel
+            // 
+            this.framePanel.AutoScroll = true;
+            this.framePanel.AutoSize = true;
+            this.framePanel.Location = new System.Drawing.Point(3, 3);
+            this.framePanel.MaximumSize = new System.Drawing.Size(718, 300);
+            this.framePanel.Name = "framePanel";
+            this.framePanel.Size = new System.Drawing.Size(0, 0);
+            this.framePanel.TabIndex = 33;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(9, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(63, 20);
+            this.label6.TabIndex = 34;
+            this.label6.Text = "Frames";
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Controls.Add(this.framePanel);
+            this.flowLayoutPanel1.Controls.Add(this.label6);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(1861, 1040);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(735, 166);
+            this.flowLayoutPanel1.TabIndex = 35;
+            this.flowLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.flowLayoutPanel1_Paint);
+            // 
             // SpriteEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(144F, 144F);
@@ -396,14 +419,13 @@
             this.ClientSize = new System.Drawing.Size(2856, 1515);
             this.Controls.Add(this.spritesheetCanvasPanel);
             this.Controls.Add(this.spriteCanvasPanel);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button6);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.frameContainer);
             this.Controls.Add(this.offsetYCheckBox);
             this.Controls.Add(this.offsetXCheckBox);
             this.Controls.Add(this.tileModeCheckBox);
@@ -425,6 +447,7 @@
             this.Controls.Add(this.newSpriteBtn);
             this.Controls.Add(this.Sprites);
             this.Controls.Add(this.spriteListBox);
+            this.Controls.Add(this.flowLayoutPanel1);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "SpriteEditor";
             this.Text = "SpriteEditor";
@@ -433,6 +456,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.spritesheetCanvas)).EndInit();
             this.spriteCanvasPanel.ResumeLayout(false);
             this.spritesheetCanvasPanel.ResumeLayout(false);
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.flowLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -463,7 +488,6 @@
         private System.Windows.Forms.CheckBox tileModeCheckBox;
         private System.Windows.Forms.CheckBox offsetXCheckBox;
         private System.Windows.Forms.CheckBox offsetYCheckBox;
-        private System.Windows.Forms.GroupBox frameContainer;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button button4;
@@ -473,6 +497,9 @@
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Panel spriteCanvasPanel;
         private System.Windows.Forms.Panel spritesheetCanvasPanel;
+        private System.Windows.Forms.Panel framePanel;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
     }
 }
 

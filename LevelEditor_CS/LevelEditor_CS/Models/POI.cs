@@ -9,9 +9,9 @@ namespace LevelEditor_CS.Models
 {
     public class POI : Selectable
     {
-        public string tags;
-        public float x;
-        public float y;
+        public string tags { get; set; }
+        public float x { get; set; }
+        public float y { get; set; }
         public POI(string tags, float x, float y) 
         {
             this.tags = tags;

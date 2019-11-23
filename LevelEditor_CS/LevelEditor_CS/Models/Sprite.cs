@@ -116,7 +116,7 @@ namespace LevelEditor_CS.Models
         {
             var rect = frame.rect;
             var offset = this.getAlignOffset(frame, flipX, flipY);
-            Helpers.drawImage(canvas, this.spritesheet.image, rect.x1, rect.y1, rect.w, rect.h, x + offset.x + frame.offset.x, y + offset.y + frame.offset.y, flipX, flipY, options, alpha, scaleX, scaleY);
+            Helpers.drawImage(canvas, this.spritesheet.image, x + offset.x + frame.offset.x, y + offset.y + frame.offset.y, rect.x1, rect.y1, rect.w, rect.h, flipX, flipY, options, alpha, scaleX, scaleY);
         }
 
         //Returns actual width and heights, not 0-1 number

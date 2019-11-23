@@ -187,7 +187,7 @@ namespace LevelEditor_CS.Editor
                 foreach (var frame in spriteEditor.selectedSprite.frames)
                 {
                     Helpers.drawRect(e.Graphics, frame.rect, null, Color.Blue, 1);
-                    Helpers.drawText(e.Graphics, (i + 1).ToString(), frame.rect.x1, frame.rect.y1, Color.Red, null, 12, "left", "Top");
+                    Helpers.drawText(e.Graphics, (i + 1).ToString(), frame.rect.x1, frame.rect.y1, Color.Red, 12);
                     i++;
                 }
             }
