@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +13,7 @@ namespace LevelEditor_CS.Models
         public string name;
         public string properties;
         public Point pos;
+        [JsonIgnore]
         public Sprite sprite;
         public Obj obj;
 
@@ -46,24 +49,16 @@ namespace LevelEditor_CS.Models
             var rect = new Rect(x1, y1, x2, y2);
             return rect;
         }
-        /*
-        getNonSerializedKeys()
-        {
-            return ["sprite"];
-        }
-        */
 
-        /*
-        draw(ctx: CanvasRenderingContext2D)
+        public void draw(Graphics graphics)
         {
-            if (this.sprite && this.sprite.spritesheet && this.sprite.spritesheet.imgEl)
+            if (this.sprite != null && this.sprite.spritesheet != null && this.sprite.spritesheet.image != null)
             {
-                this.sprite.draw(ctx, 0, this.pos.x, this.pos.y);
+                this.sprite.draw(graphics, 0, this.pos.x, this.pos.y);
             }
-            else if (this.sprite)
+            else if (this.sprite != null)
             {
             }
         }
-        */
     }
 }

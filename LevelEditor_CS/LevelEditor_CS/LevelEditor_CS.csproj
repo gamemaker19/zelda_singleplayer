@@ -78,11 +78,18 @@
     <Compile Include="Editor\Ghost.cs" />
     <Compile Include="Editor\GlobalInput.cs" />
     <Compile Include="Editor\Helpers.cs" />
+    <Compile Include="Editor\LevelCanvasUI.cs" />
     <Compile Include="Editor\Mathf.cs" />
     <Compile Include="Editor\Prompt.cs" />
     <Compile Include="Editor\Selectable.cs" />
     <Compile Include="Editor\SpriteCanvasUI.cs" />
     <Compile Include="Editor\SpritesheetCanvasUI.cs" />
+    <Compile Include="LevelEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LevelEditor.Designer.cs">
+      <DependentUpon>LevelEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Collider.cs" />
     <Compile Include="Models\Frame.cs" />
     <Compile Include="Models\GridCoords.cs" />
@@ -120,6 +127,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\POIControl.resx">
       <DependentUpon>POIControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LevelEditor.resx">
+      <DependentUpon>LevelEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SpriteEditor.resx">
       <DependentUpon>SpriteEditor.cs</DependentUpon>
