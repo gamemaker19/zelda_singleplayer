@@ -1,33 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace LevelEditor_CS.Models
 {
-    class Level
+    public class Level
     {
         public string name;
         public List<List<string>> tileInstances = new List<List<string>>();
         public List<SpriteInstance> instances = new List<SpriteInstance>();
-        //public List<HTMLCanvasElement> layers = new List<HTMLCanvasElement>();
-        //coordPropertiesGrid: any[][] = [];
+        public List<List<string>> coordPropertiesGrid = new List<List<string>>();
+        public List<Bitmap> layers = new List<Bitmap>();
+
         public List<Line> scrollLines = new List<Line>();
-        //private coordProperties: any[] = [];
+
         public float width = 0;
         public float height = 0;
-        Level(string name, float width, float height)
+        public Level(string name, float width, float height)
         {
             this.name = name;
-            //this.coordPropertiesGrid = [];
             this.width = width;
             this.height = height;
             //this.init();
         }
 
         /*
-
         public void addCanvas(img: HTMLImageElement)
         {
             let newCanvas = document.createElement("canvas");

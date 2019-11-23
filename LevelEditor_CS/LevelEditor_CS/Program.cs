@@ -19,7 +19,8 @@ namespace LevelEditor_CS
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SpriteEditor());
+            //Application.Run(new SpriteEditor());
+            Application.Run(new LevelEditor());
         }
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
