@@ -74,8 +74,8 @@ namespace LevelEditor_CS.Editor
             {
                 if (spriteEditor.tileModeOffsetX || spriteEditor.tileModeOffsetY)
                 {
-                    var finalX = this.getMouseGridCoordsCustomWidth(spriteEditor.tileWidth).j;
-                    var finalY = this.getMouseGridCoordsCustomWidth(spriteEditor.tileWidth).i;
+                    float finalX = this.getMouseGridCoordsCustomWidth(spriteEditor.tileWidth).j;
+                    float finalY = this.getMouseGridCoordsCustomWidth(spriteEditor.tileWidth).i;
                     if (spriteEditor.tileModeOffsetX)
                     {
                         var x = this.mouseX / spriteEditor.tileWidth;
@@ -90,7 +90,7 @@ namespace LevelEditor_CS.Editor
                         if (y - intY < 0.5) finalY = intY - 0.5f;
                         else finalY = intY + 0.5f;
                     }
-                    rect = new GridCoords(finalY, finalX).getRectCustomWidth(spriteEditor.tileWidth);
+                    rect = new GridCoords((int)finalY, (int)finalX).getRectCustomWidth(spriteEditor.tileWidth);
                 }
                 else
                 {
@@ -119,8 +119,8 @@ namespace LevelEditor_CS.Editor
                 }
                 else
                 {
-                    var topLeft = new GridCoords(Mathf.Floor(this.dragTopY / spriteEditor.tileWidth), Mathf.Floor(this.dragLeftX / spriteEditor.tileWidth));
-                    var botRight = new GridCoords(Mathf.Floor(this.dragBotY / spriteEditor.tileWidth), Mathf.Floor(this.dragRightX / spriteEditor.tileWidth));
+                    var topLeft = new GridCoords((int)Mathf.Floor(this.dragTopY / spriteEditor.tileWidth), (int)Mathf.Floor(this.dragLeftX / spriteEditor.tileWidth));
+                    var botRight = new GridCoords((int)Mathf.Floor(this.dragBotY / spriteEditor.tileWidth), (int)Mathf.Floor(this.dragRightX / spriteEditor.tileWidth));
                     var rect = new Rect(topLeft.j * spriteEditor.tileWidth, topLeft.i * spriteEditor.tileWidth, (botRight.j + 1) * spriteEditor.tileWidth, (botRight.i + 1) * spriteEditor.tileWidth);
                     spriteEditor.selectedFrame = new Frame(rect, 0.066f, new Models.Point(0, 0));
                     this.redraw();

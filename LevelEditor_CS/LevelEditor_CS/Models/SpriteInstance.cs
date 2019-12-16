@@ -10,8 +10,8 @@ namespace LevelEditor_CS.Models
 {
     public class SpriteInstance
     {
-        public string name;
-        public string properties;
+        public string name { get; set; }
+        public Dictionary<string, string> properties;
         public Point pos;
         [JsonIgnore]
         public Sprite sprite;
@@ -22,9 +22,13 @@ namespace LevelEditor_CS.Models
             this.name = name;
             this.pos = new Point(x, y);
             this.obj = obj;
-            this.sprite = sprites.Where((sprite) => {
-                return sprite.name == this.obj.spriteOrImage;
-            }).FirstOrDefault();
+            if (sprites != null)
+            {
+                this.sprite = sprites.Where((sprite) =>
+                {
+                    return sprite != null && sprite.name == this.obj.spriteOrImage;
+                }).FirstOrDefault();
+            }
         }
 
         public void setSprite(List<Sprite> sprites)

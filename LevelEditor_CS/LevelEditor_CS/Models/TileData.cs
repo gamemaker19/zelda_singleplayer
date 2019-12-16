@@ -1,7 +1,9 @@
 ﻿using LevelEditor_CS.Editor;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -51,16 +53,17 @@ namespace LevelEditor_CS.Models
 
     public class TileData
     {
-        public string name = "";
-        public Spritesheet tileset;
-        public string tilesetPath = "";
-        public GridCoords gridCoords;
-        public Hitbox hitbox;
-        public HitboxMode hitboxMode = 0;
-        public string customHitboxPoints = "";
-        public string tag = "";
-        public ZIndex zIndex = 0;
-        public string spriteName = "";
+        public string name { get; set; } = "";
+        [JsonIgnore]
+        public Spritesheet tileset { get; set; }
+        public string tilesetPath { get; set; } = "";
+        public GridCoords gridCoords { get; set; }
+        public Hitbox hitbox { get; set; }
+        public HitboxMode hitboxMode { get; set; } = 0;
+        public string customHitboxPoints { get; set; } = "";
+        public string tag { get; set; } = "";
+        public ZIndex zIndex { get; set; } = 0;
+        public string spriteName { get; set; } = "";
 
         public TileData(Spritesheet tileset, GridCoords gridCoords, string name)
         {
@@ -69,19 +72,13 @@ namespace LevelEditor_CS.Models
             this.name = name;
         }
 
-        /*
-        getNonSerializedKeys()
-        {
-            return ["tileset"];
-        }
-        */
-        
         public string getId()
         {
             return Helpers.baseName(this.tileset.path) + "_" + (this.gridCoords.i).ToString() + "_" + (this.gridCoords.j).ToString();
         }
-        
-        public void onSerialize()
+
+        [OnSerialized]
+        public void onSerialize(StreamingContext context)
         {
             this.tilesetPath = this.tileset.path;
             if (this.hitboxMode == HitboxMode.SmallDiagTopLeft) { this.customHitboxPoints = "130"; this.hitboxMode = HitboxMode.Custom; }
@@ -93,7 +90,9 @@ namespace LevelEditor_CS.Models
             if (this.hitboxMode == HitboxMode.LargeDiagBotLeft) { this.customHitboxPoints = "15860"; this.hitboxMode = HitboxMode.Custom; }
             if (this.hitboxMode == HitboxMode.LargeDiagBotRight) { this.customHitboxPoints = "12863"; this.hitboxMode = HitboxMode.Custom; }
         }
-        public void onDeserialize()
+
+        [OnDeserialized]
+        public void onDeserialize(StreamingContext context)
         {
             if (this.tag.StartsWith(",")) this.tag = this.tag.Substring(1);
             /*
@@ -107,6 +106,7 @@ namespace LevelEditor_CS.Models
             if(this.customHitboxPoints == "12863") { this.hitboxMode = HitboxMode.LargeDiagBotRight; this.customHitboxPoints = ""; }
             */
         }
+
         public void setTileset(List<Spritesheet> tilesets)
         {
             this.tileset = tilesets.Where((Spritesheet tileset) => { return tileset.path == this.tilesetPath; }).FirstOrDefault();
@@ -122,6 +122,7 @@ namespace LevelEditor_CS.Models
             }
             this.tag = tagToSet;
         }
+
         public bool hasTag(string tagToCheck)
         {
             var tags = this.tag.Split(',');

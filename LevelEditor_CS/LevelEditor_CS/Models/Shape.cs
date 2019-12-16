@@ -8,7 +8,7 @@ namespace LevelEditor_CS.Models
 {
     public class Shape
     {
-        List<Point> points;
+        public List<Point> points;
 
         public Shape(List<Point> points)
         {

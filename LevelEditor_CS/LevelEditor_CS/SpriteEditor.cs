@@ -76,7 +76,7 @@ namespace LevelEditor_CS
             spriteCanvasUI = new SpriteCanvasUI(spriteCanvas, spriteCanvasPanel, this);
             spritesheetCanvasUI = new SpritesheetCanvasUI(spritesheetCanvas, spritesheetCanvasPanel, this);
 
-            spritesheets = Helpers.getSpritesheets();
+            spritesheets = Helpers.getSpritesheets("spritesheets");
             sprites = Helpers.getSprites();
 
             foreach (var sprite in sprites)
@@ -85,9 +85,9 @@ namespace LevelEditor_CS
                 sprite.spritesheets = spritesheets;
             }
 
-            setSelect(spritesheetSelect, spritesheets.Select(s => s.getName()).ToList(), false);
-            setSelect(alignmentSelect, alignments);
-            setSelect(wrapModeSelect, wrapModes);
+            Helpers.setSelect(spritesheetSelect, spritesheets.Select(s => s.getName()).ToList(), false);
+            Helpers.setSelect(alignmentSelect, alignments);
+            Helpers.setSelect(wrapModeSelect, wrapModes);
 
             spritesheetCanvasPanel.Scroll += spritesheetCanvasPanel_Scroll;
 
@@ -96,18 +96,6 @@ namespace LevelEditor_CS
         private void spritesheetCanvasPanel_Scroll(Object sender, ScrollEventArgs e)
         {
             spritesheetCanvasUI.redraw();
-        }
-
-        public void setSelect(ComboBox select, List<string> items, bool setIndex = true)
-        {
-            foreach (var item in items)
-            {
-                select.Items.Add(item);
-            }
-            if (setIndex)
-            {
-                select.SelectedIndex = 0;
-            }
         }
 
         private void SpriteEditor_Load(object sender, EventArgs e)
@@ -198,7 +186,7 @@ namespace LevelEditor_CS
         
         public void onSpritesheetChange(Spritesheet newSheet)
         {
-            newSheet.init();
+            newSheet.init(false);
 
             if (selectedSprite != null)
             {

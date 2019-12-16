@@ -73,17 +73,27 @@
     <Compile Include="Controls\POIControl.Designer.cs">
       <DependentUpon>POIControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\RadioGroupBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\RadioGroupBox.Designer.cs">
+      <DependentUpon>RadioGroupBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Editor\CanvasUI.cs" />
     <Compile Include="Editor\Consts.cs" />
     <Compile Include="Editor\Ghost.cs" />
     <Compile Include="Editor\GlobalInput.cs" />
     <Compile Include="Editor\Helpers.cs" />
     <Compile Include="Editor\LevelCanvasUI.cs" />
+    <Compile Include="Editor\ListBoxBinding.cs" />
+    <Compile Include="Editor\MultiListBoxBinding.cs" />
+    <Compile Include="Editor\SelectBinding.cs" />
     <Compile Include="Editor\Mathf.cs" />
     <Compile Include="Editor\Prompt.cs" />
     <Compile Include="Editor\Selectable.cs" />
     <Compile Include="Editor\SpriteCanvasUI.cs" />
     <Compile Include="Editor\SpritesheetCanvasUI.cs" />
+    <Compile Include="Editor\TileCanvasUI.cs" />
     <Compile Include="LevelEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -127,6 +137,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\POIControl.resx">
       <DependentUpon>POIControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\RadioGroupBox.resx">
+      <DependentUpon>RadioGroupBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LevelEditor.resx">
       <DependentUpon>LevelEditor.cs</DependentUpon>

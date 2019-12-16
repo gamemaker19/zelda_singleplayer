@@ -1,210 +1,170 @@
-﻿using System;
+﻿using LevelEditor_CS.Editor;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace LevelEditor_CS.Models
 {
+    public class CoordProperties
+    {
+        public int i;
+        public int j;
+        public Dictionary<string, string> properties;
+    }
+
     public class Level
     {
-        public string name;
+        public string name { get; set; }
         public List<List<string>> tileInstances = new List<List<string>>();
         public List<SpriteInstance> instances = new List<SpriteInstance>();
-        public List<List<string>> coordPropertiesGrid = new List<List<string>>();
+        public List<CoordProperties> coordProperties = new List<CoordProperties>();
+
+        [JsonIgnore]
+        public List<List<Dictionary<string, string>>> coordPropertiesGrid = new List<List<Dictionary<string, string>>>();
+
+        [JsonIgnore]
         public List<Bitmap> layers = new List<Bitmap>();
 
         public List<Line> scrollLines = new List<Line>();
 
-        public float width = 0;
-        public float height = 0;
-        public Level(string name, float width, float height)
+        public int width { get; set; } = 0;
+        public int height { get; set; } = 0;
+        public Level(string name, int width, int height)
         {
             this.name = name;
             this.width = width;
             this.height = height;
-            //this.init();
+            this.init();
         }
 
-        /*
-        public void addCanvas(img: HTMLImageElement)
+        public void setLayers(List<Spritesheet> spritesheets)
         {
-            let newCanvas = document.createElement("canvas");
-            newCanvas.width = this.width * consts.TILE_WIDTH;
-            newCanvas.height = this.height * consts.TILE_WIDTH;
-            $(newCanvas).addClass("layer-canvas");
-            $(newCanvas).insertBefore("#level-canvas");
-            if (img)
+            foreach (var layer in this.layers)
             {
-                newCanvas.getContext("2d").drawImage(img, 0, 0);
+                layer.Dispose();
             }
-            else
+            this.layers = new List<Bitmap>();
+            foreach (var spritesheet in spritesheets)
             {
-                //newCanvas.getContext("2d").clearRect(0, 0, this.width * consts.TILE_WIDTH, this.height * consts.TILE_WIDTH);
-            }
-            this.layers.push(newCanvas);
-        }
-
-        public void setLayers(spritesheets: Spritesheet[])
-        {
-            for (let layer of this.layers)
-            {
-                layer.remove();
-            }
-            this.layers = [];
-            for (let spritesheet of spritesheets)
-            {
-                let pieces = Helpers.baseName(spritesheet.path).split("_");
-                pieces.pop();
-                if (pieces.join("_") === this.name)
+                var pieces = Path.GetFileNameWithoutExtension(spritesheet.path).Split('_').ToList();
+                pieces.RemoveAt(pieces.Count - 1);
+                if (string.Join("_", pieces) == this.name)
                 {
-                    this.addCanvas(spritesheet.imgEl);
+                    spritesheet.init(false);
+                    this.layers.Add(spritesheet.image);
                 }
             }
-            if (this.layers.length === 0)
+            if (this.layers.Count == 0)
             {
-                this.addCanvas(undefined);
+                this.layers.Add(null);
             }
         }
 
         public void resize()
         {
-            this.coordPropertiesGrid.length = this.height;
-            for (let i = 0; i < this.coordPropertiesGrid.length; i++)
+            this.coordPropertiesGrid = Helpers.make2DArray<Dictionary<string, string>>(this.height, this.width, new Dictionary<string, string>());
+
+            foreach(var layer in this.layers) 
             {
-                if (!this.coordPropertiesGrid[i])
-                {
-                    let row = [];
-                    for (let counter = 0; counter < this.width; counter++)
-                    {
-                        row.push({ });
-                    }
-                    this.coordPropertiesGrid[i] = row;
-                }
-                else 
-                {
-                    this.coordPropertiesGrid[i].length = this.width;
-                }
-            }
-            for(let row of this.coordPropertiesGrid) 
-            {
-                for (let i = 0; i < row.length; i++)
-                {
-                    if (!row[i])
-                    {
-                        row[i] = [];
-                    }
-                }
-            }
-            for(let layer of this.layers) 
-            {
-                let context = layer.getContext("2d");
-                let imageData = context.getImageData(0, 0, this.width * consts.TILE_WIDTH, this.height * consts.TILE_WIDTH);
-                layer.width = this.width * consts.TILE_WIDTH;
-                layer.height = this.height * consts.TILE_WIDTH;
-                context.putImageData(imageData, 0, 0);
+                //layer.Width = this.width * Consts.TILE_WIDTH;
+                //layer.Height = this.height * Consts.TILE_WIDTH;
             }
         }
 
         public void init()
         {
-            this.coordPropertiesGrid = [];
-            for (let i = 0; i < this.height; i++)
+            this.coordPropertiesGrid = Helpers.make2DArray<Dictionary<string, string>>(this.height, this.width, new Dictionary<string, string>());
+            if (this.tileInstances.Count == 0) 
             {
-                let row = [];
-                for (let j = 0; j < this.width; j++)
+                for (var i = 0; i < this.height; i++)
                 {
-                    row.push({ });
-                }
-                this.coordPropertiesGrid.push(row);
-            }
-            if(this.tileInstances.length === 0) 
-            {
-                for (let i = 0; i < this.height; i++)
-                {
-                    let row = [];
-                    for (let j = 0; j < this.width; j++)
+                    var row = new List<string>();
+                    for (var j = 0; j < this.width; j++)
                     {
-                        row.push(undefined);
+                        row.Add(null);
                     }
-                    this.tileInstances.push(row);
+                    this.tileInstances.Add(row);
                 }
             }
         }
-        public void getNonSerializedKeys()
+
+        [OnSerializing]
+        public void onSerialize(StreamingContext context)
         {
-            return ["layers", "coordPropertiesGrid"];
-        }
-        
-        public void onSerialize()
-        {
-            this.coordProperties = [];
-            for (let i = 0; i < this.coordPropertiesGrid.length; i++)
+            this.coordProperties = new List<CoordProperties>();
+            for (var i = 0; i < this.coordPropertiesGrid.Count; i++)
             {
-                for (let j = 0; j < this.coordPropertiesGrid[i].length; j++)
+                for (var j = 0; j < this.coordPropertiesGrid[i].Count; j++)
                 {
-                    let props = this.coordPropertiesGrid[i][j];
-                    if (!_.isEmpty(props))
+                    var props = this.coordPropertiesGrid[i][j];
+                    if (props.Keys.Count > 0)
                     {
-                        this.coordProperties.push({
-                            i: i,
-                            j: j,
-                            properties: props
+                        this.coordProperties.Add(new CoordProperties() {
+                            i = i,
+                            j = j,
+                            properties = props
                         });
                     }
                 }
             }
         }
 
-        public void setTileInstancesOnSerialize(levelCtx: CanvasRenderingContext2D, tileHashes: { [tileHash: string]: GridCoords }[], tileGrids: TileData[][][]) 
+        /*
+        public void setTileInstancesOnSerialize() //(levelCtx: CanvasRenderingContext2D, tileHashes: { [tileHash: string]: GridCoords }[], tileGrids: TileData[][][]) 
         {
-            this.tileInstances = [];
-            for(let i = 0; i< this.height; i++) {
-                let row: string[] = [];
-                this.tileInstances.push(row)
-                for (let j = 0; j < this.width; j++)
+            this.tileInstances = new List<List<string>>();
+            for(var i = 0; i < this.height; i++) {
+                var row = new List<string>();
+                this.tileInstances.Add(row);
+                for (var j = 0; j < this.width; j++)
                 {
-                    //@ts-ignore
-                    let tileHashKey = Helpers.getTileHash(levelCtx, i, j, this.name);
+                    var tileHashKey = Helpers.getTileHash(levelCtx, i, j, this.name);
                     if (!tileHashKey)
                     {
-                        console.warn("Tile hash at " + String(i) + "," + String(j) + " not found!");
-                        row.push("");
+                        Console.WriteLine("Tile hash at " + i.ToString() + "," + j.ToString() + " not found!");
+                        row.Add("");
                         continue;
                     }
-                    let id = "";
-                    let coords: GridCoords = undefined;
-                    for (let n = 0; n < tileHashes.length; n++)
+                    var id = "";
+                    GridCoords gridCoords = null;
+                    for (var n = 0; n < tileHashes.Count; n++)
                     {
                         coords = tileHashes[n][tileHashKey];
-                        if (coords)
+                        if (coords != null)
                         {
-                            let tileData = tileGrids[n][coords.i][coords.j];
+                            var tileData = tileGrids[n][coords.i][coords.j];
                             id = tileData.getId();
                             break;
                         }
                     }
-                    row.push(id);
+                    row.Add(id);
                 }
             }
         }
-    
-        onDeserialize()
+        */
+
+        [OnDeserialized]
+        public void onDeserialize(StreamingContext context)
         {
             this.init();
-            for (let coordProperty of this.coordProperties)
+            foreach (var coordProperty in this.coordProperties)
             {
                 this.coordPropertiesGrid[coordProperty.i][coordProperty.j] = coordProperty.properties;
             }
         }
-        destroy()
+
+        public void destroy()
         {
-            for (let layer of this.layers)
+            foreach (var layer in this.layers)
             {
-                layer.remove();
+                layer.Dispose();
             }
         }
-        */
     }
 }

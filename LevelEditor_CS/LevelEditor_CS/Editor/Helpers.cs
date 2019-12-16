@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace LevelEditor_CS.Editor
 {
@@ -30,9 +31,9 @@ namespace LevelEditor_CS.Editor
 
     public static class Helpers
     {
-        public static List<Spritesheet> getSpritesheets()
+        public static List<Spritesheet> getSpritesheets(string folder)
         {
-            var spritesheetsFiles = Directory.GetFiles(Consts.ASSETS_PATH + "/spritesheets");
+            var spritesheetsFiles = Directory.GetFiles(Consts.ASSETS_PATH + "/" + folder);
             List<Spritesheet> spritesheets = new List<Spritesheet>();
             foreach(string spritesheetFile in spritesheetsFiles)
             {
@@ -54,6 +55,26 @@ namespace LevelEditor_CS.Editor
                 sprites.Add(sprite);
             }
             return sprites;
+        }
+
+        public static List<Level> getLevels()
+        {
+            var levelFiles = Directory.GetFiles(Consts.ASSETS_PATH + "/levels");
+            List<Level> levels = new List<Level>();
+            foreach (string spriteFile in levelFiles)
+            {
+                string levelJson = File.ReadAllText(spriteFile);
+                var level = JsonConvert.DeserializeObject<Level>(levelJson);
+                levels.Add(level);
+            }
+            return levels;
+        }
+
+        public static List<TileData> getTileDatas()
+        {
+            string tileDataJson = File.ReadAllText(Consts.ASSETS_PATH + "/tiledatas.json");
+            var tileDatas = JsonConvert.DeserializeObject<List<TileData>>(tileDataJson);
+            return tileDatas;
         }
 
         public static void saveSprite(Sprite sprite)
@@ -102,7 +123,7 @@ namespace LevelEditor_CS.Editor
         {
             if (storageKeys == null)
             {
-                string storageJson = File.ReadAllText("storage.json");
+                string storageJson = ""; //File.ReadAllText("C:/leveleditor/storage.json");
                 if (string.IsNullOrEmpty(storageJson))
                 {
                     storageKeys = new Dictionary<string, string>();
@@ -162,6 +183,21 @@ namespace LevelEditor_CS.Editor
             {
                 SolidBrush strokeBrush = new SolidBrush((Color)lineColor);
                 canvas.DrawEllipse(new Pen(strokeBrush), new Rectangle((int)(x - r), (int)(y - r), (int)(r * 2), (int)(r * 2)));
+            }
+        }
+
+        public static void drawPolygon(Graphics canvas, Shape shape, bool v1, Color? fillColor, Color? lineColor, int lineThickness = 1, float alpha = 1)
+        {
+            if (fillColor != null)
+            {
+                SolidBrush fillBrush = new SolidBrush((Color)fillColor);
+                canvas.FillPolygon(fillBrush, shape.points.Select(point => new PointF(point.x, point.y)).ToArray());
+            }
+
+            if (lineColor != null)
+            {
+                SolidBrush strokeBrush = new SolidBrush((Color)lineColor);
+                canvas.DrawPolygon(new Pen(strokeBrush), shape.points.Select(point => new PointF(point.x, point.y)).ToArray());
             }
         }
 
@@ -757,10 +793,26 @@ namespace LevelEditor_CS.Editor
                 }
             }
             return retStr;
-
         }
-
         */
+
+        public static List<List<T>> make2DArray<T>(int rowCount, int colCount, T val)
+        {
+            var retList = new List<List<T>>();
+            for (int i = 0; i < rowCount; i++)
+            {
+                retList.Add(null);
+            }
+            for(int i = 0; i < retList.Count; i++)
+            {
+                retList[i] = new List<T>();
+                for(int j = 0; j < colCount; j++)
+                {
+                    retList[i].Add(val);
+                }
+            }
+            return retList;
+        }
 
         public static string baseName(string filepath)
         {
@@ -768,6 +820,18 @@ namespace LevelEditor_CS.Editor
             if (baseNameStr.LastIndexOf(".") != -1)
                 baseNameStr = baseNameStr.Substring(0, baseNameStr.LastIndexOf("."));
             return baseNameStr;
+        }
+
+        public static void setSelect(ComboBox select, List<string> items, bool setIndex = true)
+        {
+            foreach (var item in items)
+            {
+                select.Items.Add(item);
+            }
+            if (setIndex)
+            {
+                select.SelectedIndex = 0;
+            }
         }
 
     }

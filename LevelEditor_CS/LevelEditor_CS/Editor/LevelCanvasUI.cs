@@ -10,6 +10,19 @@ using static LevelEditor_CS.LevelEditor;
 
 namespace LevelEditor_CS.Editor
 {
+    public class BFSNode
+    {
+        public int i = 0;
+        public int j = 0;
+        public bool visited = false;
+        public BFSNode(int i, int j)
+        {
+            this.i = i;
+            this.j = j;
+            this.visited = false;
+        }
+    }
+
     public class LevelCanvasUI : CanvasUI
     {
         public GridCoords prevGridCoords;
@@ -29,6 +42,14 @@ namespace LevelEditor_CS.Editor
 
             var tileWidth = 8;
             if (levelEditor.mode16x16) tileWidth = 16;
+
+            if (levelEditor.selectedLevel != null)
+            {
+                foreach (Bitmap bitmap in levelEditor.selectedLevel.layers)
+                {
+                    Helpers.drawImage(e.Graphics, bitmap, 0, 0);
+                }
+            }
 
             if (levelEditor.showLevelGrid)
             {
@@ -175,7 +196,7 @@ namespace LevelEditor_CS.Editor
                 {
                     for (var j = 0; j < grid[i].Count; j++)
                     {
-                        if (grid[i][j][levelEditor.showOverridesWithKey])
+                        if (!string.IsNullOrEmpty(grid[i][j][levelEditor.showOverridesWithKey]))
                         {
                             Helpers.drawRect(e.Graphics, new GridCoords(i, j).getRect(), Color.Red, null, 0, 0.5f);
                         }
@@ -209,7 +230,12 @@ namespace LevelEditor_CS.Editor
             */
         }
 
-        public void onMouseMove()
+        public GridCoords getTopLeftSelectedTileGridCoord()
+        {
+            return new GridCoords(levelEditor.tileSelectedCoords.Min(c => c.i), levelEditor.tileSelectedCoords.Min(c => c.j));
+        }
+
+        public override void onMouseMove(float deltaX, float deltaY)
         {
             if (this.mousedown)
             {
@@ -265,7 +291,7 @@ namespace LevelEditor_CS.Editor
         {
             if (levelEditor.selectedTool == Tool.Select)
             {
-
+                levelEditor.resetUI();
             }
             else if (levelEditor.selectedTool == Tool.CreateInstance)
             {
@@ -322,9 +348,10 @@ namespace LevelEditor_CS.Editor
                 {
                     destPoint.j--;
                 }
-                var ctx = levelEditor.selectedLevel.layers[levelEditor.layerIndex].getContext("2d");
-                //@ts-ignore
-                Helpers.drawImage(ctx, levelEditor.selectedLevel.layers[0], rect.x1, rect.y1, rect.w, rect.h, destPoint.j * Consts.TILE_WIDTH, destPoint.i * Consts.TILE_WIDTH);
+                using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLevel.layers[levelEditor.layerIndex]))
+                {
+                    Helpers.drawImage(canvas, levelEditor.selectedLevel.layers[0], rect.x1, rect.y1, rect.w, rect.h, destPoint.j * Consts.TILE_WIDTH, destPoint.i * Consts.TILE_WIDTH);
+                }
                 return;
             }
 
@@ -346,8 +373,10 @@ namespace LevelEditor_CS.Editor
                 {
                     offsettedGridCoords.j--;
                 }
-
-                levelEditor.selectedLevel.layers[levelEditor.layerIndex].getContext("2d").drawImage(levelEditor.selectedTileset.imgEl, selectedGridCoord.j * Consts.TILE_WIDTH, selectedGridCoord.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH, offsettedGridCoords.j * Consts.TILE_WIDTH, offsettedGridCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH);
+                using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLevel.layers[levelEditor.layerIndex]))
+                {
+                    Helpers.drawImage(canvas, levelEditor.selectedTileset.image, selectedGridCoord.j * Consts.TILE_WIDTH, selectedGridCoord.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH, offsettedGridCoords.j * Consts.TILE_WIDTH, offsettedGridCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH);
+                }
             }
         }
 
@@ -365,10 +394,10 @@ namespace LevelEditor_CS.Editor
                     var lastJ = Mathf.Floor(this.lastClickX / Consts.TILE_WIDTH);
                     var currentI = this.getMouseGridCoords().i;
                     var currentJ = this.getMouseGridCoords().j;
-                    dragRect.topLeftGridCoords.i = Math.Min(lastI, currentI);
-                    dragRect.topLeftGridCoords.j = Math.Min(lastJ, currentJ);
-                    dragRect.botRightGridCoords.i = Math.Max(lastI, currentI);
-                    dragRect.botRightGridCoords.j = Math.Max(lastJ, currentJ);
+                    dragRect.topLeftGridCoords.i = (int)Math.Min(lastI, currentI);
+                    dragRect.topLeftGridCoords.j = (int)Math.Min(lastJ, currentJ);
+                    dragRect.botRightGridCoords.i = (int)Math.Max(lastI, currentI);
+                    dragRect.botRightGridCoords.j = (int)Math.Max(lastJ, currentJ);
                 }
 
                 if (!this.isHeld(Keys.LControlKey))
@@ -379,7 +408,7 @@ namespace LevelEditor_CS.Editor
                 {
                     for (var j = dragRect.topLeftGridCoords.j; j <= dragRect.botRightGridCoords.j; j++)
                     {
-                        if (!_.some(levelEditor.levelSelectedCoords, (coord) => { return coord.i == i && coord.j == j; }))
+                        if (!levelEditor.levelSelectedCoords.Any((coord) => { return coord.i == i && coord.j == j; }))
                         {
                             levelEditor.levelSelectedCoords.Add(new GridCoords(i, j));
                         }
@@ -387,36 +416,39 @@ namespace LevelEditor_CS.Editor
                 }
 
                 levelEditor.updateSelectionProperties();
+
+                /*
                 var elevation = levelEditor.selectedLevel.coordPropertiesGrid[this.getMouseGridCoords().i][this.getMouseGridCoords().j].elevation;
                 if (!elevation) elevation = 0;
                 levelEditor.selectionElevation = elevation;
+                */
 
                 levelEditor.redrawLevelCanvas();
                 levelEditor.redrawTileCanvas();
             }
             else if (levelEditor.selectedTool == Tool.SelectInstance)
             {
-                if (!levelEditor.selectedLevel) return;
+                if (levelEditor.selectedLevel == null) return;
                 var oldSelectedInstances = levelEditor.selectedInstances;
-                levelEditor.selectedInstances = [];
-                for(var instance in levelEditor.selectedLevel.instances)
+                levelEditor.instanceListBoxBinding.clear();
+                foreach(var instance in levelEditor.selectedLevel.instances)
                 {
                     var rect = instance.getPositionalRect();
                     var dragRect = new Rect(this.dragLeftX, this.dragTopY, this.dragRightX, this.dragBotY);
                     if (rect.overlaps(dragRect))
                     {
-                        if (oldSelectedInstances.indexOf(instance) == -1)
+                        if (oldSelectedInstances.IndexOf(instance) == -1)
                         {
                             levelEditor.selectedInstances.Add(instance);
                             break;
                         }
                     }
                 }
-                levelEditor.levelCanvas.Invalidate();
+                levelEditor.redrawLevelCanvas();
             }
             else if (levelEditor.selectedTool == Tool.RectangleTile)
             {
-                if (!levelEditor.selectedLevel) return;
+                if (levelEditor.selectedLevel == null) return;
                 if (levelEditor.tileSelectedCoords.Count == 0) return;
 
                 /*
@@ -433,22 +465,20 @@ namespace LevelEditor_CS.Editor
                 {
                     for (var j = rect.j1; j <= rect.j2; j++)
                     {
-                        var gridCoords = new GridCoords(i, j);
-                        levelEditor.selectedLevel.layers[levelEditor.layerIndex].getContext("2d").drawImage(levelEditor.selectedTileset.imgEl, tileCoordToPlace.j * Consts.TILE_WIDTH, tileCoordToPlace.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH, gridCoords.j * Consts.TILE_WIDTH, gridCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH);
+                        var gridCoords = new GridCoords((int)i, (int)j);
+                        using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLevel.layers[levelEditor.layerIndex]))
+                        {
+                            Helpers.drawImage(canvas, levelEditor.selectedTileset.image, tileCoordToPlace.j * Consts.TILE_WIDTH, tileCoordToPlace.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH, gridCoords.j * Consts.TILE_WIDTH, gridCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH);
+                        }
                     }
                 }
 
                 levelEditor.addUndoJson();
 
-                levelEditor.levelCanvas.Invalidate();
-                levelEditor.levelCanvas.Invalidate();
-                tileCanvas.redraw();
+                levelEditor.redrawLevelCanvas();
+                levelEditor.redrawTileCanvas();
             }
             else if (levelEditor.selectedTool == Tool.PlaceTile)
-            {
-                levelEditor.addUndoJson();
-            }
-            else if (levelEditor.selectedTool == Tool.PaintElevation)
             {
                 levelEditor.addUndoJson();
             }
@@ -457,22 +487,22 @@ namespace LevelEditor_CS.Editor
         public override void onKeyDown(Keys keyCode, bool firstFrame)
         {
             //LEVEL HOTKEYS
-            if (keyCode == Keys.Z && this.isHeld(Keys.CONTROL))
+            if (keyCode == Keys.Z && this.isHeld(Keys.Control))
             {
                 levelEditor.undo();
                 return;
             }
-            else if (keyCode == Keys.Y && this.isHeld(Keys.CONTROL))
+            else if (keyCode == Keys.Y && this.isHeld(Keys.Control))
             {
                 levelEditor.redo();
                 return;
             }
 
-            if (keyCode == Keys.ESCAPE)
+            if (keyCode == Keys.Escape)
             {
                 levelEditor.selectedTool = Tool.Select;
-                levelEditor.clonedTiles = undefined; //getLevelSelectedGridRect();
-                levelEditor.levelSelectedCoords = [];
+                levelEditor.clonedTiles = null; //getLevelSelectedGridRect();
+                levelEditor.levelSelectedCoords = new List<GridCoords>();
                 this.redraw();
                 return;
             }
@@ -493,6 +523,7 @@ namespace LevelEditor_CS.Editor
                     this.redraw();
                 }
             }
+            /*
             else if (keyCode == Keys.N)
             {
                 if (levelEditor.levelSelectedCoords.Count == 1)
@@ -521,6 +552,7 @@ namespace LevelEditor_CS.Editor
                     this.redraw();
                 }
             }
+            */
             else if (keyCode == Keys.F)
             {
                 if (levelEditor.levelSelectedCoords.Count == 1)
@@ -531,7 +563,7 @@ namespace LevelEditor_CS.Editor
                         tileHash[tile.getId()] = tile;
                     }
                     var grid = levelEditor.selectedLevel.tileInstances;
-                    var searchGrid: BFSNode[][] = Helpers.make2DArray(grid[0].Count, grid.Count, undefined);
+                    List<List<BFSNode>> searchGrid = Helpers.make2DArray<BFSNode>(grid[0].Count, grid.Count, null);
                     for (var i = 0; i < searchGrid.Count; i++)
                     {
                         for (var j = 0; j < searchGrid[i].Count; j++)
@@ -540,26 +572,27 @@ namespace LevelEditor_CS.Editor
                         }
                     }
                     var node = searchGrid[levelEditor.levelSelectedCoords[0].i][levelEditor.levelSelectedCoords[0].j];
-                    var visitedNodes = [node];
+                    var visitedNodes = new List<BFSNode>() { node };
                     var loop = 0;
-                    var hash: any = { };
+                    var hash = new Dictionary<string, bool>();
                     while (visitedNodes.Count > 0)
                     {
                         //loop++; if(loop > 1000) { throw "INFINITE LOOP!"; }
-                        var lastNode = visitedNodes.shift();
+                        var lastNode = visitedNodes[0];
+                        visitedNodes.RemoveAt(0);
                         lastNode.visited = true;
                         var i = lastNode.i;
                         var j = lastNode.j;
-                        if (hash[i + "," + j])
+                        if (hash.ContainsKey(i.ToString() + "," + j.ToString()))
                         {
                             continue;
                         }
-                        if (levelEditor.selectedLevel.coordPropertiesGrid[i][j].noLand)
+                        if (levelEditor.selectedLevel.coordPropertiesGrid[i][j].ContainsKey("noLand"))
                         {
                             continue;
                         }
                         hash[i + "," + j] = true;
-                        levelEditor.selectedLevel.coordPropertiesGrid[i][j].noLand = 1;
+                        levelEditor.selectedLevel.coordPropertiesGrid[i][j]["noLand"] = "1";
                         try
                         {
                             var topI = i - 1;
@@ -606,11 +639,11 @@ namespace LevelEditor_CS.Editor
                         catch { }
                     }
                     this.redraw();
-                    resetVue();
                 }
 
             }
-            else if (keyCode == Keys.SLASH)
+            /*
+            else if (keyCode == Keys.OemQuestion)
             {
                 if (levelEditor.levelSelectedCoords.Count == 1)
                 {
@@ -619,8 +652,8 @@ namespace LevelEditor_CS.Editor
                     var myCoords = gridCoords.i.ToString() + "," + gridCoords.j.ToString();
                     foreach (var neighbor in neighbors)
                     {
-                        var ni = int.Parse(neighbor.split(",")[0]);
-                        var nj = int.Parse(neighbor.split(",")[1]);
+                        var ni = int.Parse(neighbor.Split(',')[0]);
+                        var nj = int.Parse(neighbor.Split(',')[1]);
                         _.pull(levelEditor.selectedLevel.coordPropertiesGrid[ni][nj]["neighbors"], myCoords);
                     }
                     levelEditor.selectedLevel.coordPropertiesGrid[gridCoords.i][gridCoords.j] = { };
@@ -628,35 +661,34 @@ namespace LevelEditor_CS.Editor
                     this.redraw();
                 }
             }
-            else if (keyCode == Keys.BACK_QUOTE)
+            else if (keyCode == Keys.Back)
             {
                 levelEditor.lastNavMeshCoords = "";
             }
-
+            */
             if (levelEditor.selectedTool == Tool.Select && firstFrame)
             {
-
                 if (keyCode == Keys.C)
                 {
                     levelEditor.selectedTool = Tool.PlaceTile;
-                    levelEditor.clonedTiles = getLevelSelectedGridRect();
+                    levelEditor.clonedTiles = levelEditor.getLevelSelectedGridRect();
                     this.redraw();
                     return;
                 }
 
                 if (keyCode == Keys.L)
                 {
-                    var gridRect = getLevelSelectedGridRect();
-                    if (gridRect)
+                    var gridRect = levelEditor.getLevelSelectedGridRect();
+                    if (gridRect != null)
                     {
                         var line = new Line(new Models.Point(gridRect.j1 * Consts.TILE_WIDTH, gridRect.i1 * Consts.TILE_WIDTH), new Models.Point(gridRect.j2 * Consts.TILE_WIDTH, gridRect.i2 * Consts.TILE_WIDTH));
-                        if (!_.some(levelEditor.selectedLevel.scrollLines, (curLine) =>
+                        if (!levelEditor.selectedLevel.scrollLines.Any( (curLine) =>
                         {
-                            return line.point1.equals(curLine.point1) && line.point2.equals(curLine.point2);
+                            return line.point1.Equals(curLine.point1) && line.point2.Equals(curLine.point2);
                         }))
                         {
                             levelEditor.selectedLevel.scrollLines.Add(line);
-                            //levelEditor.addUndoJson();
+                            levelEditor.addUndoJson();
                             this.redraw();
                         }
                     }
@@ -678,11 +710,11 @@ namespace LevelEditor_CS.Editor
                         {
                             continue;
                         }
-                        var gridRect = getLevelSelectedGridRect();
+                        var gridRect = levelEditor.getLevelSelectedGridRect();
                         var selectionRect = new Rect(gridRect.j1 * Consts.TILE_WIDTH, gridRect.i1 * Consts.TILE_WIDTH, (gridRect.j2 + 1) * Consts.TILE_WIDTH, (gridRect.i2 + 1) * Consts.TILE_WIDTH);
                         if (lineRect.overlaps(selectionRect))
                         {
-                            _.remove(levelEditor.selectedLevel.scrollLines, line);
+                            levelEditor.selectedLevel.scrollLines.Remove(line);
                             this.redraw();
                             break;
                         }
@@ -691,22 +723,23 @@ namespace LevelEditor_CS.Editor
 
                 var incX = 0;
                 var incY = 0;
-                if (keyCode == Keys.LEFT)
+                if (keyCode == Keys.Left)
                 {
                     incX = -1;
                 }
-                else if (keyCode == Keys.RIGHT)
+                else if (keyCode == Keys.Right)
                 {
                     incX = 1;
                 }
-                else if (keyCode == Keys.UP)
+                else if (keyCode == Keys.Up)
                 {
                     incY = -1;
                 }
-                else if (keyCode == Keys.DOWN)
+                else if (keyCode == Keys.Down)
                 {
                     incY = 1;
                 }
+                /*
                 if (incX != 0 || incY != 0)
                 {
                     var context = levelEditor.selectedLevel.layers[levelEditor.layerIndex].getContext("2d");
@@ -736,37 +769,40 @@ namespace LevelEditor_CS.Editor
                         gridCoords.j += incX;
                     }
                     levelEditor.addUndoJson();
-                    levelEditor.levelCanvas.Invalidate();
-                    levelEditor.levelCanvas.Invalidate();
+                    levelEditor.redrawLevelCanvas();
                 }
-                if (keyCode == Keys.DELETE)
+                */
+                if (keyCode == Keys.Delete)
                 {
-                    var context = levelEditor.selectedLevel.layers[levelEditor.layerIndex].getContext("2d");
-        for(var gridCoords in levelEditor.levelSelectedCoords)
+                    using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLevel.layers[levelEditor.layerIndex]))
                     {
-                        context.clearRect(gridCoords.j * Consts.TILE_WIDTH, gridCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH);
+                        foreach (var gridCoords in levelEditor.levelSelectedCoords)
+                        {
+                            Helpers.drawRect(canvas, Rect.CreateWH(gridCoords.j * Consts.TILE_WIDTH, gridCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH), Color.Black, null, 0, 0);
+                        }
                     }
+
                     levelEditor.addUndoJson();
-                    levelEditor.levelCanvas.Invalidate();
+                    levelEditor.redrawLevelCanvas();
                 }
             }
             else if (levelEditor.selectedTool == Tool.SelectInstance && levelEditor.selectedInstances.Count > 0)
             {
                 var incX = 0;
                 var incY = 0;
-                if (keyCode == Keys.LEFT)
+                if (keyCode == Keys.Left)
                 {
                     incX = -1;
                 }
-                else if (keyCode == Keys.RIGHT)
+                else if (keyCode == Keys.Right)
                 {
                     incX = 1;
                 }
-                else if (keyCode == Keys.UP)
+                else if (keyCode == Keys.Up)
                 {
                     incY = -1;
                 }
-                else if (keyCode == Keys.DOWN)
+                else if (keyCode == Keys.Down)
                 {
                     incY = 1;
                 }
@@ -778,18 +814,16 @@ namespace LevelEditor_CS.Editor
                         instance.pos.y += incY;
                     }
                     levelEditor.addUndoJson();
-                    levelEditor.levelCanvas.Invalidate();
-                    levelEditor.levelCanvas.Invalidate();
+                    levelEditor.redrawLevelCanvas();
                 }
-                if (keyCode == Keys.DELETE)
+                if (keyCode == Keys.Delete)
                 {
                     foreach (var instance in levelEditor.selectedInstances)
                     {
-                        _.remove(levelEditor.selectedLevel.instances, instance);
+                        levelEditor.selectedLevel.instances.Remove(instance);
                     }
-                    levelEditor.levelCanvas.Invalidate();
-                    levelEditor.levelCanvas.Invalidate();
-                    levelEditor.selectedInstances = [];
+                    levelEditor.redrawLevelCanvas();
+                    levelEditor.instanceListBoxBinding.clear();
                     levelEditor.addUndoJson();
                 }
                 if (keyCode == Keys.E && levelEditor.selectedInstances.Count == 1)
@@ -798,7 +832,6 @@ namespace LevelEditor_CS.Editor
                     index++;
                     if (index >= levelEditor.selectedLevel.instances.Count) index = 0;
                     levelEditor.selectedInstances[0] = levelEditor.selectedLevel.instances[index];
-                    resetVue();
                 }
                 else if (keyCode == Keys.Q && levelEditor.selectedInstances.Count == 1)
                 {
@@ -806,7 +839,6 @@ namespace LevelEditor_CS.Editor
                     index--;
                     if (index < 0) index = levelEditor.selectedLevel.instances.Count - 1;
                     levelEditor.selectedInstances[0] = levelEditor.selectedLevel.instances[index];
-                    resetVue();
                 }
             }
         }

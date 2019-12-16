@@ -8,7 +8,7 @@ namespace LevelEditor_CS.Models
 {
     public class Obj
     {
-        public string name;
+        public string name { get; set; }
         public string spriteOrImage;
         public bool snapToTile;
         public Point snapOffset;

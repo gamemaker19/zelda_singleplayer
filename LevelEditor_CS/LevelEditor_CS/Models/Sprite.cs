@@ -12,7 +12,7 @@ namespace LevelEditor_CS.Models
 {
     public class Sprite
     {
-        public string name = "";
+        public string name { get; set; } = "";
         public List<Hitbox> hitboxes = new List<Hitbox>();
         public float loopStartFrame = 0;
         public List<Frame> frames = new List<Frame>();

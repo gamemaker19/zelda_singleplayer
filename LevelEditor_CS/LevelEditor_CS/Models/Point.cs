@@ -37,5 +37,10 @@ namespace LevelEditor_CS.Models
             var point = new Point(this.x + x, this.y + y);
             return point;
         }
+
+        public bool Equals(Point point)
+        {
+            return x == point.x && y == point.y;
+        }
     }
 }

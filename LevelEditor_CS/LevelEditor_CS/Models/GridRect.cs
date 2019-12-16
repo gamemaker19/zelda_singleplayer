@@ -12,7 +12,7 @@ namespace LevelEditor_CS.Models
         public GridCoords topLeftGridCoords;
         public GridCoords botRightGridCoords;
 
-        public GridRect(float i1, float j1, float i2, float j2)
+        public GridRect(int i1, int j1, int i2, int j2)
         {
             this.topLeftGridCoords = new GridCoords(i1, j1);
             this.botRightGridCoords = new GridCoords(i2, j2);

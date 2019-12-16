@@ -9,9 +9,9 @@ namespace LevelEditor_CS.Models
 {
     public class GridCoords
     {
-        public float i;
-        public float j;
-        public GridCoords(float i, float j)
+        public int i;
+        public int j;
+        public GridCoords(int i, int j)
         {
             this.i = i;
             this.j = j;

@@ -1,4 +1,5 @@
 ﻿using LevelEditor_CS.Editor;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -17,15 +18,27 @@ namespace LevelEditor_CS.Models
 
         public Spritesheet(string path)
         {
-            this.path = path;       
+            this.path = path;
         }
 
-        public void init()
+        public void init(bool getArray)
         {
             if (image == null)
             {
                 image = new Bitmap(path);
-                imgArr = Helpers.get2DArrayFromImage(image);
+                if (getArray)
+                {
+                    imgArr = Helpers.get2DArrayFromImage(image);
+                }
+            }
+        }
+
+        [JsonIgnore]
+        public string name
+        {
+            get
+            {
+                return getName();
             }
         }
 

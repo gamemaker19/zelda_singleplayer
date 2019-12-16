@@ -218,18 +218,18 @@ namespace LevelEditor_CS.Editor
 
         public GridRect getDragGridRect()
         {
-            return new GridRect(Mathf.Floor(this.dragTopY / Consts.TILE_WIDTH), Mathf.Floor(this.dragLeftX / Consts.TILE_WIDTH),
-                Mathf.Floor(this.dragBotY / Consts.TILE_WIDTH), Mathf.Floor(this.dragRightX / Consts.TILE_WIDTH));
+            return new GridRect((int)Mathf.Floor(this.dragTopY / Consts.TILE_WIDTH), (int)Mathf.Floor(this.dragLeftX / Consts.TILE_WIDTH),
+                (int)Mathf.Floor(this.dragBotY / Consts.TILE_WIDTH), (int)Mathf.Floor(this.dragRightX / Consts.TILE_WIDTH));
         }
 
         public GridCoords getMouseGridCoords()
         {
-            return new GridCoords(Mathf.Floor(this.mouseY / Consts.TILE_WIDTH), Mathf.Floor(this.mouseX / Consts.TILE_WIDTH));
+            return new GridCoords((int)Mathf.Floor(this.mouseY / Consts.TILE_WIDTH), (int)Mathf.Floor(this.mouseX / Consts.TILE_WIDTH));
         }
 
         public GridCoords getMouseGridCoordsCustomWidth(float width)
         {
-            return new GridCoords(Mathf.Floor(this.mouseY / width), Mathf.Floor(this.mouseX / width));
+            return new GridCoords((int)Mathf.Floor(this.mouseY / width), (int)Mathf.Floor(this.mouseX / width));
         }
 
         public void saveScrollPos(string imageKey)
