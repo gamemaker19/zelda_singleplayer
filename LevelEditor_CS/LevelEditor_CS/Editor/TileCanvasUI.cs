@@ -1,10 +1,8 @@
 ﻿using LevelEditor_CS.Models;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static LevelEditor_CS.LevelEditor;
 using Color = System.Drawing.Color;
@@ -328,7 +326,7 @@ namespace LevelEditor_CS.Editor
 
             if (!this.isHeld(Keys.Control))
             {
-                levelEditor.tileSelectedCoords = new List<GridCoords>();
+                levelEditor.tileSelectedCoords = new ObservableCollection<GridCoords>();
             }
             for (var i = dragRect.topLeftGridCoords.i; i <= dragRect.botRightGridCoords.i; i++)
             {

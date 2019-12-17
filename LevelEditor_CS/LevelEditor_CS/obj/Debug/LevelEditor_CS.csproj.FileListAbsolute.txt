@@ -32,3 +32,5 @@ C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\ob
 D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.LevelEditor.resources
 D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Controls.RadioGroupBox.resources
 D:\Documents\Game Projects\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.csprojAssemblyReference.cache
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.Controls.RadioGroupBox.resources
+C:\Users\kezhen\source\repos\zelda_singleplayer\LevelEditor_CS\LevelEditor_CS\obj\Debug\LevelEditor_CS.LevelEditor.resources

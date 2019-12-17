@@ -7,8 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LevelEditor_CS.Editor
@@ -832,6 +830,11 @@ namespace LevelEditor_CS.Editor
             {
                 select.SelectedIndex = 0;
             }
+        }
+
+        public static List<T> getEnumList<T>()
+        {
+            return Enum.GetValues(typeof(T)).Cast<T>().ToList();
         }
 
     }

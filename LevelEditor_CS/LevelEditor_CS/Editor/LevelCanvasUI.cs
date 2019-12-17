@@ -1,10 +1,9 @@
 ﻿using LevelEditor_CS.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static LevelEditor_CS.LevelEditor;
 
@@ -402,7 +401,7 @@ namespace LevelEditor_CS.Editor
 
                 if (!this.isHeld(Keys.LControlKey))
                 {
-                    levelEditor.levelSelectedCoords = new List<GridCoords>();
+                    levelEditor.levelSelectedCoords = new ObservableCollection<GridCoords>();
                 }
                 for (var i = dragRect.topLeftGridCoords.i; i <= dragRect.botRightGridCoords.i; i++)
                 {
@@ -502,7 +501,7 @@ namespace LevelEditor_CS.Editor
             {
                 levelEditor.selectedTool = Tool.Select;
                 levelEditor.clonedTiles = null; //getLevelSelectedGridRect();
-                levelEditor.levelSelectedCoords = new List<GridCoords>();
+                levelEditor.levelSelectedCoords = new ObservableCollection<GridCoords>();
                 this.redraw();
                 return;
             }

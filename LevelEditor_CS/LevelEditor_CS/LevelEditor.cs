@@ -3,14 +3,10 @@ using LevelEditor_CS.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.ListBox;
 
 namespace LevelEditor_CS
 {
@@ -30,6 +26,8 @@ namespace LevelEditor_CS
 
         public SelectBinding<Sprite> tileSpriteFilterSelectBinding;
         public SelectBinding<Spritesheet> tilesetSelectBinding;
+        public SelectBinding<ZIndex> tileZIndexSelectBinding;
+        public SelectBinding<HitboxMode> tileHitboxSelectBinding;
         public Spritesheet selectedTileset { get { return tilesetSelectBinding.selected; } }
 
         public ListBoxBinding<Level> levelListBoxBinding;
@@ -106,8 +104,8 @@ namespace LevelEditor_CS
         public Tool selectedTool = Tool.Select;
         public int selectedToolInt { get { return (int)selectedTool; } set { selectedTool = (Tool)value; } }
 
-        private List<GridCoords> _tileSelectedCoords = new List<GridCoords>();
-        private List<GridCoords> _levelSelectedCoords = new List<GridCoords>();
+        private ObservableCollection<GridCoords> _tileSelectedCoords = new ObservableCollection<GridCoords>();
+        private ObservableCollection<GridCoords> _levelSelectedCoords = new ObservableCollection<GridCoords>();
 
         public LevelCanvasUI levelCanvasUI;
         public TileCanvasUI tileCanvasUI;
@@ -167,27 +165,26 @@ namespace LevelEditor_CS
 
             tileTagTextBox.DataBindings.Clear();
             tileNameTextBox.DataBindings.Clear();
-            tileHitboxModeSelect.DataBindings.Clear();
             tileTagTextBox.DataBindings.Clear();
-            tileZIndexSelect.DataBindings.Clear();
-            tileSpriteSelect.DataBindings.Clear();
 
             if (selectedTilesetTiles == null || selectedTilesetTiles.Count == 0)
             {
-                tileTagTextBox.Visible = false;
-                tileNameTextBox.Visible = false;
-                tileHitboxModeSelect.Visible = false;
-                tileTagTextBox.Visible = false;
-                tileZIndexSelect.Visible = false;
-                tileSpriteSelect.Visible = false;
+                selectedTilePanel.Visible = false;
                 return;
+            }
+            else
+            {
+                selectedTilePanel.Visible = true;
             }
 
             TileData firstTile = selectedTilesetTiles[0];
 
             tileTagTextBox.DataBindings.Add("Text", firstTile, "tag", false, DataSourceUpdateMode.OnPropertyChanged);
             tileNameTextBox.DataBindings.Add("Text", firstTile, "name", false, DataSourceUpdateMode.OnPropertyChanged);
-            tileHitboxModeSelect.DataBindings.Add("SelectedIndex", firstTile,binding: )
+            tileHitboxSelectBinding = new SelectBinding<HitboxMode>(tileHitboxModeSelect, Helpers.getEnumList<HitboxMode>(), "", null);
+            tileTagTextBox.DataBindings.Add("Text", firstTile, "", false, DataSourceUpdateMode.OnPropertyChanged);
+            tileZIndexSelectBinding = new SelectBinding<ZIndex>(tileZIndexSelect, Helpers.getEnumList<ZIndex>(), "", null);
+            tileSpriteSelectBinding = new SelectBinding<Sprite>(tileSpriteSelect, sprites, "name", null);
         }
 
         public void resetUI()
@@ -259,7 +256,7 @@ namespace LevelEditor_CS
             });
         }
 
-        public List<GridCoords> tileSelectedCoords
+        public ObservableCollection<GridCoords> tileSelectedCoords
         {
             get
             {
@@ -268,11 +265,14 @@ namespace LevelEditor_CS
             set
             {
                 _tileSelectedCoords = value;
-                updateSelectedTilesetTileBindings();
+                _tileSelectedCoords.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+                {
+                    updateSelectedTilesetTileBindings();
+                };
             }
         }
 
-        public List<GridCoords> levelSelectedCoords
+        public ObservableCollection<GridCoords> levelSelectedCoords
         {
             get
             {
@@ -281,16 +281,19 @@ namespace LevelEditor_CS
             set
             {
                 _levelSelectedCoords = value;
-                if (value == null || value.Count == 0)
+                _levelSelectedCoords.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
                 {
-                    instancePropertiesLabel.Visible = true;
-                    tileInstancePropsTextBox.Visible = true;
-                }
-                else
-                {
-                    instancePropertiesLabel.Visible = false;
-                    tileInstancePropsTextBox.Visible = false;
-                }
+                    if (value == null || value.Count == 0)
+                    {
+                        instancePropertiesLabel.Visible = true;
+                        tileInstancePropsTextBox.Visible = true;
+                    }
+                    else
+                    {
+                        instancePropertiesLabel.Visible = false;
+                        tileInstancePropsTextBox.Visible = false;
+                    }
+                };
             }
         }
 
@@ -479,8 +482,6 @@ namespace LevelEditor_CS
                 Helpers.setStorageKey("selected_tileset_index_" + selectedLevel.name, tilesets.IndexOf(selectedTileset).ToString());
             }
             tileCanvasUI.setSize(selectedTileset.image.Width, selectedTileset.image.Height);
-
-            
 
             redrawLevelCanvas();
             redrawTileCanvas();
@@ -747,6 +748,7 @@ namespace LevelEditor_CS
             }
         }
 
+        /*
         public List<TileData> getTileDatas()
         {
             var tileDatas = new HashSet<TileData>();
@@ -766,6 +768,7 @@ namespace LevelEditor_CS
             }
             return tileDatas.ToList();
         }
+        */
 
         //If null is returned, then a rectangle wasn't selected, disjoint selection
         public GridRect getLevelSelectedGridRect()
@@ -848,6 +851,11 @@ namespace LevelEditor_CS
         }
 
         private void instanceCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label13_Click(object sender, EventArgs e)
         {
 
         }
