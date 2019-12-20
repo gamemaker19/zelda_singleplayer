@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LevelEditor_CS.Editor
@@ -25,9 +22,13 @@ namespace LevelEditor_CS.Editor
 
         public SelectBinding(ComboBox comboBox, List<T> items, string displayName, Action onIndexChange)
         {
+            comboBox.DataBindings.Clear();
             this.items = items;
             comboBox.DataSource = items;
-            comboBox.DisplayMember = displayName;
+            if (!string.IsNullOrEmpty(displayName))
+            {
+                comboBox.DisplayMember = displayName;
+            }
             this.onIndexChange = onIndexChange;
             comboBox.DataBindings.Add("SelectedIndex", this, nameof(selectedIndex), false, DataSourceUpdateMode.OnPropertyChanged);
         }

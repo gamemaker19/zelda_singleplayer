@@ -86,6 +86,7 @@
     <Compile Include="Editor\Helpers.cs" />
     <Compile Include="Editor\LevelCanvasUI.cs" />
     <Compile Include="Editor\ListBoxBinding.cs" />
+    <Compile Include="Editor\LockBitmap.cs" />
     <Compile Include="Editor\MultiListBoxBinding.cs" />
     <Compile Include="Editor\SelectBinding.cs" />
     <Compile Include="Editor\Mathf.cs" />

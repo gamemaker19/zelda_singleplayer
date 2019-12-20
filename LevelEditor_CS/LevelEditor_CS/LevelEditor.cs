@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 namespace LevelEditor_CS
@@ -126,7 +128,7 @@ namespace LevelEditor_CS
             {
                 tileData.setTileset(tilesets);
             }
-            loadHashCache("");
+            loadHashCache();
 
             levelCanvasUI = new LevelCanvasUI(levelCanvas, levelPanel, this);
             tileCanvasUI = new TileCanvasUI(tileCanvas, tilePanel, this);
@@ -165,7 +167,6 @@ namespace LevelEditor_CS
 
             tileTagTextBox.DataBindings.Clear();
             tileNameTextBox.DataBindings.Clear();
-            tileTagTextBox.DataBindings.Clear();
 
             if (selectedTilesetTiles == null || selectedTilesetTiles.Count == 0)
             {
@@ -181,8 +182,11 @@ namespace LevelEditor_CS
 
             tileTagTextBox.DataBindings.Add("Text", firstTile, "tag", false, DataSourceUpdateMode.OnPropertyChanged);
             tileNameTextBox.DataBindings.Add("Text", firstTile, "name", false, DataSourceUpdateMode.OnPropertyChanged);
+
+            firstTile.tag = firstTile.tag;
+            firstTile.name = firstTile.name;
+
             tileHitboxSelectBinding = new SelectBinding<HitboxMode>(tileHitboxModeSelect, Helpers.getEnumList<HitboxMode>(), "", null);
-            tileTagTextBox.DataBindings.Add("Text", firstTile, "", false, DataSourceUpdateMode.OnPropertyChanged);
             tileZIndexSelectBinding = new SelectBinding<ZIndex>(tileZIndexSelect, Helpers.getEnumList<ZIndex>(), "", null);
             tileSpriteSelectBinding = new SelectBinding<Sprite>(tileSpriteSelect, sprites, "name", null);
         }
@@ -691,20 +695,14 @@ namespace LevelEditor_CS
         }
         */
 
-        public void loadHashCache(string json)
+        public void loadHashCache()
         {
             foreach (var tileset in tilesets)
             {
                 tileset.init(false);
                 var tilesetName = Helpers.baseName(tileset.path);
-                /*
-                var currentHashCache = json[tilesetName];
-                if (!currentHashCache)
-                {
-                    throw "Error: tile set with name \"" + tilesetName + "\" does not have a hash cache entry! Generate one with the C# utility program.";
-                }
-                */
-                var currentHashCache = new Dictionary<string, string>();
+                
+                var currentHashCache = setHashCaches(tileset.path);
 
                 var tileDataCache = new Dictionary<string, TileData>();
                 foreach (var tileData in tileDatas)
@@ -723,7 +721,7 @@ namespace LevelEditor_CS
                     for (var j = 0; j < tileset.image.Width / Consts.TILE_WIDTH; j++)
                     {
                         currentHashCache.TryGetValue(i.ToString() + "," + j.ToString(), out var linkedCoords);
-                        if (linkedCoords == null)
+                        if (string.IsNullOrEmpty(linkedCoords))
                         {
                             row.Add(null);
                             continue;
@@ -734,10 +732,6 @@ namespace LevelEditor_CS
                         tileDataCache.TryGetValue(tilesetName + "," + i.ToString() + "," + j.ToString(), out var tileData);
                         if (tileData == null)
                         {
-                            tileData = grid[otherI][otherJ];
-                        }
-                        if (tileData == null)
-                        {
                             tileData = new TileData(tileset, new GridCoords(i, j), "");
                             tileDataCache[tilesetName + "," + tileData.gridCoords.i.ToString() + "," + tileData.gridCoords.j.ToString()] = tileData;
                         }
@@ -746,6 +740,100 @@ namespace LevelEditor_CS
                 }
                 tileDataGrids[tileset.path] = grid;
             }
+        }
+
+        static Dictionary<string, string> setHashCaches(string tileset)
+        {
+            string tilesetName = Helpers.baseName(tileset);
+            var currentHashCache = new Dictionary<string, string>();
+
+            Bitmap bitmap = new Bitmap(tileset);
+            LockBitmap lockBitmap = new LockBitmap(bitmap);
+            lockBitmap.LockBits();
+
+            Dictionary<string, GridCoords> tileHashToCoords = getTileHash(lockBitmap, tilesetName);
+            for (var i = 0; i < bitmap.Height / 8; i++)
+            {
+                for (var j = 0; j < bitmap.Width / 8; j++)
+                {
+                    var hash = getTileHash(lockBitmap, i, j, tilesetName);
+                    if (string.IsNullOrEmpty(hash))
+                    {
+                        currentHashCache[i.ToString() + "," + j.ToString()] = "";
+                        continue;
+                    }
+                    var coords = tileHashToCoords[hash];
+                    currentHashCache[i.ToString() + "," + j.ToString()] = coords.i.ToString() + "," + coords.j.ToString();
+                }
+            }
+
+            lockBitmap.UnlockBits();
+
+            return currentHashCache;
+        }
+
+        static Dictionary<string, GridCoords> getTileHash(LockBitmap image, string basename)
+        {
+            var tileHashToCoords = new Dictionary<string, GridCoords>();
+            int duplicates = 0;
+            for (int i = 0; i < image.Height / 8; i++)
+            {
+                for (var j = 0; j < image.Width / 8; j++)
+                {
+                    var hash = getTileHash(image, i, j, basename);
+                    if (!string.IsNullOrEmpty(hash) && !tileHashToCoords.ContainsKey(hash))
+                    {
+                        tileHashToCoords[hash] = new GridCoords(i, j);
+                    }
+                    else
+                    {
+                        duplicates++;
+                    }
+                }
+            }
+            //Console.WriteLine(duplicates);
+            return tileHashToCoords;
+        }
+
+
+        static Dictionary<string, string> cachedTileHashes = new Dictionary<string, string>();
+        //Returns empty string if entirely transparent
+        static string getTileHash(LockBitmap image, int i, int j, string cacheKey)
+        {
+            string key = cacheKey + "," + i.ToString() + "," + j.ToString();
+            if (cachedTileHashes.ContainsKey(key))
+            {
+                return cachedTileHashes[key];
+            }
+
+            StringBuilder sb = new StringBuilder();
+            var hash = "";
+            var numTransparent = 0;
+
+            for (int y = i * 8; y < i * 8 + 8; y++)
+            {
+                for (int x = j * 8; x < j * 8 + 8; x++)
+                {
+                    //Get Both Colours at the pixel point
+                    Color col1 = image.GetPixel(x, y);
+                    if (col1.A == 0) numTransparent++;
+                    //int colInt = col1.ToArgb();
+                    char r = (char)col1.R;
+                    char g = (char)col1.G;
+                    char b = (char)col1.B;
+                    char a = (char)col1.A;
+                    sb.Append(r);
+                    sb.Append(g);
+                    sb.Append(b);
+                    sb.Append(a);
+                    sb.Append(",");
+                }
+            }
+
+            hash = sb.ToString();
+            if (numTransparent == 8 * 8) hash = "";
+            cachedTileHashes[cacheKey + "," + i.ToString() + "," + j.ToString()] = hash;
+            return hash;
         }
 
         /*
