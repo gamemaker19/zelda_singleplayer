@@ -2,9 +2,9 @@
 {
     public class ShapeInstance
     {
-        public string name;
-        public string properties;
-        
+        public string name { get; set; }
+        public string properties { get; set; }
+
         public ShapeInstance(string name, string properties)
         {
             this.name = name;

@@ -4,8 +4,8 @@ namespace GameEditor.Models
 {
     public class Rect
     {
-        public Point topLeftPoint;
-        public Point botRightPoint;
+        public Point topLeftPoint { get; set; }
+        public Point botRightPoint { get; set; }
 
         public static Rect Create(Point topLeftPoint, Point botRightPoint)
         {

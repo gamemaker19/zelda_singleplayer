@@ -6,6 +6,8 @@
         xmlns:local="clr-namespace:GameEditor"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:uc="clr-namespace:GameEditor.Controls"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        xmlns:swfh="clr-namespace:WPFRichTextBox"
         mc:Ignorable="d"
         Title="MainWindow" Width="1600" Height="1000" >
     <Canvas>
@@ -16,11 +18,12 @@
         <Label Content="Objects" Canvas.Left="181" Canvas.Top="10" RenderTransformOrigin="-0.346,-0.236" Height="34" Width="72" FontWeight="Bold" FontSize="16"/>
         <ListBox Height="231" Canvas.Left="181" Canvas.Top="49" Width="149" ItemsSource="{Binding Path=objs}" SelectedItem="{Binding Path=selectedObj}"/>
         <Label Content="Instances" Canvas.Left="181" Canvas.Top="299" RenderTransformOrigin="-0.346,-0.236" Height="34" Width="89" FontWeight="Bold" FontSize="16"/>
-        <ListBox Height="345" Canvas.Left="181" Canvas.Top="338" Width="149"/>
+        <ListBox Name="instanceListBox" Height="345" Canvas.Left="181" Canvas.Top="338" Width="149" SelectionMode="Extended" ItemsSource="{Binding Path=selectedLevel.instances}" SelectionChanged="instanceListboxChanged" />
+
         <ScrollViewer Name="levelScroll" Width="714" Height="524" Canvas.Left="348" Canvas.Top="49" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <!--<uc:DrawingCanvas x:Name="levelCanvas" Height="524" Width="714" />-->
         </ScrollViewer>
-        <ScrollViewer Name="tileScroll" Width="476" Height="524" Canvas.Left="1080" Canvas.Top="49">
+        <ScrollViewer Name="tileScroll" Width="476" Height="524" Canvas.Left="1080" Canvas.Top="49" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <!--<uc:DrawingCanvas x:Name="tileCanvas" Width="476" Height="524" />-->
         </ScrollViewer>
 
@@ -48,7 +51,7 @@
         </WrapPanel>
         <StackPanel Visibility="{Binding Path=hasLevelSelectedTile, Converter={StaticResource BoolToVis}}" Height="232" Canvas.Left="349" Canvas.Top="706" Width="321">
             <Label Content="Selection Properties" FontWeight="Bold" FontSize="16"/>
-            <TextBox Height="191" Margin="0,0,10,0" />
+            <TextBox Text="{Binding Path=selectionProperties}" Height="191" Margin="0,0,10,0" />
         </StackPanel>
         <StackPanel Visibility="{Binding Path=hasSelectedInstance, Converter={StaticResource BoolToVis}}" Height="232" Canvas.Left="688" Canvas.Top="706" Width="323">
             <Label Content="Instance Properties" FontWeight="Bold" FontSize="16"/>
@@ -56,25 +59,25 @@
         </StackPanel>
         <Label Content="Tileset:" Canvas.Left="1081" Canvas.Top="581"/>
         <ComboBox ItemsSource="{Binding tilesets}" SelectedItem="{Binding selectedTileset}" SelectionChanged="tilesetComboBoxChanged" Canvas.Left="1145" Canvas.Top="585" Width="120"/>
-        <CheckBox Content="Show tile hitboxes" Canvas.Left="1091" Canvas.Top="622" RenderTransformOrigin="0.002,-0.695"/>
-        <CheckBox Content="Show tiles with z index 1" Canvas.Left="1224" Canvas.Top="622" RenderTransformOrigin="0.174,0.543"/>
+        <CheckBox IsChecked="{Binding showTileHitboxes}" Content="Show tile hitboxes" Canvas.Left="1091" Canvas.Top="622" RenderTransformOrigin="0.002,-0.695"/>
+        <CheckBox IsChecked="{Binding showTilesWithZIndex1}" Content="Show tiles with z index 1" Canvas.Left="1224" Canvas.Top="622" RenderTransformOrigin="0.174,0.543"/>
         <Label Content="Show tiles with tag:" Canvas.Left="1091" Canvas.Top="651"/>
-        <TextBox Height="23" Canvas.Left="1208" TextWrapping="Wrap" Text="TextBox" Canvas.Top="655" Width="93"/>
+        <TextBox Text="{Binding showTilesWithTag}" Height="23" Canvas.Left="1208" TextWrapping="Wrap" Canvas.Top="655" Width="93"/>
         <Label Content="Show tiles with sprite" Canvas.Left="1306" Canvas.Top="651"/>
-        <ComboBox Canvas.Left="1433" Canvas.Top="655" Width="120"/>
+        <ComboBox ItemsSource="{Binding sprites}" SelectedItem="{Binding showTilesWithSprite}" Canvas.Left="1433" Canvas.Top="655" Width="120"/>
         <Canvas Height="182" Visibility="{Binding hasTileSelectedTiles, Converter={StaticResource BoolToVis}}" Canvas.Left="1091" Canvas.Top="693" Width="421">
             <Label Content="Tile name:" Canvas.Left="10" Canvas.Top="10"/>
             <TextBox Text="{Binding multiEditName}" Height="23" Canvas.Left="79" TextWrapping="Wrap" Canvas.Top="14" Width="120"/>
             <Label Content="Id:" Canvas.Left="212" Canvas.Top="12" RenderTransformOrigin="-0.098,0.524"/>
             <Label Content="Label" Canvas.Left="250" Canvas.Top="12" RenderTransformOrigin="-0.122,0.615"/>
             <Label Content="Hitbox Mode:" Canvas.Left="10" Canvas.Top="39"/>
-            <ComboBox ItemsSource="{Binding hitboxModes}" SelectedItem="multiEditHitboxMode" Canvas.Left="97" Canvas.Top="43" Width="120"/>
+            <ComboBox ItemsSource="{Binding hitboxModes}" SelectedItem="{Binding multiEditHitboxMode}" Canvas.Left="97" Canvas.Top="43" Width="120"/>
             <Label Content="Tag" Canvas.Left="10" Canvas.Top="65"/>
             <TextBox Text="{Binding multiEditTag}" Height="23" Canvas.Left="43" TextWrapping="Wrap" Canvas.Top="69" Width="120"/>
             <Label Content="Z-Index" Canvas.Left="179" Canvas.Top="66"/>
-            <ComboBox ItemsSource="{Binding zIndices}" SelectedItem="multiEditZIndex" Canvas.Left="236" Canvas.Top="70" Width="120"/>
+            <ComboBox ItemsSource="{Binding zIndices}" SelectedItem="{Binding multiEditZIndex}" Canvas.Left="236" Canvas.Top="70" Width="120"/>
             <Label Content="Sprite" Canvas.Left="11" Canvas.Top="93"/>
-            <ComboBox ItemsSource="{Binding sprites}" SelectedItem="multiEditTileSprite" Canvas.Left="68" Canvas.Top="97" Width="120"/>
+            <ComboBox ItemsSource="{Binding sprites}" SelectedItem="{Binding multiEditTileSprite}" Canvas.Left="68" Canvas.Top="97" Width="120"/>
         </Canvas>
     </Canvas>
 </Window>

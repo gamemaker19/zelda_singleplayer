@@ -16,7 +16,7 @@ namespace GameEditor.Editor
         public float y;
         public Color rgb;
         public List<PixelData> neighbors;
-        
+
         public PixelData(float x, float y, Color rgb, List<PixelData> neighbors)
         {
             this.x = x;
@@ -32,7 +32,7 @@ namespace GameEditor.Editor
         {
             var spritesheetsFiles = Directory.GetFiles(Consts.ASSETS_PATH + "/" + folder);
             List<Spritesheet> spritesheets = new List<Spritesheet>();
-            foreach(string spritesheetFile in spritesheetsFiles)
+            foreach (string spritesheetFile in spritesheetsFiles)
             {
                 string path = spritesheetFile.Replace('\\', '/');
                 var spritesheet = new Spritesheet(path);
@@ -74,10 +74,24 @@ namespace GameEditor.Editor
             return tileDatas;
         }
 
+        public static void saveTileDatas(List<TileData> tileDatas)
+        {
+            string path = Consts.ASSETS_PATH + "/tiledatas.json";
+            string json = JsonConvert.SerializeObject(tileDatas);
+            File.WriteAllText(path, json);
+        }
+
         public static void saveSprite(Sprite sprite)
         {
             string path = Consts.ASSETS_PATH + "/sprites/" + sprite.name + ".json";
             string json = JsonConvert.SerializeObject(sprite);
+            File.WriteAllText(path, json);
+        }
+
+        public static void saveLevel(Level level)
+        {
+            string path = Consts.ASSETS_PATH + "/levels/" + level.name + ".json";
+            string json = JsonConvert.SerializeObject(level);
             File.WriteAllText(path, json);
         }
 
@@ -144,7 +158,7 @@ namespace GameEditor.Editor
             storageKeys[key] = val;
         }
 
-        public static void drawRect(Graphics canvas, Rect rect, Color? fillColor, Color? strokeColor = null, int strokeWidth = 0, float fillAlpha = 1) 
+        public static void drawRect(Graphics canvas, Rect rect, Color? fillColor, Color? strokeColor = null, int strokeWidth = 0, float fillAlpha = 1)
         {
             if (fillColor != null)
             {
@@ -203,7 +217,7 @@ namespace GameEditor.Editor
             canvas.DrawLine(new Pen(new SolidBrush((Color)color)), x, y, x2, y2);
         }
 
-        public static void drawImage(Graphics canvas, Bitmap bitmap, float dx, float dy, float sx = 0, float sy = 0, float sw = -1, float sh = -1, int flipX = 1, int flipY = 1, string options = "", float alpha = 1, float scaleX = 1, float scaleY = 1) 
+        public static void drawImage(Graphics canvas, Bitmap bitmap, float dx, float dy, float sx = 0, float sy = 0, float sw = -1, float sh = -1, int flipX = 1, int flipY = 1, string options = "", float alpha = 1, float scaleX = 1, float scaleY = 1)
         {
             if (sw == -1) sw = bitmap.Width;
             if (sh == -1) sh = bitmap.Height;
@@ -800,10 +814,10 @@ namespace GameEditor.Editor
             {
                 retList.Add(null);
             }
-            for(int i = 0; i < retList.Count; i++)
+            for (int i = 0; i < retList.Count; i++)
             {
                 retList[i] = new List<T>();
-                for(int j = 0; j < colCount; j++)
+                for (int j = 0; j < colCount; j++)
                 {
                     retList[i].Add(val);
                 }

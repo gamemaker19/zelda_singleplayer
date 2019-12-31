@@ -2,8 +2,8 @@
 {
     public class Line
     {
-        public Point point1;
-        public Point point2;
+        public Point point1 { get; set; }
+        public Point point2 { get; set; }
         public Line(Point point1, Point point2)
         {
             this.point1 = point1;

@@ -10,17 +10,17 @@ namespace GameEditor.Models
 {
     public class CoordProperties
     {
-        public int i;
-        public int j;
-        public Dictionary<string, string> properties;
+        public int i { get; set; }
+        public int j { get; set; }
+        public Dictionary<string, string> properties { get; set; }
     }
 
     public class Level
     {
         public string name { get; set; }
-        public List<List<string>> tileInstances = new List<List<string>>();
-        public List<SpriteInstance> instances = new List<SpriteInstance>();
-        public List<CoordProperties> coordProperties = new List<CoordProperties>();
+        public List<List<string>> tileInstances { get; set; } = new List<List<string>>();
+        public List<SpriteInstance> instances { get; set; } = new List<SpriteInstance>();
+        public List<CoordProperties> coordProperties { get; set; } = new List<CoordProperties>();
 
         [JsonIgnore]
         public List<List<Dictionary<string, string>>> coordPropertiesGrid = new List<List<Dictionary<string, string>>>();
@@ -28,7 +28,7 @@ namespace GameEditor.Models
         [JsonIgnore]
         public List<Bitmap> layers = new List<Bitmap>();
 
-        public List<Line> scrollLines = new List<Line>();
+        public List<Line> scrollLines { get; set; } = new List<Line>();
 
         public int width { get; set; } = 0;
         public int height { get; set; } = 0;
@@ -72,7 +72,7 @@ namespace GameEditor.Models
         {
             this.coordPropertiesGrid = Helpers.make2DArray<Dictionary<string, string>>(this.height, this.width, new Dictionary<string, string>());
 
-            foreach(var layer in this.layers) 
+            foreach (var layer in this.layers)
             {
                 //layer.Width = this.width * Consts.TILE_WIDTH;
                 //layer.Height = this.height * Consts.TILE_WIDTH;
@@ -82,7 +82,7 @@ namespace GameEditor.Models
         public void init()
         {
             this.coordPropertiesGrid = Helpers.make2DArray<Dictionary<string, string>>(this.height, this.width, new Dictionary<string, string>());
-            if (this.tileInstances.Count == 0) 
+            if (this.tileInstances.Count == 0)
             {
                 for (var i = 0; i < this.height; i++)
                 {
@@ -107,7 +107,8 @@ namespace GameEditor.Models
                     var props = this.coordPropertiesGrid[i][j];
                     if (props.Keys.Count > 0)
                     {
-                        this.coordProperties.Add(new CoordProperties() {
+                        this.coordProperties.Add(new CoordProperties()
+                        {
                             i = i,
                             j = j,
                             properties = props

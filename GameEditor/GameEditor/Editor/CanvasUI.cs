@@ -1,18 +1,18 @@
 ﻿using GameEditor.Models;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media.Imaging;
+using WPFRichTextBox;
 using Color = System.Drawing.Color;
+using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
+using Rect = GameEditor.Models.Rect;
 
 namespace GameEditor.Editor
 {
-    public class CanvasUI : Canvas
+    public class CanvasUI
     {
         public ScrollViewer panel;
         public PictureBox pictureBox;
@@ -56,10 +56,17 @@ namespace GameEditor.Editor
 
         RenderTargetBitmap bmp;
 
-        public CanvasUI(PictureBox pictureBox, ScrollViewer panel, int canvasWidth, int canvasHeight, Color color)
+        public CanvasUI(ScrollViewer panel, int canvasWidth, int canvasHeight, Color color)
         {
             this.color = color;
-            this.pictureBox = pictureBox;
+
+            //System.Windows.Forms.Integration.WindowsFormsHost host = new System.Windows.Forms.Integration.WindowsFormsHost();
+
+            var host = new ScrollViewerWindowsFormsHost();
+            panel.Content = host;
+            pictureBox = new PictureBox();
+            host.Child = pictureBox;
+
             pictureBox.Width = canvasWidth;
             pictureBox.Height = canvasHeight;
 
@@ -68,61 +75,38 @@ namespace GameEditor.Editor
 
             this.panel = panel;
 
-            //bmp = new RenderTargetBitmap(baseWidth, baseHeight, 96, 96, PixelFormats.Pbgra32);
-            //pictureBox.Source = bmp;
+            pictureBox.Paint += pictureBox_Paint;
+            pictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
 
             pictureBox.MouseMove += mouseMoveEvent;
             pictureBox.MouseDown += mouseDownEvent;
             pictureBox.MouseUp += mouseUpEvent;
             pictureBox.MouseWheel += mouseWheelEvent;
             pictureBox.MouseLeave += mouseLeaveEvent;
-
+            panel.KeyDown += keyDownEvent;
+            panel.KeyUp += keyUpEvent;
         }
 
-        public void redraw()
-        {
-            using (var tempBitmap = new Bitmap(CanvasWidth, CanvasHeight))
-            {
-                using (var graphics = Graphics.FromImage(tempBitmap))
-                {
-                    redrawHelper(graphics);
-                }
-                // Copy GDI bitmap to WPF bitmap.
-                var hbmp = tempBitmap.GetHbitmap();
-                var options = BitmapSizeOptions.FromEmptyOptions();
-
-                pictureBox.imageSource = Imaging.CreateBitmapSourceFromHBitmap(hbmp, IntPtr.Zero, Int32Rect.Empty, options);
-            }
-
-            pictureBox.mouseX = (int)mouseX;
-            pictureBox.mouseY = (int)mouseY;
-            pictureBox.Render();
-
-            // Redraw the WPF Image control.
-            //pictureBox.InvalidateMeasure();
-            //pictureBox.InvalidateVisual();
-        }
-
-        protected virtual void redrawHelper(Graphics graphics)
+        public virtual void pictureBox_Paint(object sender, PaintEventArgs e)
         {
             if (this.isNoScrollZoom)
             {
-                graphics.ResetTransform();
-                graphics.ScaleTransform(zoom, zoom);
+                e.Graphics.ResetTransform();
+                e.Graphics.ScaleTransform(zoom, zoom);
                 float origHalfCanvasW = (CanvasWidth / zoom) * 0.5f;
                 float origHalfCanvasH = (CanvasHeight / zoom) * 0.5f;
-                graphics.TranslateTransform(origHalfCanvasW - (CanvasWidth * 0.5f), origHalfCanvasH - (CanvasHeight * 0.5f));
+                e.Graphics.TranslateTransform(origHalfCanvasW - (CanvasWidth * 0.5f), origHalfCanvasH - (CanvasHeight * 0.5f));
             }
             else
             {
                 this.pictureBox.Width = (int)(this.baseWidth * this.zoom);
                 this.pictureBox.Height = (int)(this.baseHeight * this.zoom);
-                graphics.ResetTransform();
-                graphics.ScaleTransform(zoom, zoom);
+                e.Graphics.ResetTransform();
+                e.Graphics.ScaleTransform(zoom, zoom);
             }
 
-            graphics.Clear(System.Drawing.Color.Transparent);
-            Helpers.drawRect(graphics, new Models.Rect(0, 0, CanvasWidth, CanvasHeight), color);
+            e.Graphics.Clear(Color.Transparent);
+            Helpers.drawRect(e.Graphics, new Rect(0, 0, CanvasWidth, CanvasHeight), color);
         }
 
         public void setSize(int width, int height)
@@ -133,7 +117,7 @@ namespace GameEditor.Editor
             baseHeight = height;
         }
 
-        public void mouseMoveEvent(object sender, System.Windows.Input.MouseEventArgs e)
+        public void mouseMoveEvent(object sender, MouseEventArgs e)
         {
             // Update the mouse path that is drawn onto the Panel.
             var oldMouseX = this.mouseX;
@@ -144,8 +128,8 @@ namespace GameEditor.Editor
             var offsetTop = 0;
             var scrollTop = this.panel.VerticalOffset;
 
-            var rawMouseX = e.GetPosition(pictureBox).X; // - offsetLeft + scrollLeft;
-            var rawMouseY = e.GetPosition(pictureBox).Y; // - offsetTop + scrollTop;
+            var rawMouseX = e.X - offsetLeft;// + scrollLeft;
+            var rawMouseY = e.Y - offsetTop;// + scrollTop;
 
             if (!this.isNoScrollZoom)
             {
@@ -173,10 +157,10 @@ namespace GameEditor.Editor
             this.onMouseMove(this.deltaX, this.deltaY);
         }
 
-        public void mouseDownEvent(object sender, MouseButtonEventArgs e)
+        public void mouseDownEvent(object sender, MouseEventArgs e)
         {
             //console.log(mouseX + "," + mouseY)
-            if (e.ChangedButton == MouseButton.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 if (!this.mousedown)
                 {
@@ -190,36 +174,36 @@ namespace GameEditor.Editor
                 this.mousedown = true;
                 this.onLeftMouseDown();
             }
-            else if (e.ChangedButton == MouseButton.Middle)
+            else if (e.Button == MouseButtons.Middle)
             {
                 this.middlemousedown = true;
             }
-            else if (e.ChangedButton == MouseButton.Right)
+            else if (e.Button == MouseButtons.Right)
             {
                 this.rightmousedown = true;
             }
         }
 
-        public void mouseUpEvent(object sender, MouseButtonEventArgs e)
+        public void mouseUpEvent(object sender, MouseEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 this.mousedown = false;
                 this.onLeftMouseUp();
             }
-            else if (e.ChangedButton == MouseButton.Middle)
+            else if (e.Button == MouseButtons.Middle)
             {
                 this.middlemousedown = false;
             }
-            else if (e.ChangedButton == MouseButton.Right)
+            else if (e.Button == MouseButtons.Right)
             {
                 this.rightmousedown = true;
             }
         }
 
-        public void mouseWheelEvent(object sender, MouseWheelEventArgs e)
+        public void mouseWheelEvent(object sender, MouseEventArgs e)
         {
-            if (this.isHeld(Keys.Control))
+            if (this.isHeld(Key.LeftCtrl))
             {
                 var delta = -(e.Delta / 180);
                 this.zoom += delta;
@@ -228,6 +212,7 @@ namespace GameEditor.Editor
                 this.redraw();
                 this.onMouseWheel(delta);
             }
+            panel.ScrollToVerticalOffset(panel.VerticalOffset + 30 * -Math.Sign(e.Delta));
         }
 
         public void mouseLeaveEvent(object sender, EventArgs e)
@@ -236,7 +221,10 @@ namespace GameEditor.Editor
             this.onMouseLeave();
         }
 
-        bool once = false;
+        public virtual void redraw()
+        {
+            pictureBox.Invalidate();
+        }
 
         public GridRect getDragGridRect()
         {
@@ -274,9 +262,10 @@ namespace GameEditor.Editor
             //if (!string.IsNullOrEmpty(scrollLeft)) this.panel.HorizontalOffset = int.Parse(scrollLeft);
         }
 
-        public bool isHeld(Keys keyCode)
+        public bool isHeld(Key keyCode)
         {
-            return (System.Windows.Forms.Control.ModifierKeys & Keys.Control) == keyCode;
+            return false;
+            //return (System.Windows.Forms.Control.ModifierKeys & Keys.Control) == keyCode;
         }
 
         public virtual void onMouseLeave() { }
@@ -293,11 +282,22 @@ namespace GameEditor.Editor
         {
         }
 
-        public virtual void onKeyDown(Keys key, bool firstFrame)
+        public void keyDownEvent(object sender, System.Windows.Input.KeyEventArgs e)
         {
+            onKeyDown(e.Key, true);
         }
 
-        public virtual void onKeyUp(Keys key)
+        public void keyUpEvent(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            onKeyUp(e.Key);
+        }
+
+        public virtual void onKeyDown(Key keyCode, bool firstFrame)
+        {
+
+        }
+
+        public virtual void onKeyUp(Key keyCode)
         {
 
         }

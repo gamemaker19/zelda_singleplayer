@@ -3,9 +3,9 @@
     public class Obj
     {
         public string name { get; set; }
-        public string spriteOrImage;
-        public bool snapToTile;
-        public Point snapOffset;
+        public string spriteOrImage { get; set; }
+        public bool snapToTile { get; set; }
+        public Point snapOffset { get; set; }
 
         public Obj(string name, string image, bool snapToTile, Point snapOffset)
         {

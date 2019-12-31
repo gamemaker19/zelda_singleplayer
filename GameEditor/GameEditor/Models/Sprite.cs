@@ -10,13 +10,13 @@ namespace GameEditor.Models
     public class Sprite
     {
         public string name { get; set; } = "";
-        public List<Hitbox> hitboxes = new List<Hitbox>();
-        public float loopStartFrame = 0;
-        public List<Frame> frames = new List<Frame>();
-        public string alignment = "center";
-        public string wrapMode = "once"; //Can be "once", "loop" or "pingpong"
-        public string spriteJson = "";
-        public string spritesheetPath;
+        public List<Hitbox> hitboxes { get; set; } = new List<Hitbox>();
+        public float loopStartFrame { get; set; } = 0;
+        public List<Frame> frames { get; set; } = new List<Frame>();
+        public string alignment { get; set; } = "center";
+        public string wrapMode { get; set; } = "once"; //Can be "once", "loop" or "pingpong"
+        public string spriteJson { get; set; } = "";
+        public string spritesheetPath { get; set; }
 
         [JsonIgnore]
         public List<Spritesheet> spritesheets;
@@ -89,6 +89,8 @@ namespace GameEditor.Models
             var frame = this.frames[frameIndex];
             var rect = frame.rect;
             var offset = this.getAlignOffset(frame, flipX, flipY);
+
+            this.spritesheet.init(false);
 
             Helpers.drawImage(canvas, this.spritesheet.image, x + offset.x + frame.offset.x, y + offset.y + frame.offset.y, rect.x1, rect.y1, rect.w, rect.h, flipX, flipY, options, alpha, scaleX, scaleY);
 

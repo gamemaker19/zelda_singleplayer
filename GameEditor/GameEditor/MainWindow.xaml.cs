@@ -1,17 +1,19 @@
 ﻿using GameEditor.Editor;
 using GameEditor.Models;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
+using Point = GameEditor.Models.Point;
 
 namespace GameEditor
 {
@@ -33,15 +35,9 @@ namespace GameEditor
         public string newLevelName = "";
         public List<TileData> tileDatas = new List<TileData>();
         public Dictionary<string, List<List<TileData>>> tileDataGrids = new Dictionary<string, List<List<TileData>>>();
-        public string multiEditName { get; set; } = "";
-        public HitboxMode multiEditHitboxMode { get; set; } = 0;
-        public string multiEditTag { get; set; } = "";
-        public ZIndex multiEditZIndex { get; set; } = 0;
-        public string multiEditTileSprite { get; set; } = "";
 
         public int loadCount = -1;
         public int maxLoadCount = 0;
-        public string selectionProperties = "";
         public List<string> undoJsons = new List<string>();
         public int undoIndex = 0;
         public int selectionElevation = 0;
@@ -85,14 +81,12 @@ namespace GameEditor
         private string _showOverridesWithKey = "";
         public string showOverridesWithKey { get { return _showOverridesWithKey; } set { _showOverridesWithKey = value; redrawLevelCanvas(); } }
 
-        public Tool selectedTool { get; set; } = Tool.Select;
+        private Tool _selectTool = Tool.Select;
+        public Tool selectedTool { get { return _selectTool; } set { _selectTool = value; notifyPropertyChanged(); } }
         public int selectedToolInt { get { return (int)selectedTool; } set { selectedTool = (Tool)value; } }
 
         private ObservableCollection<GridCoords> _tileSelectedCoords = new ObservableCollection<GridCoords>();
         private ObservableCollection<GridCoords> _levelSelectedCoords = new ObservableCollection<GridCoords>();
-
-        //public LevelCanvasUI levelCanvasUI;
-        //public TileCanvasUI tileCanvasUI;
 
         public List<Spritesheet> spritesheets { get; set; }
         public List<Spritesheet> tilesets { get; set; }
@@ -103,9 +97,40 @@ namespace GameEditor
         public List<Level> levels { get; set; }
         private Spritesheet _selectedTileset;
         public Spritesheet selectedTileset { get { return _selectedTileset; } set { _selectedTileset = value; notifyPropertyChanged(); } }
-        public List<SpriteInstance> selectedInstances { get; set; }
+
+        public List<SpriteInstance> selectedInstances
+        {
+            get
+            {
+                List<SpriteInstance> _selectedInstances = new List<SpriteInstance>();
+                foreach (var instance in instanceListBox.SelectedItems)
+                {
+                    _selectedInstances.Add((SpriteInstance)instance);
+                }
+                return _selectedInstances;
+            }
+        }
+
+        public void addSelectedInstance(SpriteInstance instance)
+        {
+            if (!instanceListBox.SelectedItems.Contains(instance))
+            {
+                instanceListBox.SelectedItems.Add(instance);
+            }
+        }
+
+        public void removeSelectedInstance(SpriteInstance instance)
+        {
+            instanceListBox.SelectedItems.Remove(instance);
+        }
+
+        public void clearSelectedInstances()
+        {
+            instanceListBox.SelectedItems.Clear();
+        }
+
         public List<Obj> objs { get; set; }
-        public Obj selectedObj { get; set; }
+        private Obj _selectedObj;
 
         public TileCanvasUI tileCanvasUI;
         public LevelCanvasUI levelCanvasUI;
@@ -136,52 +161,64 @@ namespace GameEditor
             {
                 tileData.setTileset(tilesets);
             }
+            foreach (var level in levels)
+            {
+                foreach (var instance in level.instances)
+                {
+                    instance.setSprite(sprites);
+                }
+            }
 
-            System.Windows.Forms.Integration.WindowsFormsHost host = new System.Windows.Forms.Integration.WindowsFormsHost();
-            PictureBox pictureBox = new PictureBox();
-            host.Child = pictureBox;
-            levelScroll.Content = host;
-
-            levelCanvasUI = new LevelCanvasUI(levelCanvas, levelScroll, this);
-            tileCanvasUI = new TileCanvasUI(tileCanvas, tileScroll, this);
+            levelCanvasUI = new LevelCanvasUI(levelScroll, this);
+            tileCanvasUI = new TileCanvasUI(tileScroll, this);
 
             loadHashCache();
-        }
 
-        public void updateSelectedTilesetTileBindings()
-        {
+            _tileSelectedCoords.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+            {
+                resetUI();
+            };
+
+            _levelSelectedCoords.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+            {
+                resetUI();
+            };
         }
 
         public void resetUI()
         {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(""));
+            }
         }
 
         public List<Obj> getObjectList()
         {
             return new List<Obj>()
             {
-                new Obj("NPCTest", "NPCIdleDown", false, null),
-                new Obj("Octorok", "OctorokWalkDown", false, null),
-                new Obj("RockBigGray", "RockBigGray", true, new Models.Point(0, 0)),
-                new Obj("RockPile", "RockPile", true, new Models.Point(0, 0)),
-                new Obj("WaterRock", "TileWaterRock", true, new Models.Point(0, 0)),
-                new Obj("Entrance", "EditorPOI", true, new Models.Point(0, 0)),
-                new Obj("DoorSanctuary", "DoorSanctuary", true, new Models.Point(0, 0)),
-                new Obj("DoorCastle", "DoorCastle", true, new Models.Point(0, 0)),
-                new Obj("Door", "Door", true, new Models.Point(0, 0)),
-                new Obj("Weathercock", "Weathercock", true, new Models.Point(0, 0)),
-                new Obj("DesertPalaceStone", "DesertPalaceStone", true, new Models.Point(0, 0)),
-                new Obj("Whirlpool", "TileWhirlpool", true, new Models.Point(0, 0)),
-                new Obj("TorchLit", "TorchLit", true, new Models.Point(0, 0)),
-                new Obj("TorchUnlit", "TorchUnlit", true, new Models.Point(0, 0)),
-                new Obj("TorchBig", "TorchBig", true, new Models.Point(0, 0)),
-                new Obj("ChestSmall", "ChestSmall", true, new Models.Point(0, 0)),
-                new Obj("ChestBig", "ChestBig", true, new Models.Point(0, 0)),
-                new Obj("Pot", "Pot", true, new Models.Point(0, 0)),
-                new Obj("MasterSwordWoods", "MasterSwordWoods", true, new Models.Point(0, 0)),
-                new Obj("BigFairy", "BigFairy", true, new Models.Point(0, 0)),
-                new Obj("Fairy", "Fairy", true, new Models.Point(0, 0)),
-                new Obj("Generic", "EditorPOI", true, new Models.Point(0, 0)),
+                new Obj("NPCTest", "NPCIdleDown", false, new Point(0, 0)),
+                new Obj("Octorok", "OctorokWalkDown", false, new Point(0, 0)),
+                new Obj("RockBigGray", "RockBigGray", true, new Point(0, 0)),
+                new Obj("RockPile", "RockPile", true, new Point(0, 0)),
+                new Obj("WaterRock", "TileWaterRock", true, new Point(0, 0)),
+                new Obj("Entrance", "EditorPOI", true, new Point(0, 0)),
+                new Obj("DoorSanctuary", "DoorSanctuary", true, new Point(0, 0)),
+                new Obj("DoorCastle", "DoorCastle", true, new Point(0, 0)),
+                new Obj("Door", "Door", true, new Point(0, 0)),
+                new Obj("Weathercock", "Weathercock", true, new Point(0, 0)),
+                new Obj("DesertPalaceStone", "DesertPalaceStone", true, new Point(0, 0)),
+                new Obj("Whirlpool", "TileWhirlpool", true, new Point(0, 0)),
+                new Obj("TorchLit", "TorchLit", true, new Point(0, 0)),
+                new Obj("TorchUnlit", "TorchUnlit", true, new Point(0, 0)),
+                new Obj("TorchBig", "TorchBig", true, new Point(0, 0)),
+                new Obj("ChestSmall", "ChestSmall", true, new Point(0, 0)),
+                new Obj("ChestBig", "ChestBig", true, new Point(0, 0)),
+                new Obj("Pot", "Pot", true, new Point(0, 0)),
+                new Obj("MasterSwordWoods", "MasterSwordWoods", true, new Point(0, 0)),
+                new Obj("BigFairy", "BigFairy", true, new Point(0, 0)),
+                new Obj("Fairy", "Fairy", true, new Point(0, 0)),
+                new Obj("Generic", "EditorPOI", true, new Point(0, 0)),
             };
         }
 
@@ -200,6 +237,19 @@ namespace GameEditor
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        public Obj selectedObj
+        {
+            get
+            {
+                return _selectedObj;
+            }
+            set
+            {
+                _selectedObj = value;
+                selectedTool = Tool.CreateInstance;
             }
         }
 
@@ -251,10 +301,6 @@ namespace GameEditor
             set
             {
                 _tileSelectedCoords = value;
-                _tileSelectedCoords.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
-                {
-                    updateSelectedTilesetTileBindings();
-                };
             }
         }
 
@@ -267,9 +313,6 @@ namespace GameEditor
             set
             {
                 _levelSelectedCoords = value;
-                _levelSelectedCoords.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
-                {
-                };
             }
         }
 
@@ -290,18 +333,22 @@ namespace GameEditor
 
         public List<List<TileData>> getTileGrid()
         {
+            if (selectedTileset == null) return new List<List<TileData>>();
             return tileDataGrids[selectedTileset.path];
         }
 
-        public string getSelectionCoords()
+        public string getSelectionCoords
         {
-            var rect = getLevelSelectedGridRect();
-            if (rect != null)
+            get
             {
-                return "(" + (rect.topLeftGridCoords.j) + "," + (rect.topLeftGridCoords.i) + ")," +
-                        "(" + (rect.botRightGridCoords.j) + "," + (rect.botRightGridCoords.i) + ")";
+                var rect = getLevelSelectedGridRect();
+                if (rect != null)
+                {
+                    return "Selection: (" + (rect.topLeftGridCoords.j) + "," + (rect.topLeftGridCoords.i) + ")," +
+                            "(" + (rect.botRightGridCoords.j) + "," + (rect.botRightGridCoords.i) + ")";
+                }
+                return "";
             }
-            return "";
         }
 
         public string getLevelSelectionTileData
@@ -311,10 +358,10 @@ namespace GameEditor
                 var selectedCoords = levelSelectedCoords;
                 if (selectedCoords != null && selectedCoords.Count > 0)
                 {
-                    var selection = selectedLevel.tileInstances[selectedCoords[0].i][selectedCoords[0].j];
+                    string selection = selectedLevel.tileInstances[selectedCoords[0].i][selectedCoords[0].j];
                     if (selection != null)
                     {
-                        return selection;
+                        return "Selection: " + selection;
                     }
                 }
                 return "";
@@ -339,6 +386,41 @@ namespace GameEditor
             }
         }
 
+        public string selectionProperties
+        {
+            get
+            {
+                if (levelSelectedCoords == null || levelSelectedCoords.Count == 0)
+                {
+                    return "";
+                }
+                var firstCoords = levelSelectedCoords[0];
+                string results = JsonConvert.SerializeObject(selectedLevel.coordPropertiesGrid[firstCoords.i][firstCoords.j]);
+                if (results == "{}")
+                {
+                    return "";
+                }
+                return results;
+            }
+            set
+            {
+                Dictionary<string, string> json = new Dictionary<string, string>();
+                try
+                {
+                    json = JsonConvert.DeserializeObject<Dictionary<string, string>>(value);
+                }
+                catch
+                {
+                    Console.WriteLine("Invalid json!");
+                    return;
+                }
+                foreach (var gridCoords in levelSelectedCoords)
+                {
+                    selectedLevel.coordPropertiesGrid[gridCoords.i][gridCoords.j] = json;
+                }
+            }
+        }
+
         public string getLevelOffset()
         {
             return "(" + levelCanvasUI.offsetX + "," + levelCanvasUI.offsetY + ")";
@@ -358,19 +440,6 @@ namespace GameEditor
         //        selectedLevel.coordPropertiesGrid[gridCoords.i][gridCoords.j].elevation = selectionElevation.ToString();
         //    }
         //}
-
-        public void onSelectionPropertyChange()
-        {
-            foreach (var gridCoords in levelSelectedCoords)
-            {
-                selectedLevel.coordPropertiesGrid[gridCoords.i][gridCoords.j] = JsonConvert.DeserializeObject<Dictionary<string, string>>(selectionProperties);
-            }
-        }
-        public void updateSelectionProperties()
-        {
-            var firstCoords = levelSelectedCoords[0];
-            selectionProperties = JsonConvert.SerializeObject(selectedLevel.coordPropertiesGrid[firstCoords.i][firstCoords.j]);
-        }
 
         public void onSelectedInstancePropertyChange()
         {
@@ -415,22 +484,48 @@ namespace GameEditor
             onLevelChange(oldLevel);
         }
 
+        public void instanceListboxChanged(object sender, SelectionChangedEventArgs e)
+        {
+            redrawLevelCanvas();
+        }
+
         public void saveLevel()
         {
-            //for(var instance in this.selectedLevel.instances) {
-            //  instance.normalizePoints();
-            //}
-            //?resourceName=tiledata
-            //?resourceName=tileanimation
-            //?resourceName=tileclump
-
             saveScrollPositions();
-            //var tileDataJsons = Helpers.serializeES6(getTileDatas());
-            //console.log(tileDataJsons);
-            //var tileAnimationJsons = Helpers.serializeES6(tileAnimations);
-            //var tileClumpJsons = Helpers.serializeES6(tileClumps);
 
-            //var levelJson = Helpers.serializeES6(selectedLevel);
+            List<TileData> tileDatas = getTileDatas();
+            Helpers.saveTileDatas(tileDatas);
+
+            if (selectedLevel != null)
+            {
+                Helpers.saveLevel(selectedLevel);
+                int i = 0;
+                foreach (Bitmap image in selectedLevel.layers)
+                {
+                    image.Save(Consts.ASSETS_PATH + "/levelimages/" + selectedLevel.name + "_" + i.ToString(), ImageFormat.Png);
+                    i++;
+                }
+            }
+        }
+
+        public List<TileData> getTileDatas()
+        {
+            var tileDatas = new HashSet<TileData>();
+            foreach (var key in tileDataGrids.Keys)
+            {
+                var grid = tileDataGrids[key];
+                for (var i = 0; i < grid.Count; i++)
+                {
+                    for (var j = 0; j < grid[i].Count; j++)
+                    {
+                        if (grid[i][j] != null)
+                        {
+                            tileDatas.Add(grid[i][j]);
+                        }
+                    }
+                }
+            }
+            return tileDatas.ToList();
         }
 
         public void redraw(bool redrawTileUICanvas = false)
@@ -475,138 +570,145 @@ namespace GameEditor
             tileCanvasUI.loadScrollPos(selectedTileset.path);
         }
 
-        public void initMultiEditParams()
+        public string multiEditName
         {
-            var selectedTiles = getTileSelectedTiles();
-            if (selectedTiles.Count == 0) return;
-            var firstName = selectedTiles[0].name;
-            if (selectedTiles.All(selectedTile => { return selectedTile.name == firstName; }))
+            get
             {
-                multiEditName = firstName;
-            }
-            else
-            {
-                multiEditName = "";
-            }
-            var firstMode = selectedTiles[0].hitboxMode;
-            if (selectedTiles.All(selectedTile => { return selectedTile.hitboxMode == firstMode; }))
-            {
-                multiEditHitboxMode = firstMode;
-            }
-            else
-            {
-                multiEditHitboxMode = HitboxMode.None;
-            }
-            var firstTag = selectedTiles[0].tag;
-            if (selectedTiles.All(selectedTile => { return selectedTile.tag == firstTag; }))
-            {
-                multiEditTag = firstTag;
-            }
-            else
-            {
-                multiEditTag = "";
-            }
-            var firstZIndex = selectedTiles[0].zIndex;
-            if (selectedTiles.All(selectedTile => { return selectedTile.zIndex == firstZIndex; }))
-            {
-                multiEditZIndex = firstZIndex;
-            }
-            else
-            {
-                multiEditZIndex = ZIndex.Default;
-            }
-            var firstSpriteName = selectedTiles[0].spriteName;
-            if (selectedTiles.All(selectedTile => { return selectedTile.spriteName == firstSpriteName; }))
-            {
-                multiEditTileSprite = firstSpriteName;
-            }
-            else
-            {
-                multiEditTileSprite = null;
-            }
-            var customHitboxPoints = selectedTiles[0].customHitboxPoints;
-            if (selectedTiles.All(selectedTile => { return selectedTile.customHitboxPoints == customHitboxPoints; }))
-            {
-                this.customHitboxPoints = customHitboxPoints;
-            }
-            else
-            {
-                customHitboxPoints = "";
-            }
-        }
-
-        public void setMultiEditName()
-        {
-            var selectedTiles = getTileSelectedTiles();
-            foreach (var selectedTile in selectedTiles)
-            {
-                selectedTile.name = multiEditName;
-            }
-        }
-
-        public void setMultiEditHitboxMode()
-        {
-            showTileHitboxes = true;
-            var selectedTiles = getTileSelectedTiles();
-            foreach (var selectedTile in selectedTiles)
-            {
-                selectedTile.hitboxMode = (HitboxMode)multiEditHitboxMode;
-            }
-            redrawTileCanvas();
-        }
-
-        public void setMultiEditPoints()
-        {
-            var selectedTiles = getTileSelectedTiles();
-            foreach (var selectedTile in selectedTiles)
-            {
-                selectedTile.customHitboxPoints = customHitboxPoints;
-            }
-            redrawTileCanvas();
-        }
-
-        public void setMultiEditTag()
-        {
-            var selectedTiles = getTileSelectedTiles();
-            foreach (var selectedTile in selectedTiles)
-            {
-                selectedTile.setTag(multiEditTag);
-            }
-            redrawTileCanvas();
-        }
-
-        public void setMultiEditZIndex()
-        {
-            var selectedTiles = getTileSelectedTiles();
-            foreach (var selectedTile in selectedTiles)
-            {
-                selectedTile.zIndex = (ZIndex)multiEditZIndex;
-            }
-            redrawTileCanvas();
-        }
-
-        public void setMultiEditTileSprite()
-        {
-            var selectedTiles = getTileSelectedTiles();
-            foreach (var selectedTile in selectedTiles)
-            {
-                selectedTile.spriteName = multiEditTileSprite;
-            }
-            lastSelectedTileSprite = multiEditTileSprite;
-            redrawTileCanvas();
-        }
-
-        public List<string> getTileSpriteNames()
-        {
-            var spriteNames = new List<string>() { "" };
-            foreach (var sprite in sprites)
-            {
-                if (sprite.name.StartsWith("Tile"))
+                var selectedTiles = getTileSelectedTiles();
+                if (selectedTiles.Count == 0) return "";
+                var firstName = selectedTiles[0].name;
+                if (selectedTiles.All(selectedTile => { return selectedTile.name == firstName; }))
                 {
-                    spriteNames.Add(sprite.name);
+                    return firstName;
+                }
+                else
+                {
+                    return "";
                 }
             }
-            return spriteNames;
+            set
+            {
+                var selectedTiles = getTileSelectedTiles();
+                foreach (var selectedTile in selectedTiles)
+                {
+                    selectedTile.name = value;
+                }
+                notifyPropertyChanged();
+            }
+        }
+
+        public HitboxMode multiEditHitboxMode
+        {
+            get
+            {
+                var selectedTiles = getTileSelectedTiles();
+                if (selectedTiles.Count == 0) return HitboxMode.None;
+                var firstMode = selectedTiles[0].hitboxMode;
+                if (selectedTiles.All(selectedTile => { return selectedTile.hitboxMode == firstMode; }))
+                {
+                    return firstMode;
+                }
+                else
+                {
+                    return HitboxMode.None;
+                }
+            }
+            set
+            {
+                showTileHitboxes = true;
+                var selectedTiles = getTileSelectedTiles();
+                foreach (var selectedTile in selectedTiles)
+                {
+                    selectedTile.hitboxMode = value;
+                }
+                notifyPropertyChanged();
+                redrawTileCanvas();
+            }
+        }
+
+        public string multiEditTag
+        {
+            get
+            {
+                var selectedTiles = getTileSelectedTiles();
+                if (selectedTiles.Count == 0) return "";
+                var firstTag = selectedTiles[0].tag;
+                if (selectedTiles.All(selectedTile => { return selectedTile.tag == firstTag; }))
+                {
+                    return firstTag;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            set
+            {
+                var selectedTiles = getTileSelectedTiles();
+                foreach (var selectedTile in selectedTiles)
+                {
+                    selectedTile.setTag(value);
+                }
+                notifyPropertyChanged();
+                redrawTileCanvas();
+            }
+        }
+
+        public ZIndex multiEditZIndex
+        {
+            get
+            {
+                var selectedTiles = getTileSelectedTiles();
+                if (selectedTiles.Count == 0) return ZIndex.Default;
+                var firstZIndex = selectedTiles[0].zIndex;
+                if (selectedTiles.All(selectedTile => { return selectedTile.zIndex == firstZIndex; }))
+                {
+                    return firstZIndex;
+                }
+                else
+                {
+                    return ZIndex.Default;
+                }
+            }
+            set
+            {
+                var selectedTiles = getTileSelectedTiles();
+                foreach (var selectedTile in selectedTiles)
+                {
+                    selectedTile.zIndex = value;
+                }
+                notifyPropertyChanged();
+                redrawTileCanvas();
+            }
+        }
+
+        public string multiEditTileSprite
+        {
+            get
+            {
+                var selectedTiles = getTileSelectedTiles();
+                if (selectedTiles.Count == 0) return "";
+                var firstSpriteName = selectedTiles[0].spriteName;
+                if (selectedTiles.All(selectedTile => { return selectedTile.spriteName == firstSpriteName; }))
+                {
+                    return firstSpriteName;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                var selectedTiles = getTileSelectedTiles();
+                foreach (var selectedTile in selectedTiles)
+                {
+                    selectedTile.spriteName = value;
+                }
+                lastSelectedTileSprite = value;
+                notifyPropertyChanged();
+                redrawTileCanvas();
+            }
         }
 
         public void addUndoJson()
@@ -683,7 +785,7 @@ namespace GameEditor
                 var tileDataCache = new Dictionary<string, TileData>();
                 foreach (var tileData in tileDatas)
                 {
-                    if (tileData.tilesetPath == tileset.path)
+                    if (tileData.tilesetPath == tileset.getBasePath())
                     {
                         tileDataCache[tilesetName + "," + tileData.gridCoords.i.ToString() + "," + tileData.gridCoords.j.ToString()] = tileData;
                     }
@@ -705,7 +807,7 @@ namespace GameEditor
                         var otherI = int.Parse(linkedCoords.Split(',')[0]);
                         var otherJ = int.Parse(linkedCoords.Split(',')[1]);
 
-                        tileDataCache.TryGetValue(tilesetName + "," + i.ToString() + "," + j.ToString(), out var tileData);
+                        tileDataCache.TryGetValue(tilesetName + "," + otherI.ToString() + "," + otherJ.ToString(), out var tileData);
                         if (tileData == null)
                         {
                             tileData = new TileData(tileset, new GridCoords(i, j), "");

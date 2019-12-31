@@ -8,11 +8,11 @@ namespace GameEditor.Models
     public class SpriteInstance
     {
         public string name { get; set; }
-        public Dictionary<string, string> properties;
-        public Point pos;
+        public Dictionary<string, string> properties { get; set; }
+        public Point pos { get; set; }
         [JsonIgnore]
         public Sprite sprite;
-        public Obj obj;
+        public Obj obj { get; set; }
 
         public SpriteInstance(string name, float x, float y, Obj obj, List<Sprite> sprites)
         {
@@ -30,7 +30,8 @@ namespace GameEditor.Models
 
         public void setSprite(List<Sprite> sprites)
         {
-            this.sprite = sprites.Where((sprite) => {
+            this.sprite = sprites.Where((sprite) =>
+            {
                 return sprite.name == this.obj.spriteOrImage;
             }).FirstOrDefault();
         }
@@ -53,13 +54,19 @@ namespace GameEditor.Models
 
         public void draw(Graphics graphics)
         {
-            if (this.sprite != null && this.sprite.spritesheet != null && this.sprite.spritesheet.image != null)
+            if (this.sprite != null && this.sprite.spritesheet != null)
             {
+                this.sprite.spritesheet.init(false);
                 this.sprite.draw(graphics, 0, this.pos.x, this.pos.y);
             }
             else if (this.sprite != null)
             {
             }
+        }
+
+        public override string ToString()
+        {
+            return name;
         }
     }
 }

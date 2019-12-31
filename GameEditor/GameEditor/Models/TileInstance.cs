@@ -10,9 +10,9 @@ namespace GameEditor.Models
     public class TileInstance
     {
         [JsonIgnore]
-        public TileData tileData;
-        public string tileDataId;
-        public GridCoords destPoint;
+        public TileData tileData { get; set; }
+        public string tileDataId { get; set; }
+        public GridCoords destPoint { get; set; }
 
         public TileInstance(TileData tileData, GridCoords destPoint)
         {
@@ -34,13 +34,13 @@ namespace GameEditor.Models
         {
             this.tileData = tileDatas.Where((TileData tileData) => { return tileData.getId() == this.tileDataId; }).FirstOrDefault();
         }
-        
+
         public void draw(Graphics canvas)
         {
             var rect = this.tileData.gridCoords.getRect();
             Helpers.drawImage(canvas, this.tileData.tileset.image, rect.x1, rect.y1, rect.w, rect.h, this.destPoint.j * Consts.TILE_WIDTH, this.destPoint.i * Consts.TILE_WIDTH);
         }
-        
+
         public Rect getRect()
         {
             return this.destPoint.getRect();

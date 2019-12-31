@@ -1,5 +1,4 @@
-﻿using GameEditor.Controls;
-using GameEditor.Models;
+﻿using GameEditor.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Input;
 using Color = System.Drawing.Color;
 using Point = GameEditor.Models.Point;
 using Rect = GameEditor.Models.Rect;
@@ -17,14 +17,15 @@ namespace GameEditor.Editor
     {
         public MainWindow levelEditor;
 
-        public TileCanvasUI(DrawingCanvas pictureBox, ScrollViewer panel, MainWindow levelEditor) : base(pictureBox, panel, (int)panel.Width, (int)panel.Height, Color.Transparent)
+        public TileCanvasUI(ScrollViewer panel, MainWindow levelEditor) : base(panel, (int)panel.Width, (int)panel.Height, Color.Transparent)
         {
             this.levelEditor = levelEditor;
         }
 
-        protected override void redrawHelper(Graphics graphics)
+        public override void pictureBox_Paint(object sender, PaintEventArgs e)
         {
-            base.redrawHelper(graphics);
+            base.pictureBox_Paint(sender, e);
+            var graphics = e.Graphics;
 
             if (levelEditor.selectedLevel == null) return;
             if (levelEditor.selectedTileset == null) return;
@@ -288,7 +289,7 @@ namespace GameEditor.Editor
             }
 
             //SHIFT box selection
-            if (this.isHeld(Keys.Shift))
+            if (this.isHeld(Key.LeftShift))
             {
                 var lastI = Mathf.Floor(this.lastClickY / Consts.TILE_WIDTH);
                 var lastJ = Mathf.Floor(this.lastClickX / Consts.TILE_WIDTH);
@@ -300,7 +301,7 @@ namespace GameEditor.Editor
                 dragRect.botRightGridCoords.j = (int)Math.Max(lastJ, currentJ);
             }
 
-            if (!this.isHeld(Keys.Control))
+            if (!this.isHeld(Key.LeftCtrl))
             {
                 levelEditor.tileSelectedCoords = new ObservableCollection<GridCoords>();
             }
@@ -316,13 +317,12 @@ namespace GameEditor.Editor
                 }
             }
 
-            levelEditor.initMultiEditParams();
-
             if (levelEditor.selectedTool != Tool.PlaceTile && levelEditor.selectedTool != Tool.RectangleTile)
             {
                 levelEditor.selectedTool = Tool.PlaceTile;
             }
 
+            levelEditor.resetUI();
             levelEditor.redrawTileCanvas();
         }
 
@@ -339,109 +339,92 @@ namespace GameEditor.Editor
             this.redraw();
         }
 
-        public override void onKeyDown(Keys keyCode, bool firstFrame)
+        public override void onKeyDown(Key keyCode, bool firstFrame)
         {
             //TILE_HOTKEYS
             if (!firstFrame) return;
-            if (keyCode == Keys.S)
+            if (keyCode == Key.S)
             {
                 levelEditor.multiEditHitboxMode = (HitboxMode)1;
-                levelEditor.setMultiEditHitboxMode();
             }
-            else if (keyCode == Keys.Q)
+            else if (keyCode == Key.Q)
             {
-                if (this.isHeld(Keys.Control)) levelEditor.multiEditHitboxMode = (HitboxMode)17;
-                else if (this.isHeld(Keys.Shift)) levelEditor.multiEditHitboxMode = (HitboxMode)21;
+                if (this.isHeld(Key.LeftCtrl)) levelEditor.multiEditHitboxMode = (HitboxMode)17;
+                else if (this.isHeld(Key.LeftShift)) levelEditor.multiEditHitboxMode = (HitboxMode)21;
                 else levelEditor.multiEditHitboxMode = (HitboxMode)3;
-                levelEditor.setMultiEditHitboxMode();
             }
-            else if (keyCode == Keys.E)
+            else if (keyCode == Key.E)
             {
-                if (this.isHeld(Keys.Control)) levelEditor.multiEditHitboxMode = (HitboxMode)18;
-                else if (this.isHeld(Keys.Shift)) levelEditor.multiEditHitboxMode = (HitboxMode)22;
+                if (this.isHeld(Key.LeftCtrl)) levelEditor.multiEditHitboxMode = (HitboxMode)18;
+                else if (this.isHeld(Key.LeftShift)) levelEditor.multiEditHitboxMode = (HitboxMode)22;
                 else levelEditor.multiEditHitboxMode = (HitboxMode)4;
-                levelEditor.setMultiEditHitboxMode();
             }
-            else if (keyCode == Keys.Z)
+            else if (keyCode == Key.Z)
             {
-                if (this.isHeld(Keys.Control)) levelEditor.multiEditHitboxMode = (HitboxMode)19;
-                else if (this.isHeld(Keys.Shift)) levelEditor.multiEditHitboxMode = (HitboxMode)23;
+                if (this.isHeld(Key.LeftCtrl)) levelEditor.multiEditHitboxMode = (HitboxMode)19;
+                else if (this.isHeld(Key.LeftShift)) levelEditor.multiEditHitboxMode = (HitboxMode)23;
                 else levelEditor.multiEditHitboxMode = (HitboxMode)5;
-                levelEditor.setMultiEditHitboxMode();
             }
-            else if (keyCode == Keys.C)
+            else if (keyCode == Key.C)
             {
-                if (this.isHeld(Keys.Control)) levelEditor.multiEditHitboxMode = (HitboxMode)20;
-                else if (this.isHeld(Keys.Shift)) levelEditor.multiEditHitboxMode = (HitboxMode)24;
+                if (this.isHeld(Key.LeftCtrl)) levelEditor.multiEditHitboxMode = (HitboxMode)20;
+                else if (this.isHeld(Key.LeftShift)) levelEditor.multiEditHitboxMode = (HitboxMode)24;
                 else levelEditor.multiEditHitboxMode = (HitboxMode)6;
-                levelEditor.setMultiEditHitboxMode();
             }
-            else if (keyCode == Keys.W)
+            else if (keyCode == Key.W)
             {
                 levelEditor.multiEditHitboxMode = (HitboxMode)9;
-                levelEditor.setMultiEditHitboxMode();
             }
-            else if (keyCode == Keys.X)
+            else if (keyCode == Key.X)
             {
                 levelEditor.multiEditHitboxMode = (HitboxMode)10;
-                levelEditor.setMultiEditHitboxMode();
             }
-            else if (keyCode == Keys.A)
+            else if (keyCode == Key.A)
             {
                 levelEditor.multiEditHitboxMode = (HitboxMode)11;
-                levelEditor.setMultiEditHitboxMode();
             }
-            else if (keyCode == Keys.D)
+            else if (keyCode == Key.D)
             {
                 levelEditor.multiEditHitboxMode = (HitboxMode)12;
-                levelEditor.setMultiEditHitboxMode();
             }
-            else if (keyCode == Keys.NumPad1)
+            else if (keyCode == Key.NumPad1)
             {
                 levelEditor.multiEditHitboxMode = 0;
-                levelEditor.setMultiEditHitboxMode();
             }
-            else if (keyCode == Keys.NumPad2)
+            else if (keyCode == Key.NumPad2)
             {
                 levelEditor.multiEditZIndex = 0;
-                levelEditor.setMultiEditZIndex();
             }
-            else if (keyCode == Keys.NumPad3)
+            else if (keyCode == Key.NumPad3)
             {
             }
-            else if (keyCode == Keys.NumPad4)
+            else if (keyCode == Key.NumPad4)
             {
             }
 
-            else if (keyCode == Keys.O)
+            else if (keyCode == Key.O)
             {
                 levelEditor.multiEditTag = "swater";
-                levelEditor.setMultiEditTag();
             }
-            else if (keyCode == Keys.P)
+            else if (keyCode == Key.P)
             {
                 levelEditor.multiEditTag = "water";
-                levelEditor.setMultiEditTag();
             }
-            else if (keyCode == Keys.L)
+            else if (keyCode == Key.L)
             {
                 levelEditor.multiEditTag = "ledge";
-                levelEditor.setMultiEditTag();
             }
-            else if (keyCode == Keys.K)
+            else if (keyCode == Key.K)
             {
                 levelEditor.multiEditTag = "ledgewall";
-                levelEditor.setMultiEditTag();
             }
-            else if (keyCode == Keys.F)
+            else if (keyCode == Key.F)
             {
                 levelEditor.multiEditZIndex = ZIndex.Foreground1;
-                levelEditor.setMultiEditZIndex();
             }
-            else if (keyCode == Keys.T)
+            else if (keyCode == Key.T)
             {
                 levelEditor.multiEditTileSprite = levelEditor.lastSelectedTileSprite;
-                levelEditor.setMultiEditTileSprite();
             }
         }
     }

@@ -4,14 +4,14 @@ namespace GameEditor.Models
 {
     public class Collider
     {
-        Shape _shape;
-        public bool isTrigger;
-        public bool wallOnly = false;
-        public bool isClimbable = true;
+        public Shape _shape { get; set; }
+        public bool isTrigger { get; set; }
+        public bool wallOnly { get; set; } = false;
+        public bool isClimbable { get; set; } = true;
         //gameObject: GameObject;
-        public Point offset;
-        public bool isStatic = false;
-        public int flag = 0;
+        public Point offset { get; set; }
+        public bool isStatic { get; set; } = false;
+        public int flag { get; set; } = 0;
 
         public Collider(List<Point> points, bool isTrigger, bool isClimbable, bool isStatic, int flag, Point offset)
         {

@@ -4,8 +4,8 @@ namespace GameEditor.Models
 {
     public class GridCoords
     {
-        public int i;
-        public int j;
+        public int i { get; set; }
+        public int j { get; set; }
         public GridCoords(int i, int j)
         {
             this.i = i;
@@ -16,12 +16,12 @@ namespace GameEditor.Models
         {
             return new Rect(this.j * Consts.TILE_WIDTH, this.i * Consts.TILE_WIDTH, (this.j + 1) * Consts.TILE_WIDTH, (this.i + 1) * Consts.TILE_WIDTH);
         }
-        
+
         public Rect getRectCustomWidth(float width)
         {
             return new Rect(this.j * width, this.i * width, (this.j + 1) * width, (this.i + 1) * width);
         }
-        
+
         public GridCoords clone()
         {
             return new GridCoords(this.i, this.j);

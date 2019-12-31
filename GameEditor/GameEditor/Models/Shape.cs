@@ -4,7 +4,7 @@ namespace GameEditor.Models
 {
     public class Shape
     {
-        public List<Point> points;
+        public List<Point> points { get; set; }
 
         public Shape(List<Point> points)
         {

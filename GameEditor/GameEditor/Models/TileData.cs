@@ -56,9 +56,25 @@ namespace GameEditor.Models
         public string tilesetPath { get; set; } = "";
         public GridCoords gridCoords { get; set; }
         public Hitbox hitbox { get; set; }
-        public HitboxMode hitboxMode { get; set; } = 0;
+
+        private HitboxMode _hitboxMode;
+        public HitboxMode hitboxMode
+        {
+            get
+            {
+                return _hitboxMode;
+            }
+            set
+            {
+                if (tag == "indoorvoid")
+                {
+                    var a = 0;
+                }
+                _hitboxMode = value;
+            }
+        }
         public string customHitboxPoints { get; set; } = "";
-        public string tag { get; set; } = "";
+        public string tag { get; set; }
         public ZIndex zIndex { get; set; } = 0;
         public string spriteName { get; set; } = "";
 
