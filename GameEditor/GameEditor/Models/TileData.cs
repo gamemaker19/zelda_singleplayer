@@ -122,7 +122,10 @@ namespace GameEditor.Models
 
         public void setTileset(List<Spritesheet> tilesets)
         {
-            this.tileset = tilesets.Where((Spritesheet tileset) => { return tileset.path == this.tilesetPath; }).FirstOrDefault();
+            this.tileset = tilesets.Where((Spritesheet tileset) =>
+            {
+                return tileset.getBasePath() == this.tilesetPath;
+            }).FirstOrDefault();
         }
 
         public void setTag(string tagToSet)

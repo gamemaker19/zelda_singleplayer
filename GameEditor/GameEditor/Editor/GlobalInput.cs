@@ -1,49 +1,49 @@
-﻿namespace GameEditor.Editor
+﻿using System;
+using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using WPFRichTextBox;
+
+namespace GameEditor.Editor
 {
     public class GlobalInput
     {
-        /*
-        keysHeld: Set<KeyCode> = new Set();
+        HashSet<Key> keysHeld = new HashSet<Key>();
+        public Action<Key, bool> onKeyDown;
+        public Action<Key> onKeyUp;
+        public DependencyObject window;
 
-        constructor()
+        public GlobalInput(Canvas canvas, DependencyObject window)
         {
-            document.onkeydown = (e: KeyboardEvent) => {
-                if (this.isTextBox(document.activeElement)) return;
-                let keyCode = < KeyCode > e.keyCode;
-                this.onKeyDown(keyCode, !this.keysHeld.has(keyCode));
-                this.keysHeld.add(keyCode);
-                //e.preventDefault();
+            this.window = window;
+            canvas.KeyDown += keyDownEvent;
+            canvas.KeyUp += keyUpEvent;
+        }
+
+        public void keyDownEvent(object sender, KeyEventArgs e)
+        {
+            if (!canProcessKeyEvent()) return;
+            onKeyDown?.Invoke(e.Key, !keysHeld.Contains(e.Key));
+            keysHeld.Add(e.Key);
+        }
+
+        public void keyUpEvent(object sender, KeyEventArgs e)
+        {
+            if (!canProcessKeyEvent()) return;
+            keysHeld.Remove(e.Key);
+            onKeyUp?.Invoke(e.Key);
+        }
+
+        private bool canProcessKeyEvent()
+        {
+            var focusedControl = FocusManager.GetFocusedElement(window);
+            if (focusedControl == null || focusedControl is ScrollViewerWindowsFormsHost || focusedControl is ScrollViewer || focusedControl is Canvas)
+            {
+                return true;
             }
-
-            document.onkeyup = (e: KeyboardEvent) => {
-                if (this.isTextBox(document.activeElement)) return;
-                let keyCode = < KeyCode > e.keyCode;
-                this.keysHeld.delete(keyCode);
-                this.onKeyUp(e.keyCode);
-                //e.preventDefault();
-            }
+            return false;
         }
 
-        onKeyDown(keyCode: KeyCode, firstFrame: boolean)
-        {
-        }
-
-        onKeyUp(keyCode: KeyCode)
-        {
-
-        }
-
-        isTextBox(element: Element)
-        {
-            if (!element) return false;
-            var tagName = element.tagName.toLowerCase();
-            if (tagName === 'textarea') return true;
-            if (tagName !== 'input') return false;
-            var type = element.getAttribute('type').toLowerCase(),
-                // if any of these input types is not supported by a browser, it will behave as input type text.
-                inputTypes = ['text', 'password', 'number', 'email', 'tel', 'url', 'search', 'date', 'datetime', 'datetime-local', 'time', 'month', 'week']
-          return inputTypes.indexOf(type) >= 0;
-        }
-        */
     }
 }

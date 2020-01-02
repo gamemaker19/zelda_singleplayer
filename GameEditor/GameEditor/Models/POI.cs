@@ -1,4 +1,5 @@
 ﻿using GameEditor.Editor;
+using Newtonsoft.Json;
 
 namespace GameEditor.Models
 {
@@ -7,20 +8,24 @@ namespace GameEditor.Models
         public string tags { get; set; }
         public float x { get; set; }
         public float y { get; set; }
-        public POI(string tags, float x, float y) 
+
+        [JsonIgnore]
+        public bool isSelected { get; set; }
+
+        public POI(string tags, float x, float y)
         {
             this.tags = tags;
             this.x = x;
             this.y = y;
         }
 
-        public void move(float deltaX, float deltaY) 
+        public void move(float deltaX, float deltaY)
         {
             this.x += deltaX;
             this.y += deltaY;
         }
-        
-        public void resizeCenter(float w, float h) 
+
+        public void resizeCenter(float w, float h)
         {
         }
 

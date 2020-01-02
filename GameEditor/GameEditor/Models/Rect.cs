@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GameEditor.Models
 {
+    [Serializable]
     public class Rect
     {
         public Point topLeftPoint { get; set; }

@@ -23,7 +23,7 @@ namespace GameEditor.Editor
         public bool mousedown = false;
         public bool middlemousedown = false;
         public bool rightmousedown = false;
-        public HashSet<Keys> keysHeld = new HashSet<Keys>();
+        public HashSet<Key> keysHeld = new HashSet<Key>();
         public Color color = Color.White;
         public bool isNoScrollZoom = false;  //Determines whether to use zoom with an outer scroll div, or just hard canvas zoom (without outer scrollbars)
         public float offsetX = 0;
@@ -83,6 +83,7 @@ namespace GameEditor.Editor
             pictureBox.MouseUp += mouseUpEvent;
             pictureBox.MouseWheel += mouseWheelEvent;
             pictureBox.MouseLeave += mouseLeaveEvent;
+
             panel.KeyDown += keyDownEvent;
             panel.KeyUp += keyUpEvent;
         }
@@ -107,6 +108,7 @@ namespace GameEditor.Editor
 
             e.Graphics.Clear(Color.Transparent);
             Helpers.drawRect(e.Graphics, new Rect(0, 0, CanvasWidth, CanvasHeight), color);
+            e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
         }
 
         public void setSize(int width, int height)
@@ -284,11 +286,13 @@ namespace GameEditor.Editor
 
         public void keyDownEvent(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            onKeyDown(e.Key, true);
+            onKeyDown(e.Key, !keysHeld.Contains(e.Key));
+            keysHeld.Add(e.Key);
         }
 
         public void keyUpEvent(object sender, System.Windows.Input.KeyEventArgs e)
         {
+            keysHeld.Remove(e.Key);
             onKeyUp(e.Key);
         }
 

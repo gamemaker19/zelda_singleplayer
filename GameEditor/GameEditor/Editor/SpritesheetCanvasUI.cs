@@ -1,27 +1,36 @@
-﻿namespace GameEditor.Editor
+﻿using GameEditor.Models;
+using System;
+using System.Drawing;
+using System.Windows.Controls;
+using System.Windows.Forms;
+using System.Windows.Input;
+using Color = System.Drawing.Color;
+using Frame = GameEditor.Models.Frame;
+using Rect = GameEditor.Models.Rect;
+
+namespace GameEditor.Editor
 {
-    /*
     public class SpritesheetCanvasUI : CanvasUI
     {
         public SpriteEditor spriteEditor;
         public Bitmap spritesheetImage;
 
-        public SpritesheetCanvasUI(PictureBox pictureBox, Panel panel, SpriteEditor spriteEditor) : base(pictureBox, panel, panel.Width, panel.Height, Color.LightGray)
+        public SpritesheetCanvasUI(ScrollViewer panel, SpriteEditor spriteEditor) : base(panel, (int)panel.Width, (int)panel.Height, Color.Transparent)
         {
             this.spriteEditor = spriteEditor;
             zoom = 1;
         }
 
-        public override void onKeyDown(Keys key, bool firstFrame)
+        public override void onKeyDown(Key key, bool firstFrame)
         {
             base.onKeyDown(key, firstFrame);
             if (spriteEditor.selectedFrame != null)
             {
-                if (key == Keys.F)
+                if (key == Key.F)
                 {
                     spriteEditor.addPendingFrame();
                 }
-                else if (key == Keys.C && spriteEditor.selectedSprite.frames.Count > 0)
+                else if (key == Key.C && spriteEditor.selectedSprite.frames.Count > 0)
                 {
                     spriteEditor.selectedFrame.parentFrameIndex = spriteEditor.lastSelectedFrameIndex;
                     spriteEditor.selectedSprite.frames[spriteEditor.lastSelectedFrameIndex].childFrames.Add(spriteEditor.selectedFrame);
@@ -33,7 +42,7 @@
             this.redraw();
         }
 
-        public override void onKeyUp(Keys key)
+        public override void onKeyUp(Key key)
         {
             base.onKeyUp(key);
         }
@@ -196,5 +205,4 @@
             spritesheetImage = image;
         }
     }
-    */
 }

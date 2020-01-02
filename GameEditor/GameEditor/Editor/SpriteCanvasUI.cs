@@ -1,11 +1,17 @@
-﻿namespace GameEditor.Editor
+﻿using System.Windows.Controls;
+using System.Windows.Forms;
+using System.Windows.Input;
+using Color = System.Drawing.Color;
+using Frame = GameEditor.Models.Frame;
+using Rect = GameEditor.Models.Rect;
+
+namespace GameEditor.Editor
 {
-    /*
     public class SpriteCanvasUI : CanvasUI
     {
         public SpriteEditor spriteEditor;
 
-        public SpriteCanvasUI(PictureBox pictureBox, Panel panel, SpriteEditor spriteEditor) : base(pictureBox, panel, panel.Width, panel.Height, Color.LightGray)
+        public SpriteCanvasUI(ScrollViewer panel, SpriteEditor spriteEditor) : base(panel, (int)panel.Width, (int)panel.Height, Color.LightGray)
         {
             isNoScrollZoom = true;
             zoom = 5;
@@ -38,7 +44,7 @@
             int cY = CanvasHeight / 2;
 
             var frameIndex = spriteEditor.selectedSprite.frames.IndexOf(frame);
-            
+
             //if(frameIndex < 0 && frame.parentFrameIndex !== undefined) {
             //  frameIndex = frame.parentFrameIndex;
             //}
@@ -61,7 +67,7 @@
             {
                 foreach (var hitbox in spriteEditor.getVisibleHitboxes())
                 {
-                    float hx = 0; 
+                    float hx = 0;
                     float hy = 0;
                     float halfW = hitbox.width * 0.5f;
                     float halfH = hitbox.height * 0.5f;
@@ -132,45 +138,77 @@
             }
         }
 
-        public override void onKeyDown(Keys key, bool firstFrame)
+        public override void onKeyDown(Key keyCode, bool firstFrame)
         {
-            base.onKeyDown(key, firstFrame);
-        }
+            if (keyCode == Key.Escape)
+            {
+                spriteEditor.selection = null;
+                spriteEditor.ghost = null;
+            }
 
-        public override void onKeyUp(Keys key)
-        {
-            base.onKeyUp(key);
-        }
+            if (spriteEditor.selectedFrame != null)
+            {
+                if (keyCode == Key.G)
+                {
+                    spriteEditor.ghost = new Ghost(spriteEditor.selectedSprite, spriteEditor.selectedFrame);
+                }
+            }
 
-        public override void onLeftMouseDown()
-        {
-            base.onLeftMouseDown();
-        }
-
-        public override void onLeftMouseUp()
-        {
-            base.onLeftMouseUp();
-        }
-
-        public override void onMouseLeave()
-        {
-            base.onMouseLeave();
-        }
-
-        public override void onMouseMove(float deltaX, float deltaY)
-        {
-            base.onMouseMove(deltaX, deltaY);
-        }
-
-        public override void onMouseWheel(float delta)
-        {
-            base.onMouseWheel(delta);
-        }
-
-        public override string ToString()
-        {
-            return base.ToString();
+            if (spriteEditor.selection != null && firstFrame)
+            {
+                if (keyCode == Key.A)
+                {
+                    spriteEditor.selection.move(-1, 0);
+                }
+                else if (keyCode == Key.D)
+                {
+                    spriteEditor.selection.move(1, 0);
+                }
+                else if (keyCode == Key.W)
+                {
+                    spriteEditor.selection.move(0, -1);
+                }
+                else if (keyCode == Key.S)
+                {
+                    spriteEditor.selection.move(0, 1);
+                }
+                else if (keyCode == Key.Left)
+                {
+                    spriteEditor.selection.resizeCenter(-1, 0);
+                }
+                else if (keyCode == Key.Right)
+                {
+                    spriteEditor.selection.resizeCenter(1, 0);
+                }
+                else if (keyCode == Key.Down)
+                {
+                    spriteEditor.selection.resizeCenter(0, -1);
+                }
+                else if (keyCode == Key.Up)
+                {
+                    spriteEditor.selection.resizeCenter(0, 1);
+                }
+            }
+            else if (spriteEditor.selectedFrame != null && firstFrame)
+            {
+                if (keyCode == Key.A)
+                {
+                    spriteEditor.selectedFrame.offset.x -= 1;
+                }
+                else if (keyCode == Key.D)
+                {
+                    spriteEditor.selectedFrame.offset.x += 1;
+                }
+                else if (keyCode == Key.W)
+                {
+                    spriteEditor.selectedFrame.offset.y -= 1;
+                }
+                else if (keyCode == Key.S)
+                {
+                    spriteEditor.selectedFrame.offset.y += 1;
+                }
+            }
+            this.redraw();
         }
     }
-    */
 }

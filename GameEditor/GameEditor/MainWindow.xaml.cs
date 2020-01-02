@@ -138,8 +138,6 @@ namespace GameEditor
         public List<HitboxMode> hitboxModes { get; set; } = Helpers.getEnumList<HitboxMode>();
         public List<ZIndex> zIndices { get; set; } = Helpers.getEnumList<ZIndex>();
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -185,6 +183,14 @@ namespace GameEditor
             };
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void notifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
         public void resetUI()
         {
             if (PropertyChanged != null)
@@ -230,14 +236,6 @@ namespace GameEditor
         public void redrawLevelCanvas()
         {
             levelCanvasUI.redraw();
-        }
-
-        private void notifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
         }
 
         public Obj selectedObj
@@ -502,7 +500,7 @@ namespace GameEditor
                 int i = 0;
                 foreach (Bitmap image in selectedLevel.layers)
                 {
-                    image.Save(Consts.ASSETS_PATH + "/levelimages/" + selectedLevel.name + "_" + i.ToString(), ImageFormat.Png);
+                    image.Save(Consts.ASSETS_PATH + "/levelimages/" + selectedLevel.name + "_" + i.ToString() + ".png", ImageFormat.Png);
                     i++;
                 }
             }
@@ -966,8 +964,9 @@ namespace GameEditor
             tileCanvasUI.saveScrollPos(selectedTileset.path);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void onSaveButtonClicked(object sender, RoutedEventArgs e)
         {
+            saveLevel();
         }
 
     }

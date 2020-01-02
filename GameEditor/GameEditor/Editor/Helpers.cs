@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -223,7 +224,19 @@ namespace GameEditor.Editor
             if (sh == -1) sh = bitmap.Height;
 
             Rectangle destRect = new Rectangle((int)dx, (int)dy, (int)sw, (int)sh);
-            canvas.DrawImage(bitmap, destRect, sx, sy, sw, sh, GraphicsUnit.Pixel);
+
+            if (alpha == 1)
+            {
+                canvas.DrawImage(bitmap, destRect, sx, sy, sw, sh, GraphicsUnit.Pixel);
+            }
+            else
+            {
+                ColorMatrix cm = new ColorMatrix();
+                cm.Matrix33 = alpha;
+                ImageAttributes ia = new ImageAttributes();
+                ia.SetColorMatrix(cm);
+                canvas.DrawImage(bitmap, destRect, sx, sy, sw, sh, GraphicsUnit.Pixel, ia);
+            }
         }
 
         public static List<List<PixelData>> get2DArrayFromImage(Bitmap bitmap)
@@ -368,6 +381,7 @@ namespace GameEditor.Editor
 
         public static T DeepClone<T>(this T a)
         {
+            /*
             using (MemoryStream stream = new MemoryStream())
             {
                 BinaryFormatter formatter = new BinaryFormatter();
@@ -375,6 +389,9 @@ namespace GameEditor.Editor
                 stream.Position = 0;
                 return (T)formatter.Deserialize(stream);
             }
+            */
+            string json = JsonConvert.SerializeObject(a);
+            return JsonConvert.DeserializeObject<T>(json);
         }
 
 

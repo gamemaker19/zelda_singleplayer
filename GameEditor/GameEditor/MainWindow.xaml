@@ -27,7 +27,7 @@
             <!--<uc:DrawingCanvas x:Name="tileCanvas" Width="476" Height="524" />-->
         </ScrollViewer>
 
-        <Button Click="Button_Click" Content="Save" Canvas.Left="348" Canvas.Top="589" Width="75"/>
+        <Button Click="onSaveButtonClicked" Content="Save" Canvas.Left="348" Canvas.Top="589" Width="75"/>
         <Button Content="Undo" Canvas.Left="428" Canvas.Top="589" Width="75"/>
         <Button Content="Redo" Canvas.Left="508" Canvas.Top="589" Width="75"/>
         <CheckBox IsChecked="{Binding showInstances}" Content="Instances" Canvas.Left="601" Canvas.Top="592"/>
