@@ -1,1 +1,40 @@
--Sprite editor: subsprites
+Subsprite system approaches
+
+1. "Burn in" the subsprites, make them separate from the main sprites
+Pros: 
+	-removes subsprite system, greatly simplifies sprite system
+	-future creation of new sprites can be done in image editors (i.e. photoshop) instead of having to use sprite editor
+Cons
+	-requires one-time transformation of all existing sprites
+	-sprites are separate, meaning more pieces to manage, more sprites, potential sync issue, etc.
+		-Can remedy this with "snapping" to parent sprite
+	-if a frame is missing a sprite, what do we do? need empty frame concept
+		-This isn't really hard to do though, already it is supported and can streamline it
+	-z-index rendering issues: have less control. sometimes sword needs to be below/above shield, etc.
+		-We could fix this by having z-indices per frame
+	-it becomes harder to demo what link animations will look like in the editor
+		-Build tooling to link animations together
+	-sprite swapping (i.e. Zelda) becomes harder as they need the burn-in applied as well
+		-Zelda is probably the only char that would use this
+
+Verdict: we can refactor the susbsprite system away but a bunch of tooling needs to be built. Should we stick with the legacy system which works
+and has all sprites needed, or create the new system?
+
+Tile system pain points
+-Currently no way to set a custom transparent background color for a tile (easy to add in though)
+-Tile cache population is super slow, even in C#
+	-If we save to hash cache in disk it's faster. But this has to be run every time the tileset changes
+-Adding more tiles is hard - doesn't support multiple tiles from multiple tilesets in same level very well, both in code and in UI
+-Having to bundle entire overworld image takes up a lot of disk
+-Overworld data takes a lot of disk (but not as much as the sounds!)
+-Currently only one layer is supported in the level editor
+	-Causes issues for example, trees on top of ledges
+-The level tile data is implicit and stored in bitmaps.
+	-Pros: 
+		-lets you change level data in editor
+		-this is storage efficient
+	-Cons: 
+		-changes in the tileset image must be manually propegated
+	-Alternatives:
+		-use a translation system so you can continue the image system in code, but it gets saved as JSON instead
+-No system built for dungeons yet

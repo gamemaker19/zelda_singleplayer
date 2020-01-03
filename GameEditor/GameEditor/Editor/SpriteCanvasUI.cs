@@ -138,6 +138,31 @@ namespace GameEditor.Editor
             }
         }
 
+        public override void onLeftMouseDown()
+        {
+            var cX = (this.CanvasWidth) / 2;
+            var cY = (this.CanvasHeight) / 2;
+            if (spriteEditor.addPOIMode)
+            {
+                spriteEditor.addPOIMode = false;
+                spriteEditor.addPOI(spriteEditor.selectedFrame, (this.mouseX - cX) / this.zoom, (this.mouseY - cY) / this.zoom);
+                return;
+            }
+            var found = false;
+            var selectables = spriteEditor.getSelectables();
+            foreach (var selectable in selectables)
+            {
+                var rect = selectable.getRect.clone(cX / this.zoom, cY / this.zoom);
+                if (Helpers.inRect((this.mouseX - cX) / this.zoom, (this.mouseY - cY) / this.zoom, rect))
+                {
+                    spriteEditor.selection = selectable;
+                    found = true;
+                }
+            }
+            if (!found) spriteEditor.selection = null;
+            this.redraw();
+        }
+
         public override void onKeyDown(Key keyCode, bool firstFrame)
         {
             if (keyCode == Key.Escape)

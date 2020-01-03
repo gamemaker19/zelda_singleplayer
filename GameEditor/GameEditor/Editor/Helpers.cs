@@ -223,7 +223,16 @@ namespace GameEditor.Editor
             if (sw == -1) sw = bitmap.Width;
             if (sh == -1) sh = bitmap.Height;
 
-            Rectangle destRect = new Rectangle((int)dx, (int)dy, (int)sw, (int)sh);
+            if (flipX == -1)
+            {
+                dx += sw;
+            }
+            if (flipY == -1)
+            {
+                dy += sh;
+            }
+
+            Rectangle destRect = new Rectangle((int)dx, (int)dy, (int)(sw * flipX), (int)(sh * flipY));
 
             if (alpha == 1)
             {

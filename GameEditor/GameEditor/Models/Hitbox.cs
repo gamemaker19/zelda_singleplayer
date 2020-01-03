@@ -1,17 +1,38 @@
 ﻿using GameEditor.Editor;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace GameEditor.Models
 {
-    public class Hitbox : Selectable
+    public class Hitbox : Selectable, INotifyPropertyChanged
     {
         public string tags { get; set; }
         public float width { get; set; }
         public float height { get; set; }
         public Point offset { get; set; }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void NotifyPropertyChanged(string propName)
+        {
+            if (this.PropertyChanged != null)
+                this.PropertyChanged(this, new PropertyChangedEventArgs(propName));
+        }
+
+        private bool _isSelected;
         [JsonIgnore]
-        public bool isSelected { get; set; }
+        public bool isSelected
+        {
+            get
+            {
+                return _isSelected;
+            }
+            set
+            {
+                _isSelected = value;
+                NotifyPropertyChanged("isSelected");
+            }
+        }
 
         public Hitbox()
         {
@@ -33,9 +54,12 @@ namespace GameEditor.Models
             this.height += h;
         }
 
-        public Rect getRect()
+        public Rect getRect
         {
-            return new Rect(this.offset.x, this.offset.y, this.offset.x + this.width, this.offset.y + this.height);
+            get
+            {
+                return new Rect(this.offset.x, this.offset.y, this.offset.x + this.width, this.offset.y + this.height);
+            }
         }
 
     }

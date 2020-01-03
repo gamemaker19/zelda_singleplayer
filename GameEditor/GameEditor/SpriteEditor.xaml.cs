@@ -21,7 +21,7 @@ namespace GameEditor
     public partial class SpriteEditor : Window, INotifyPropertyChanged
     {
         public Dictionary<string, Sprite> origSprites = new Dictionary<string, Sprite>();
-        public List<Sprite> sprites { get; set; } = new List<Sprite>();
+        public ObservableCollection<Sprite> sprites { get; set; } = new ObservableCollection<Sprite>();
         public List<Spritesheet> spritesheets { get; set; }
         public GlobalInput globalInput;
 
@@ -111,7 +111,7 @@ namespace GameEditor
             spritesheetCanvasUI = new SpritesheetCanvasUI(spriteSheetScroll, this);
 
             spritesheets = Helpers.getSpritesheets("spritesheets");
-            sprites = Helpers.getSprites();
+            sprites = new ObservableCollection<Sprite>(Helpers.getSprites());
 
             foreach (var sprite in sprites)
             {
@@ -162,14 +162,18 @@ namespace GameEditor
 
         public void resetUI()
         {
-            icGlobalHitboxes.ItemsSource = selectedSprite == null ? new ObservableCollection<Hitbox>() : new ObservableCollection<Hitbox>(selectedSprite.hitboxes);
-            icFrameHitboxes.ItemsSource = selectedFrame == null ? new ObservableCollection<Hitbox>() : new ObservableCollection<Hitbox>(selectedFrame.hitboxes);
-            icPOIs.ItemsSource = selectedFrame == null ? new ObservableCollection<POI>() : new ObservableCollection<POI>(selectedFrame.POIs);
-            icFrames.ItemsSource = selectedSprite != null ? new ObservableCollection<Frame>(selectedSprite.frames) : new ObservableCollection<Frame>();
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(""));
             }
+        }
+
+        public void resetFrames()
+        {
+        }
+
+        public void resetHitboxes()
+        {
         }
 
         /*
@@ -195,11 +199,11 @@ namespace GameEditor
         }
         */
 
-        public List<Sprite> getFilteredSprites()
+        public ObservableCollection<Sprite> getFilteredSprites()
         {
             var filters = spriteFilter.Split(',').ToList();
             if (filters[0] == "") return sprites;
-            return sprites.Where((sprite) =>
+            var spriteList = sprites.Where((sprite) =>
             {
                 if (selectedFilterMode == "exactmatch")
                 {
@@ -237,12 +241,16 @@ namespace GameEditor
                 }
                 return false;
             }).ToList();
+            return new ObservableCollection<Sprite>(spriteList);
         }
 
         public void onSpritesheetChange(Spritesheet newSheet)
         {
-            newSheet.init(true);
             selectedSpritesheet = newSheet;
+
+            if (newSheet == null) return;
+
+            newSheet.init(true);
 
             if (selectedSprite != null)
             {
@@ -262,9 +270,10 @@ namespace GameEditor
         public void addSprite()
         {
             string spritename = Prompt.ShowDialog("Enter sprite name", "Enter a sprite name");
-            var newSprite = new Sprite(spritename, null);
+            var newSprite = new Sprite(spritename, spritesheets);
             this.changeSprite(newSprite);
             sprites.Add(newSprite);
+            spriteListBox.ScrollIntoView(newSprite);
             selectedFrame = null;
             selection = null;
         }
@@ -277,11 +286,12 @@ namespace GameEditor
                 this.onSpritesheetChange(newSprite.spritesheet);
             }
             selection = null;
-            selectedFrame = selectedSprite.frames[0];
+            selectedFrame = selectedSprite.frames.Count > 0 ? selectedSprite.frames[0] : null;
             lastSelectedFrameIndex = 0;
             spriteCanvasUI.redraw();
             spritesheetCanvasUI.redraw();
             resetUI();
+            resetFrames();
         }
 
         public void addHitboxToSprite(Sprite sprite)
@@ -449,6 +459,7 @@ namespace GameEditor
             {
                 frame.duration = bulkDuration;
             }
+            resetUI();
         }
 
         public void onLoopStartChange()
@@ -639,6 +650,21 @@ namespace GameEditor
             resetUI();
         }
 
+        private void addGlobalHitboxClicked(object sender, RoutedEventArgs e)
+        {
+            addHitboxToSprite(selectedSprite);
+        }
+
+        private void addFrameHitboxClicked(object sender, RoutedEventArgs e)
+        {
+            addHitboxToFrame(selectedFrame);
+        }
+
+        private void addFramePOIClicked(object sender, RoutedEventArgs e)
+        {
+            addPOIMode = !addPOIMode;
+        }
+
         private void frameCopyUpClicked(object sender, RoutedEventArgs e)
         {
             var frame = ((Button)sender).DataContext as Frame;
@@ -669,7 +695,7 @@ namespace GameEditor
 
         private void frameRowClicked(object sender, MouseButtonEventArgs e)
         {
-            var frame = ((WrapPanel)sender).DataContext as Frame;
+            var frame = ((StackPanel)sender).DataContext as Frame;
             selectedFrame = frame;
             selection = frame;
             redraw();

@@ -1,4 +1,6 @@
-﻿namespace GameEditor.Editor
+﻿using GameEditor.Models;
+
+namespace GameEditor.Editor
 {
     public interface Selectable
     {
@@ -7,5 +9,7 @@
         void move(float deltaX, float deltaY);
 
         void resizeCenter(float w, float h);
+
+        Rect getRect { get; }
     }
 }

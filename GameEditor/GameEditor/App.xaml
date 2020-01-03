@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:GameEditor"
              xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
              xmlns:swfh="clr-namespace:WPFRichTextBox"
-             StartupUri="SpriteEditor.xaml">
+             StartupUri="LevelEditor.xaml">
     <Application.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <local:ComparisonConverter x:Key="ComparisonConverter" />

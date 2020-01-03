@@ -1,16 +1,37 @@
 ﻿using GameEditor.Editor;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace GameEditor.Models
 {
-    public class POI : Selectable
+    public class POI : Selectable, INotifyPropertyChanged
     {
         public string tags { get; set; }
         public float x { get; set; }
         public float y { get; set; }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void NotifyPropertyChanged(string propName)
+        {
+            if (this.PropertyChanged != null)
+                this.PropertyChanged(this, new PropertyChangedEventArgs(propName));
+        }
+
+        private bool _isSelected;
         [JsonIgnore]
-        public bool isSelected { get; set; }
+        public bool isSelected
+        {
+            get
+            {
+                return _isSelected;
+            }
+            set
+            {
+                _isSelected = value;
+                NotifyPropertyChanged("isSelected");
+            }
+        }
 
         public POI(string tags, float x, float y)
         {

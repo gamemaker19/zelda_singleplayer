@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 
@@ -10,9 +11,9 @@ namespace GameEditor.Models
     public class Sprite
     {
         public string name { get; set; } = "";
-        public List<Hitbox> hitboxes { get; set; } = new List<Hitbox>();
+        public ObservableCollection<Hitbox> hitboxes { get; set; } = new ObservableCollection<Hitbox>();
         public float loopStartFrame { get; set; } = 0;
-        public List<Frame> frames { get; set; } = new List<Frame>();
+        public ObservableCollection<Frame> frames { get; set; } = new ObservableCollection<Frame>();
         public string alignment { get; set; } = "center";
         public string wrapMode { get; set; } = "once"; //Can be "once", "loop" or "pingpong"
         public string spriteJson { get; set; } = "";
@@ -92,37 +93,34 @@ namespace GameEditor.Models
 
             this.spritesheet.init(false);
 
-            Helpers.drawImage(canvas, this.spritesheet.image, x + offset.x + frame.offset.x, y + offset.y + frame.offset.y, rect.x1, rect.y1, rect.w, rect.h, flipX, flipY, options, alpha, scaleX, scaleY);
+            var wrappers = new List<Tuple<Action, float>>();
+            wrappers.Add(new Tuple<Action, float>(
+                () =>
+                {
+                    Helpers.drawImage(canvas, this.spritesheet.image, x + offset.x + frame.offset.x, y + offset.y + frame.offset.y, rect.x1, rect.y1, rect.w, rect.h, flipX, flipY, options, alpha, scaleX, scaleY);
+                }, 0));
 
-            /*
-            var wrappers : any = [];
-            wrappers.push({
-            closure: () => {
-                Helpers.drawImage(ctx, this.spritesheet.imgEl, rect.x1, rect.y1, rect.w, rect.h, x + offset.x + frame.offset.x, y + offset.y + frame.offset.y, flipX, flipY, options, alpha, scaleX, scaleY);
-            },
-            zIndex: 0
-            });
-
-            for (var childFrame of frame.childFrames)
+            foreach (var childFrame in frame.childFrames)
             {
-                wrappers.push({
-                closure: () => {
+                wrappers.Add(new Tuple<Action, float>(
+                () =>
+                {
                     var childOffsetX = x + offset.x + frame.offset.x + childFrame.offset.x;
                     var childOffsetY = y + offset.y + frame.offset.y + childFrame.offset.y;
-                    Helpers.drawImage(ctx, this.spritesheet.imgEl, childFrame.rect.x1, childFrame.rect.y1, childFrame.rect.w, childFrame.rect.h, childOffsetX, childOffsetY, childFrame.xDir, childFrame.yDir, options, alpha, scaleX, scaleY);
+                    Helpers.drawImage(canvas, this.spritesheet.image, childOffsetX, childOffsetY, childFrame.rect.x1, childFrame.rect.y1, childFrame.rect.w, childFrame.rect.h, childFrame.xDir, childFrame.yDir, options, alpha, scaleX, scaleY);
                 },
-                zIndex: childFrame.zIndex
-                });
+                childFrame.zIndex));
             }
 
-            wrappers.sort((a: any, b: any) => {
-              return a.zIndex - b.zIndex;
+            wrappers.Sort((Tuple<Action, float> a, Tuple<Action, float> b) =>
+            {
+                return Math.Sign(a.Item2 - b.Item2);
             });
 
-            for(var wrapper of wrappers) {
-              wrapper.closure();
+            foreach (var wrapper in wrappers)
+            {
+                wrapper.Item1();
             }
-            */
         }
 
         public void drawFrame(Graphics canvas, Frame frame, float x, float y, int flipX = 1, int flipY = 1, string options = "", float alpha = 1, float scaleX = 1, float scaleY = 1)
@@ -218,6 +216,21 @@ namespace GameEditor.Models
                 }
             }
             return frames;
+        }
+
+        public List<Frame> getAllFrames()
+        {
+            var retFrames = new List<Frame>();
+            for (int i = 0; i < frames.Count; i++)
+            {
+                Frame frame = frames[i];
+                if (frame.parentFrameIndex == -1)
+                {
+                    retFrames.Add(frame);
+                    retFrames.AddRange(frame.childFrames);
+                }
+            }
+            return retFrames;
         }
     }
 }
