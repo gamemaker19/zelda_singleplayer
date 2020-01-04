@@ -1,3 +1,7 @@
+-FIgure out why loading level editor is so slow. If it can't be helped implement a hash cache system
+
+========================================================================
+
 Subsprite system approaches
 
 1. "Burn in" the subsprites, make them separate from the main sprites

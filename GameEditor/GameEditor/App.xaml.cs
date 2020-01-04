@@ -11,6 +11,12 @@ namespace GameEditor
     /// </summary>
     public partial class App : Application
     {
+        public static Action applicationExitAction;
+
+        private void onApplicationExit(object sender, ExitEventArgs e)
+        {
+            applicationExitAction?.Invoke();
+        }
     }
 
     public class ComparisonConverter : IValueConverter

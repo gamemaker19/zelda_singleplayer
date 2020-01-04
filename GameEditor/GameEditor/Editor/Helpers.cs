@@ -129,13 +129,18 @@ namespace GameEditor.Editor
             }
         }
 
+        public static string storageKeysPath = "storage.json";
         public static Dictionary<string, string> storageKeys = null;
 
         public static void setStorageKeyIfNull()
         {
             if (storageKeys == null)
             {
-                string storageJson = ""; //File.ReadAllText("C:/leveleditor/storage.json");
+                if (!File.Exists(storageKeysPath))
+                {
+                    File.CreateText("storage.json");
+                }
+                string storageJson = File.ReadAllText(storageKeysPath);
                 if (string.IsNullOrEmpty(storageJson))
                 {
                     storageKeys = new Dictionary<string, string>();
@@ -157,6 +162,13 @@ namespace GameEditor.Editor
         {
             setStorageKeyIfNull();
             storageKeys[key] = val;
+        }
+
+        public static void saveStorageKeys()
+        {
+            setStorageKeyIfNull();
+            string json = JsonConvert.SerializeObject(storageKeys);
+            File.WriteAllText(storageKeysPath, json);
         }
 
         public static void drawRect(Graphics canvas, Rect rect, Color? fillColor, Color? strokeColor = null, int strokeWidth = 0, float fillAlpha = 1)
@@ -215,7 +227,7 @@ namespace GameEditor.Editor
 
         public static void drawLine(Graphics canvas, float x, float y, float x2, float y2, Color? color, int thickness)
         {
-            canvas.DrawLine(new Pen(new SolidBrush((Color)color)), x, y, x2, y2);
+            canvas.DrawLine(new Pen(new SolidBrush((Color)color), thickness), x, y, x2, y2);
         }
 
         public static void drawImage(Graphics canvas, Bitmap bitmap, float dx, float dy, float sx = 0, float sy = 0, float sw = -1, float sh = -1, int flipX = 1, int flipY = 1, string options = "", float alpha = 1, float scaleX = 1, float scaleY = 1)

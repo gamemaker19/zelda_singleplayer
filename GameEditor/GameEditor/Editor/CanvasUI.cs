@@ -248,20 +248,20 @@ namespace GameEditor.Editor
         {
             var scrollTop = this.panel.VerticalOffset;
             var scrollLeft = this.panel.HorizontalOffset;
-            var scrollTopKey = "scrollTop";
-            var scrollLeftKey = "scrollLeft";
+            var scrollTopKey = GetType().Name + imageKey + "scrollTop";
+            var scrollLeftKey = GetType().Name + imageKey + "scrollLeft";
             Helpers.setStorageKey(scrollTopKey, scrollTop.ToString());
             Helpers.setStorageKey(scrollLeftKey, scrollLeft.ToString());
         }
 
         public void loadScrollPos(string imageKey)
         {
-            var scrollTopKey = "scrollTop";
-            var scrollLeftKey = "scrollLeft";
+            var scrollTopKey = GetType().Name + imageKey + "scrollTop";
+            var scrollLeftKey = GetType().Name + imageKey + "scrollLeft";
             var scrollTop = Helpers.getStorageKey(scrollTopKey);
             var scrollLeft = Helpers.getStorageKey(scrollLeftKey);
-            //if (!string.IsNullOrEmpty(scrollTop)) this.panel.VerticalOffset = int.Parse(scrollTop);
-            //if (!string.IsNullOrEmpty(scrollLeft)) this.panel.HorizontalOffset = int.Parse(scrollLeft);
+            if (!string.IsNullOrEmpty(scrollTop)) this.panel.ScrollToVerticalOffset(int.Parse(scrollTop));
+            if (!string.IsNullOrEmpty(scrollLeft)) this.panel.ScrollToHorizontalOffset(int.Parse(scrollLeft));
         }
 
         public bool isHeld(Key keyCode)

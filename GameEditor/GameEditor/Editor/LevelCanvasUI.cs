@@ -66,14 +66,6 @@ namespace GameEditor.Editor
                 {
                     Helpers.drawLine(graphics, 0, i * tileWidth, CanvasWidth, i * tileWidth, Color.Red, 1);
                 }
-                if (levelEditor.selectedLevel != null)
-                {
-                    //Draw scroll lines
-                    foreach (var scrollLine in levelEditor.selectedLevel.scrollLines)
-                    {
-                        Helpers.drawLine(graphics, scrollLine.point1.x, scrollLine.point1.y, scrollLine.point2.x, scrollLine.point2.y, Color.Yellow, 3);
-                    }
-                }
             }
             if (levelEditor.showRoomLines)
             {
@@ -86,6 +78,15 @@ namespace GameEditor.Editor
                 for (var i = 1; i < CanvasHeight / 256; i++)
                 {
                     Helpers.drawLine(graphics, 0, i * 256, CanvasWidth, i * 256, Color.White, 1);
+                }
+            }
+
+            if (levelEditor.selectedLevel != null)
+            {
+                //Draw scroll lines
+                foreach (var scrollLine in levelEditor.selectedLevel.scrollLines)
+                {
+                    Helpers.drawLine(graphics, scrollLine.point1.x, scrollLine.point1.y, scrollLine.point2.x, scrollLine.point2.y, Color.Yellow, 3);
                 }
             }
 

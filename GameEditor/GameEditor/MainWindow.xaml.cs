@@ -181,6 +181,8 @@ namespace GameEditor
             {
                 resetUI();
             };
+
+            App.applicationExitAction = onApplicationExit;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -772,7 +774,6 @@ namespace GameEditor
 
         public void loadHashCache()
         {
-            tilesets.RemoveAt(tilesets.Count - 1);
             foreach (var tileset in tilesets)
             {
                 tileset.init(false);
@@ -969,5 +970,11 @@ namespace GameEditor
             saveLevel();
         }
 
+        public void onApplicationExit()
+        {
+            levelCanvasUI.saveScrollPos(selectedLevel.name);
+            tileCanvasUI.saveScrollPos(selectedTileset.path);
+            Helpers.saveStorageKeys();
+        }
     }
 }
