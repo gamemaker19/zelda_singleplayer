@@ -25,12 +25,13 @@ Verdict: we can refactor the susbsprite system away but a bunch of tooling needs
 and has all sprites needed, or create the new system?
 
 Tile system pain points
--Currently no way to set a custom transparent background color for a tile (easy to add in though)
+
+-Make swapping tilesets easier
+-Loading all tiles is very slow in the game
+-Adding more tiles is hard - doesn't support multiple tiles from multiple tilesets in same level very well, both in code and in UI
 -Tile cache population is super slow, even in C#
 	-If we save to hash cache in disk it's faster. But this has to be run every time the tileset changes
--Adding more tiles is hard - doesn't support multiple tiles from multiple tilesets in same level very well, both in code and in UI
--Having to bundle entire overworld image takes up a lot of disk
--Overworld data takes a lot of disk (but not as much as the sounds!)
+-Having to bundle entire overworld image takes up a lot of disk - consider a tile translation layer
 -Currently only one layer is supported in the level editor
 	-Causes issues for example, trees on top of ledges
 -The level tile data is implicit and stored in bitmaps.
@@ -42,3 +43,15 @@ Tile system pain points
 	-Alternatives:
 		-use a translation system so you can continue the image system in code, but it gets saved as JSON instead
 -No system built for dungeons yet
+-Currently no way to set a custom transparent background color for a tile (easy to add in though)
+
+Proposals
+-Continue using overworlds as tile banks in the UI. 
+-Continue using hash cache system for tile bank saving. Have option to refresh this cache when you change the tile bank.
+	-Since we change the tile bank rarely, this is OK
+-Have an option to change the pixels of a tile bank, and hit save, to update both the tileset image and the tile bank json.
+-Have a translation layer: create a smaller tile bank for the actual game to consume. This translation layer should only run infrequently and the game should support both for fast dev mode, since translation would be slow every time you save.
+
+-Idea: have tiles represented and keyed by color data only. The tilesprite images are only a UI layer on top.
+	-Con: if we need to mass change the colors, everything breaks
+	-Solution could be: mass change the colors in intermediary layer, then the tile banks would be regenerated
