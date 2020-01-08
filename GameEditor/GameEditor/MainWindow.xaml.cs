@@ -774,6 +774,7 @@ namespace GameEditor
 
         public void loadHashCache()
         {
+            tilesets.RemoveAt(tilesets.Count - 1);
             foreach (var tileset in tilesets)
             {
                 tileset.init(false);
@@ -972,6 +973,8 @@ namespace GameEditor
 
         public void onApplicationExit()
         {
+            if (selectedLevel == null) return;
+            if (selectedTileset == null) return;
             levelCanvasUI.saveScrollPos(selectedLevel.name);
             tileCanvasUI.saveScrollPos(selectedTileset.path);
             Helpers.saveStorageKeys();
