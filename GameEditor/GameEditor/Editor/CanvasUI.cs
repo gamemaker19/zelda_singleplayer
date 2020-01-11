@@ -260,8 +260,8 @@ namespace GameEditor.Editor
             var scrollLeftKey = GetType().Name + imageKey + "scrollLeft";
             var scrollTop = Helpers.getStorageKey(scrollTopKey);
             var scrollLeft = Helpers.getStorageKey(scrollLeftKey);
-            if (!string.IsNullOrEmpty(scrollTop)) this.panel.ScrollToVerticalOffset(int.Parse(scrollTop));
-            if (!string.IsNullOrEmpty(scrollLeft)) this.panel.ScrollToHorizontalOffset(int.Parse(scrollLeft));
+            if (!string.IsNullOrEmpty(scrollTop)) this.panel.ScrollToVerticalOffset((int)float.Parse(scrollTop));
+            if (!string.IsNullOrEmpty(scrollLeft)) this.panel.ScrollToHorizontalOffset((int)float.Parse(scrollLeft));
         }
 
         public bool isHeld(Key keyCode)
