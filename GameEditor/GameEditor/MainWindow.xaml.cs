@@ -1,5 +1,6 @@
 ﻿using GameEditor.Editor;
 using GameEditor.Models;
+using LevelEditor_CS.Editor;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,8 @@ namespace GameEditor
         PlaceTile,
         RectangleTile,
         SelectInstance,
-        CreateInstance
+        CreateInstance,
+        FloodfillTile
     }
 
     /// <summary>
@@ -32,19 +34,17 @@ namespace GameEditor
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public float zoom = 1;
-        public string newLevelName = "";
+        public string newLevelName { get; set; }
         public List<TileData> tileDatas = new List<TileData>();
-        public Dictionary<string, List<List<TileData>>> tileDataGrids = new Dictionary<string, List<List<TileData>>>();
+        public static Dictionary<string, List<List<TileData>>> tileDataGrids = new Dictionary<string, List<List<TileData>>>();
 
         public int loadCount = -1;
         public int maxLoadCount = 0;
         public List<string> undoJsons = new List<string>();
         public int undoIndex = 0;
         public int selectionElevation = 0;
-        public string selectedInstanceProperties = "";
 
         public int paintElevationHeight = 0;
-        public int layerIndex = 0;
         public List<Spritesheet> levelImages = new List<Spritesheet>();
         public string lastSelectedTileSprite = "";
         public string customHitboxPoints = "";
@@ -91,10 +91,11 @@ namespace GameEditor
         public List<Spritesheet> spritesheets { get; set; }
         public List<Spritesheet> tilesets { get; set; }
         public List<Sprite> sprites { get; set; }
+        public ObservableCollection<string> spriteNames { get; set; } = new ObservableCollection<string>();
 
         private Level _selectedLevel;
         public Level selectedLevel { get { return _selectedLevel; } set { _selectedLevel = value; notifyPropertyChanged(); } }
-        public List<Level> levels { get; set; }
+        public ObservableCollection<Level> levels { get; set; }
         private Spritesheet _selectedTileset;
         public Spritesheet selectedTileset { get { return _selectedTileset; } set { _selectedTileset = value; notifyPropertyChanged(); } }
 
@@ -149,11 +150,13 @@ namespace GameEditor
             tileDatas = Helpers.getTileDatas();
             levelImages = Helpers.getSpritesheets("levelimages");
             sprites = Helpers.getSprites();
-            levels = Helpers.getLevels();
+            levels = new ObservableCollection<Level>(Helpers.getLevels());
+            spriteNames.Add("");
 
             foreach (var sprite in sprites)
             {
                 sprite.spritesheets = spritesheets;
+                spriteNames.Add(sprite.name);
             }
             foreach (var tileData in tileDatas)
             {
@@ -167,10 +170,10 @@ namespace GameEditor
                 }
             }
 
+            setTileDataGrids();
+
             levelCanvasUI = new LevelCanvasUI(levelScroll, this);
             tileCanvasUI = new TileCanvasUI(tileScroll, this);
-
-            loadHashCache();
 
             _tileSelectedCoords.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
             {
@@ -183,6 +186,29 @@ namespace GameEditor
             };
 
             App.applicationExitAction = onApplicationExit;
+        }
+
+        public string selectedTileId
+        {
+            get
+            {
+                var tiles = getTileSelectedTiles();
+                if (tiles.Count != 1) return "";
+                return tiles[0].getId();
+            }
+        }
+
+        public string layerShowOrHide
+        {
+            get
+            {
+                if (selectedLevel == null || selectedLevel.layers.Count == 0) return "Hide";
+                if(selectedLevel.layers[selectedLayer].isHidden)
+                {
+                    return "Show";
+                }
+                return "Hide";
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -270,7 +296,9 @@ namespace GameEditor
 
         public void sortInstances()
         {
-            selectedLevel.instances.Sort((SpriteInstance a, SpriteInstance b) =>
+            var instanceList = selectedLevel.instances.ToList();
+
+            instanceList.Sort((SpriteInstance a, SpriteInstance b) =>
             {
                 var compare = a.name.CompareTo(b.name);
                 if (compare < 0) return -1;
@@ -290,6 +318,8 @@ namespace GameEditor
                 }
                 return 0;
             });
+
+            selectedLevel.instances = new ObservableCollection<SpriteInstance>(instanceList);
         }
 
         public ObservableCollection<GridCoords> tileSelectedCoords
@@ -316,6 +346,41 @@ namespace GameEditor
             }
         }
 
+        public ObservableCollection<int> layers
+        {
+            get
+            {
+                var retList = new ObservableCollection<int>();
+                if (selectedLevel == null) return retList;
+                for (int i = 0; i < selectedLevel.layers.Count; i++)
+                {
+                    retList.Add(i);
+                }
+                return retList;
+            }
+        }
+
+        private int _selectedLayer;
+        public int selectedLayer
+        {
+            get
+            {
+                return _selectedLayer;
+            }
+            set
+            {
+                _selectedLayer = value;
+                notifyPropertyChanged("layerShowOrHide");
+            }
+        }
+        public Bitmap selectedLayerBitmap 
+        {
+            get
+            {
+                return selectedLevel.layers[selectedLayer].bitmap;
+            }
+        }
+
         public List<TileData> getTileSelectedTiles()
         {
             var tileDatas = new HashSet<TileData>();
@@ -334,7 +399,15 @@ namespace GameEditor
         public List<List<TileData>> getTileGrid()
         {
             if (selectedTileset == null) return new List<List<TileData>>();
-            return tileDataGrids[selectedTileset.path];
+            return tileDataGrids[selectedTileset.getName()];
+        }
+
+        public TileData getTile(int i, int j)
+        {
+            var grid = getTileGrid();
+            if (i >= grid.Count) return null;
+            if (j >= grid[0].Count) return null;
+            return grid[i][j];
         }
 
         public string getSelectionCoords
@@ -358,7 +431,7 @@ namespace GameEditor
                 var selectedCoords = levelSelectedCoords;
                 if (selectedCoords != null && selectedCoords.Count > 0)
                 {
-                    string selection = selectedLevel.tileInstances[selectedCoords[0].i][selectedCoords[0].j];
+                    string selection = selectedLevel.tileInstances[selectedLayer][selectedCoords[0].i][selectedCoords[0].j];
                     if (selection != null)
                     {
                         return "Selection: " + selection;
@@ -421,16 +494,93 @@ namespace GameEditor
             }
         }
 
+        public string selectedInstanceX
+        {
+            get
+            {
+                if(selectedInstances.Count > 1)
+                {
+                    return "-";
+                }
+                else if(selectedInstances.Count == 1)
+                {
+                    return selectedInstances[0].pos.x.ToString();
+                }
+                return "";
+            }
+            set
+            {
+                foreach(var instance in selectedInstances)
+                {
+                    try
+                    {
+                        instance.pos.x = int.Parse(value);
+                    }
+                    catch { }
+                }
+            }
+        }
+
+        public string selectedInstanceY
+        {
+            get
+            {
+                if (selectedInstances.Count > 1)
+                {
+                    return "-";
+                }
+                else if (selectedInstances.Count == 1)
+                {
+                    return selectedInstances[0].pos.y.ToString();
+                }
+                return "";
+            }
+            set
+            {
+                foreach (var instance in selectedInstances)
+                {
+                    try
+                    {
+                        instance.pos.y = int.Parse(value);
+                    }
+                    catch { }
+                }
+            }
+        }
+
+        public string selectedInstanceProperties
+        {
+            get
+            {
+                if (selectedInstances.Count > 1)
+                {
+                    return "-";
+                }
+                else if (selectedInstances.Count == 1 && selectedInstances[0].properties != null)
+                {
+                    return JsonConvert.SerializeObject(selectedInstances[0].properties);
+                }
+                return "";
+            }
+            set
+            {
+                foreach (var instance in selectedInstances)
+                {
+                    try
+                    {
+                        instance.properties = JsonConvert.DeserializeObject<Dictionary<string, string>>(value);
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
+        }
+
         public string getLevelOffset()
         {
             return "(" + levelCanvasUI.offsetX + "," + levelCanvasUI.offsetY + ")";
-        }
-
-        public void onLevelSizeChange()
-        {
-            selectedLevel.resize();
-            levelCanvasUI.setSize(selectedLevel.width * Consts.TILE_WIDTH, selectedLevel.height * Consts.TILE_WIDTH);
-            redrawLevelCanvas();
         }
 
         //public void onSelectionElevationChange()
@@ -451,8 +601,14 @@ namespace GameEditor
 
         public void addLevel()
         {
-            var newLevel = new Level(this.newLevelName, 30, 30);
+            var newLevel = new Level(this.newLevelName, 128, 128);
             levels.Add(newLevel);
+            resetUI();
+        }
+
+        public Spritesheet getTilesetWithName(string tilesetName)
+        {
+            return tilesets.Where((t) => { return t.name == tilesetName; }).FirstOrDefault();
         }
 
         public void onLevelChange(Level oldLevel)
@@ -469,11 +625,12 @@ namespace GameEditor
             var selectedTilesetIndexStr = Helpers.getStorageKey("selected_tileset_index_" + selectedLevel.name);
             if (!string.IsNullOrEmpty(selectedTilesetIndexStr)) selectedTilesetIndex = int.Parse(selectedTilesetIndexStr);
             if (selectedTilesetIndex < 0) selectedTilesetIndex = 0;
+            if (selectedTilesetIndex >= tilesets.Count) selectedTilesetIndex = 0;
             selectedTileset = tilesets[selectedTilesetIndex];
             selectedLevel.setLayers(levelImages);
             onTilesetChange(selectedTileset);
             addUndoJson();
-
+            resetUI();
             redrawLevelCanvas();
             redrawTileCanvas();
         }
@@ -499,13 +656,9 @@ namespace GameEditor
             if (selectedLevel != null)
             {
                 Helpers.saveLevel(selectedLevel);
-                int i = 0;
-                foreach (Bitmap image in selectedLevel.layers)
-                {
-                    image.Save(Consts.ASSETS_PATH + "/levelimages/" + selectedLevel.name + "_" + i.ToString() + ".png", ImageFormat.Png);
-                    i++;
-                }
             }
+
+            Prompt.ShowMessage("Level successfully saved", "Level successfully saved");
         }
 
         public List<TileData> getTileDatas()
@@ -593,7 +746,7 @@ namespace GameEditor
                 {
                     selectedTile.name = value;
                 }
-                notifyPropertyChanged();
+                resetUI();
             }
         }
 
@@ -621,7 +774,7 @@ namespace GameEditor
                 {
                     selectedTile.hitboxMode = value;
                 }
-                notifyPropertyChanged();
+                resetUI();
                 redrawTileCanvas();
             }
         }
@@ -649,7 +802,7 @@ namespace GameEditor
                 {
                     selectedTile.setTag(value);
                 }
-                notifyPropertyChanged();
+                resetUI();
                 redrawTileCanvas();
             }
         }
@@ -677,7 +830,7 @@ namespace GameEditor
                 {
                     selectedTile.zIndex = value;
                 }
-                notifyPropertyChanged();
+                resetUI();
                 redrawTileCanvas();
             }
         }
@@ -706,7 +859,7 @@ namespace GameEditor
                     selectedTile.spriteName = value;
                 }
                 lastSelectedTileSprite = value;
-                notifyPropertyChanged();
+                resetUI();
                 redrawTileCanvas();
             }
         }
@@ -771,16 +924,15 @@ namespace GameEditor
             //link.setAttribute('href', selectedLevel.layers[0].toDataURL("image/png").replace("image/png", "image/octet-stream"));
             //link.click();
         }
-
-        public void loadHashCache()
+        
+        public void setTileDataGrids()
         {
-            tilesets.RemoveAt(tilesets.Count - 1);
             foreach (var tileset in tilesets)
             {
                 tileset.init(false);
                 var tilesetName = Helpers.baseName(tileset.path);
 
-                var currentHashCache = setHashCaches(tileset.path);
+                var currentHashCache = getHashCaches(tileset.path);
 
                 var tileDataCache = new Dictionary<string, TileData>();
                 foreach (var tileData in tileDatas)
@@ -816,11 +968,11 @@ namespace GameEditor
                         row.Add(tileData);
                     }
                 }
-                tileDataGrids[tileset.path] = grid;
+                tileDataGrids[tilesetName] = grid;
             }
         }
 
-        static Dictionary<string, string> setHashCaches(string tileset)
+        static Dictionary<string, string> getHashCaches(string tileset)
         {
             string tilesetName = Helpers.baseName(tileset);
             var currentHashCache = new Dictionary<string, string>();
@@ -969,6 +1121,37 @@ namespace GameEditor
         private void onSaveButtonClicked(object sender, RoutedEventArgs e)
         {
             saveLevel();
+        }
+
+        private void onNewLevelButtonClicked(object sender, RoutedEventArgs e)
+        {
+            addLevel();
+        }
+
+        private void onNewLayerButtonClicked(object sender, RoutedEventArgs e)
+        {
+            selectedLevel.addLayer();
+            selectedLayer = selectedLevel.layers.Count - 1;
+            resetUI();
+            redrawLevelCanvas();
+        }
+
+        private void onDeleteLayerButtonClicked(object sender, RoutedEventArgs e)
+        {
+            selectedLevel.removeLayer(selectedLayer);
+            if (selectedLayer >= selectedLevel.layers.Count)
+            {
+                selectedLayer = selectedLevel.layers.Count - 1;
+            }
+            resetUI();
+            redrawLevelCanvas();
+        }
+
+        private void onHideLayerButtonClicked(object sender, RoutedEventArgs e)
+        {
+            selectedLevel.layers[selectedLayer].isHidden = !selectedLevel.layers[selectedLayer].isHidden;
+            resetUI();
+            redrawLevelCanvas();
         }
 
         public void onApplicationExit()

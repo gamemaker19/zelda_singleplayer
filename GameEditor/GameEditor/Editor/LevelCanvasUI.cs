@@ -48,9 +48,10 @@ namespace GameEditor.Editor
 
             if (levelEditor.selectedLevel != null)
             {
-                foreach (Bitmap bitmap in levelEditor.selectedLevel.layers)
+                foreach (var layer in levelEditor.selectedLevel.layers)
                 {
-                    Helpers.drawImage(graphics, bitmap, 0, 0);
+                    if (layer.isHidden) continue;
+                    Helpers.drawImage(graphics, layer.bitmap, 0, 0);
                 }
             }
 
@@ -118,7 +119,7 @@ namespace GameEditor.Editor
                     {
                         destPoint.j--;
                     }
-                    Helpers.drawImage(graphics, levelEditor.selectedLevel.layers[0], destPoint.j * Consts.TILE_WIDTH, destPoint.i * Consts.TILE_WIDTH, rect.x1, rect.y1, rect.w, rect.h);
+                    Helpers.drawImage(graphics, levelEditor.selectedLayerBitmap, destPoint.j * Consts.TILE_WIDTH, destPoint.i * Consts.TILE_WIDTH, rect.x1, rect.y1, rect.w, rect.h);
                 }
                 else
                 {
@@ -149,11 +150,18 @@ namespace GameEditor.Editor
             if (levelEditor.selectedTool == Tool.CreateInstance && !this.mouseLeftCanvas)
             {
                 var sprite = levelEditor.sprites.Where(s => { return s.name == levelEditor.selectedObj.spriteOrImage; }).FirstOrDefault();
-                var a = (this.getMouseGridCoordsCustomWidth(Consts.TILE_WIDTH).j * Consts.TILE_WIDTH);
-                var b = (this.getMouseGridCoordsCustomWidth(Consts.TILE_WIDTH).i * Consts.TILE_WIDTH);
+
+                float a = mouseX;
+                float b = mouseY;
+                
+                if (true)
+                {
+                    a = (this.getMouseGridCoordsCustomWidth(Consts.TILE_WIDTH).j * Consts.TILE_WIDTH);
+                    b = (this.getMouseGridCoordsCustomWidth(Consts.TILE_WIDTH).i * Consts.TILE_WIDTH);
+                }
+                
                 var x = a + levelEditor.selectedObj.snapOffset.x;
                 var y = b + levelEditor.selectedObj.snapOffset.y;
-                var rect = sprite.frames[0].rect;
                 sprite.draw(graphics, 0, x, y);
             }
 
@@ -249,8 +257,8 @@ namespace GameEditor.Editor
             {
                 var x = this.mouseX;
                 var y = this.mouseY;
-                if (levelEditor.selectedObj.snapToTile)
-                {
+                //if (levelEditor.selectedObj.snapToTile)
+                //{
                     var sprite = levelEditor.sprites.Where(s => { return s.name == levelEditor.selectedObj.spriteOrImage; }).FirstOrDefault();
                     var a = (this.getMouseGridCoordsCustomWidth(Consts.TILE_WIDTH).j * Consts.TILE_WIDTH);
                     var b = (this.getMouseGridCoordsCustomWidth(Consts.TILE_WIDTH).i * Consts.TILE_WIDTH);
@@ -262,7 +270,7 @@ namespace GameEditor.Editor
                         Console.WriteLine("Same instance found at point! Not creating...");
                         return;
                     }
-                }
+                //}
                 var instance = new SpriteInstance(levelEditor.selectedObj.name, x, y, levelEditor.selectedObj, levelEditor.sprites);
                 levelEditor.selectedLevel.instances.Add(instance);
                 //levelEditor.selectedObj = undefined;
@@ -270,12 +278,35 @@ namespace GameEditor.Editor
                 //levelEditor.selectedTool = Tool.SelectInstance;
                 levelEditor.addUndoJson();
                 levelEditor.sortInstances();
+                levelEditor.resetUI();
                 this.redraw();
             }
             else if (levelEditor.selectedTool == Tool.PlaceTile)
             {
                 this.prevGridCoords = this.getMouseGridCoords();
                 this.placeTile(this.getMouseGridCoords());
+            }
+            else if (levelEditor.selectedTool == Tool.FloodfillTile)
+            {
+                var grid = levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer];
+                for(int i = 0; i < grid.Count; i++)
+                {
+                    for(int j = 0; j < grid[i].Count; j++)
+                    {
+                        if(string.IsNullOrEmpty(grid[i][j]))
+                        {
+                            var tile = levelEditor.getTileSelectedTiles()[0];
+                            grid[i][j] = tile.getId();
+                            
+                            using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLayerBitmap))
+                            {
+                                var rect = tile.gridCoords.getRect();
+                                Helpers.drawImage(canvas, levelEditor.selectedTileset.image, j * Consts.TILE_WIDTH, i * Consts.TILE_WIDTH, rect.x1, rect.y1, rect.w, rect.h);
+                            }
+                        }
+                    }
+                }
+                this.redraw();
             }
         }
 
@@ -293,10 +324,24 @@ namespace GameEditor.Editor
                 {
                     destPoint.j--;
                 }
-                using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLevel.layers[levelEditor.layerIndex]))
+                using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLayerBitmap))
                 {
-                    Helpers.drawImage(canvas, levelEditor.selectedLevel.layers[0], destPoint.j * Consts.TILE_WIDTH, destPoint.i * Consts.TILE_WIDTH, rect.x1, rect.y1, rect.w, rect.h);
+                    Helpers.drawImage(canvas, levelEditor.selectedLayerBitmap, destPoint.j * Consts.TILE_WIDTH, destPoint.i * Consts.TILE_WIDTH, rect.x1, rect.y1, rect.w, rect.h);
                 }
+
+                for (int i = levelEditor.clonedTiles.i1, iDiff = 0; i <= levelEditor.clonedTiles.i2; i++, iDiff++)
+                {
+                    for (int j = levelEditor.clonedTiles.j1, jDiff = 0; j <= levelEditor.clonedTiles.j2; j++, jDiff++)
+                    {
+                        try
+                        {
+                            levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][destPoint.i + iDiff][destPoint.j + jDiff] =
+                                levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][i][j];
+                        }
+                        catch (ArgumentOutOfRangeException) { }
+                    }
+                }
+
                 return;
             }
 
@@ -318,11 +363,21 @@ namespace GameEditor.Editor
                 {
                     offsettedGridCoords.j--;
                 }
-                using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLevel.layers[levelEditor.layerIndex]))
+                using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLayerBitmap))
                 {
                     Helpers.drawImage(canvas, levelEditor.selectedTileset.image, offsettedGridCoords.j * Consts.TILE_WIDTH, offsettedGridCoords.i * Consts.TILE_WIDTH, selectedGridCoord.j * Consts.TILE_WIDTH, selectedGridCoord.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH);
+                    placeTileInLevel(offsettedGridCoords, selectedGridCoord, levelEditor.selectedTileset);
                 }
             }
+        }
+
+        public void placeTileInLevel(GridCoords levelCoords, GridCoords tileCoords, Spritesheet tileset)
+        {
+            try
+            {
+                levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][levelCoords.i][levelCoords.j] = TileData.createId(tileset, tileCoords);
+            }
+            catch (ArgumentOutOfRangeException) { }
         }
 
         public override void onLeftMouseUp()
@@ -383,6 +438,7 @@ namespace GameEditor.Editor
                         }
                     }
                 }
+                levelEditor.resetUI();
                 levelEditor.redrawLevelCanvas();
             }
             else if (levelEditor.selectedTool == Tool.RectangleTile)
@@ -390,22 +446,31 @@ namespace GameEditor.Editor
                 if (levelEditor.selectedLevel == null) return;
                 if (levelEditor.tileSelectedCoords.Count == 0) return;
 
-                //SHIFT box selection
-                //if(this.isHeld(Key.Shift) && levelEditor.levelSelectedRect) {
-                //  topX = levelEditor.levelSelectedRect.x1;     
-                //  topY = levelEditor.levelSelectedRect.y1;
-                //}
+                GridCoords tileCoordToPlace = levelEditor.tileSelectedCoords[0];
+                var tileset = levelEditor.selectedTileset;
+                /*
+                if (levelEditor.clonedTiles != null)
+                {
+                    string tileId = levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][levelEditor.clonedTiles.i1][levelEditor.clonedTiles.j1];
+                    if(!string.IsNullOrEmpty(tileId))
+                    {
+                        TileData.getPieces(tileId, out var tilesetName, out tileCoordToPlace);
+                        tileset = levelEditor.getTilesetWithName(tilesetName);
+                    }
+                }
+                */
 
-                var tileCoordToPlace = levelEditor.tileSelectedCoords[0];
                 var rect = this.getDragGridRect();
                 for (var i = rect.i1; i <= rect.i2; i++)
                 {
                     for (var j = rect.j1; j <= rect.j2; j++)
                     {
                         var gridCoords = new GridCoords((int)i, (int)j);
-                        using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLevel.layers[levelEditor.layerIndex]))
+                        using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLayerBitmap))
                         {
-                            Helpers.drawImage(canvas, levelEditor.selectedTileset.image, tileCoordToPlace.j * Consts.TILE_WIDTH, tileCoordToPlace.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH, gridCoords.j * Consts.TILE_WIDTH, gridCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH);
+                            int w = Consts.TILE_WIDTH;
+                            Helpers.drawImage(canvas, levelEditor.selectedTileset.image, gridCoords.j * w, gridCoords.i * w, tileCoordToPlace.j * w, tileCoordToPlace.i * w, w, w);
+                            placeTileInLevel(gridCoords, tileCoordToPlace, tileset);
                         }
                     }
                 }
@@ -444,6 +509,24 @@ namespace GameEditor.Editor
                 return;
             }
 
+            if (keyCode == Key.R)
+            {
+                levelEditor.selectedTool = Tool.RectangleTile;
+                levelEditor.clonedTiles = null; //getLevelSelectedGridRect();
+                levelEditor.levelSelectedCoords = new ObservableCollection<GridCoords>();
+                this.redraw();
+                return;
+            }
+
+            if (keyCode == Key.I)
+            {
+                levelEditor.selectedTool = Tool.SelectInstance;
+                levelEditor.clonedTiles = null; //getLevelSelectedGridRect();
+                levelEditor.levelSelectedCoords = new ObservableCollection<GridCoords>();
+                this.redraw();
+                return;
+            }
+
             if (keyCode == Key.W)
             {
                 if (levelEditor.selectedInstances.Count > 0)
@@ -469,7 +552,7 @@ namespace GameEditor.Editor
                     {
                         tileHash[tile.getId()] = tile;
                     }
-                    var grid = levelEditor.selectedLevel.tileInstances;
+                    var grid = levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer];
                     List<List<BFSNode>> searchGrid = Helpers.make2DArray<BFSNode>(grid[0].Count, grid.Count, null);
                     for (var i = 0; i < searchGrid.Count; i++)
                     {
@@ -604,71 +687,135 @@ namespace GameEditor.Editor
                     }
                 }
 
-                var incX = 0;
-                var incY = 0;
-                if (keyCode == Key.Left)
+                int leftResize = 0;
+                int rightResize = 0;
+                int topResize = 0;
+                int botResize = 0;
+                if (keyCode == Key.NumPad1)
                 {
-                    incX = -1;
+                    leftResize = 1;
+                    botResize = 1;
                 }
-                else if (keyCode == Key.Right)
+                else if (keyCode == Key.NumPad2)
                 {
-                    incX = 1;
+                    botResize = 1;
                 }
-                else if (keyCode == Key.Up)
+                else if (keyCode == Key.NumPad3)
                 {
-                    incY = -1;
+                    rightResize = 1;
+                    botResize = 1;
                 }
-                else if (keyCode == Key.Down)
+                else if (keyCode == Key.NumPad4)
                 {
-                    incY = 1;
+                    leftResize = 1;
+                }
+                else if (keyCode == Key.NumPad6)
+                {
+                    rightResize = 1;
+                }
+                else if (keyCode == Key.NumPad7)
+                {
+                    leftResize = 1;
+                    topResize = 1;
+                }
+                else if (keyCode == Key.NumPad8)
+                {
+                    topResize = 1;
+                }
+                else if (keyCode == Key.NumPad9)
+                {
+                    topResize = 1;
+                    rightResize = 1;
                 }
 
-                //if (incX != 0 || incY != 0)
-                //{
-                //    var context = levelEditor.selectedLevel.layers[levelEditor.layerIndex].getContext("2d");
-                //    var savedImageDatas = [];
-                //    var gridCoordsMovedTo = new HashSet<string>();
-                //    foreach (var gridCoords in levelEditor.levelSelectedCoords)
-                //    {
-                //        var imageData = context.getImageData(gridCoords.j * Consts.TILE_WIDTH, gridCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH);
-                //        savedImageDatas.Add(imageData);
-                //    }
-                //    for (var i = 0; i < levelEditor.levelSelectedCoords.Count; i++)
-                //    {
-                //        var gridCoords = levelEditor.levelSelectedCoords[i];
-                //        context.putImageData(savedImageDatas[i], (gridCoords.j + incX) * Consts.TILE_WIDTH, (gridCoords.i + incY) * Consts.TILE_WIDTH);
-                //        gridCoordsMovedTo.Add((gridCoords.i + incY) + "," + (gridCoords.j + incX).ToString());
-                //    }
-                //    foreach (var gridCoords in levelEditor.levelSelectedCoords)
-                //    {
-                //        if (!gridCoordsMovedTo.Contains(gridCoords.i.ToString() + "," + gridCoords.j.ToString()))
-                //        {
-                //            context.clearRect(gridCoords.j * Consts.TILE_WIDTH, gridCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH);
-                //        }
-                //    }
-                //    foreach (var gridCoords in levelEditor.levelSelectedCoords)
-                //    {
-                //        gridCoords.i += incY;
-                //        gridCoords.j += incX;
-                //    }
-                //    levelEditor.addUndoJson();
-                //    levelEditor.redrawLevelCanvas();
-                //}
+                if (leftResize != 0 || rightResize != 0 || topResize != 0 || botResize != 0)
+                {
+                    levelEditor.selectedLevel.resize(leftResize, rightResize, topResize, botResize);
+                    setSize(levelEditor.selectedLevel.width * Consts.TILE_WIDTH, levelEditor.selectedLevel.height * Consts.TILE_WIDTH);
+                    levelEditor.redrawLevelCanvas();
+                    levelEditor.resetUI();
+                }
 
                 if (keyCode == Key.Delete)
                 {
-                    using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLevel.layers[levelEditor.layerIndex]))
+                    using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLayerBitmap))
                     {
                         foreach (var gridCoords in levelEditor.levelSelectedCoords)
                         {
-                            Helpers.drawRect(canvas, Rect.CreateWH(gridCoords.j * Consts.TILE_WIDTH, gridCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH), Color.Black);
+                            Helpers.drawRect(canvas, Rect.CreateWH(gridCoords.j * Consts.TILE_WIDTH, gridCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH), Color.Transparent);
+                            levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][gridCoords.i][gridCoords.j] = "";
                         }
                     }
+
+                    levelEditor.selectedLevel.redrawLayer(levelEditor.selectedLayer);
 
                     levelEditor.addUndoJson();
                     levelEditor.redrawLevelCanvas();
                 }
+                var incX = 0;
+                var incY = 0;
+                if (keyCode == Key.A)
+                {
+                    incX = -1;
+                }
+                else if (keyCode == Key.D)
+                {
+                    incX = 1;
+                }
+                else if (keyCode == Key.W)
+                {
+                    incY = -1;
+                }
+                else if (keyCode == Key.S)
+                {
+                    incY = 1;
+                }
+                if (incX != 0 || incY != 0)
+                {
+                    using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLayerBitmap))
+                    {
+                        var savedTiles = new Dictionary<string, string>();
+                        foreach (var coord in levelEditor.levelSelectedCoords)
+                        {
+                            savedTiles[coord.ToString()] = levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][coord.i][coord.j];
+                            levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][coord.i][coord.j] = levelEditor.selectedLevel.defaultTileId;
+
+                            if (!string.IsNullOrEmpty(levelEditor.selectedLevel.defaultTileId))
+                            {
+                                TileData.getPieces(levelEditor.selectedLevel.defaultTileId, out var tilesetName, out var savedTileCoords);
+                                var tileset = levelEditor.getTilesetWithName(tilesetName);
+                                tileset.init(false);
+                                Helpers.drawImage(canvas, tileset.image, (coord.j) * Consts.TILE_WIDTH, (coord.i) * Consts.TILE_WIDTH, savedTileCoords.j * Consts.TILE_WIDTH, savedTileCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH);
+                            }
+                            else
+                            {
+                                Helpers.drawRect(canvas, Rect.CreateWH(coord.j * Consts.TILE_WIDTH, coord.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH), Color.Transparent);
+                            }
+                        }
+                        foreach (var coord in levelEditor.levelSelectedCoords)
+                        {
+                            string savedTileId = savedTiles[coord.ToString()];
+                            levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][coord.i + incY][coord.j + incX] = savedTileId;
+                            if (!string.IsNullOrEmpty(savedTileId))
+                            {
+                                TileData.getPieces(savedTileId, out var tilesetName, out var savedTileCoords);
+                                var tileset = levelEditor.getTilesetWithName(tilesetName);
+                                tileset.init(false);
+                                Helpers.drawImage(canvas, tileset.image, (coord.j + incX) * Consts.TILE_WIDTH, (coord.i + incY) * Consts.TILE_WIDTH, savedTileCoords.j * Consts.TILE_WIDTH, savedTileCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH);
+                            }
+                        }
+                        foreach (var coord in levelEditor.levelSelectedCoords)
+                        {
+                            coord.i += incY;
+                            coord.j += incX;
+                        }
+                        //levelEditor.selectedLevel.redrawLayer(levelEditor.selectedLayer, levelEditor.tileDataGrids);
+                        levelEditor.addUndoJson();
+                        levelEditor.redrawLevelCanvas();
+                    }
+                }
             }
+
             else if (levelEditor.selectedTool == Tool.SelectInstance && levelEditor.selectedInstances.Count > 0)
             {
                 var incX = 0;

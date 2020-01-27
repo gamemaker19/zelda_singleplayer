@@ -55,26 +55,8 @@ namespace GameEditor.Models
         public Spritesheet tileset { get; set; }
         public string tilesetPath { get; set; } = "";
         public GridCoords gridCoords { get; set; }
-        public Hitbox hitbox { get; set; }
-
-        private HitboxMode _hitboxMode;
-        public HitboxMode hitboxMode
-        {
-            get
-            {
-                return _hitboxMode;
-            }
-            set
-            {
-                if (tag == "indoorvoid")
-                {
-                    var a = 0;
-                }
-                _hitboxMode = value;
-            }
-        }
-        public string customHitboxPoints { get; set; } = "";
-        public string tag { get; set; }
+        public HitboxMode hitboxMode { get; set; }
+        public string tag { get; set; } = "";
         public ZIndex zIndex { get; set; } = 0;
         public string spriteName { get; set; } = "";
 
@@ -90,34 +72,21 @@ namespace GameEditor.Models
             return Helpers.baseName(this.tileset.path) + "_" + (this.gridCoords.i).ToString() + "_" + (this.gridCoords.j).ToString();
         }
 
-        [OnSerialized]
+        public static string createId(Spritesheet tileset, GridCoords gridCoords)
+        {
+            return Helpers.baseName(tileset.path) + "_" + gridCoords.i.ToString() + "_" + gridCoords.j.ToString();
+        }
+
+        [OnSerializing]
         public void onSerialize(StreamingContext context)
         {
-            this.tilesetPath = this.tileset.path;
-            if (this.hitboxMode == HitboxMode.SmallDiagTopLeft) { this.customHitboxPoints = "130"; this.hitboxMode = HitboxMode.Custom; }
-            if (this.hitboxMode == HitboxMode.SmallDiagTopRight) { this.customHitboxPoints = "125"; this.hitboxMode = HitboxMode.Custom; }
-            if (this.hitboxMode == HitboxMode.SmallDiagBotLeft) { this.customHitboxPoints = "367"; this.hitboxMode = HitboxMode.Custom; }
-            if (this.hitboxMode == HitboxMode.SmallDiagBotRight) { this.customHitboxPoints = "578"; this.hitboxMode = HitboxMode.Custom; }
-            if (this.hitboxMode == HitboxMode.LargeDiagTopLeft) { this.customHitboxPoints = "25760"; this.hitboxMode = HitboxMode.Custom; }
-            if (this.hitboxMode == HitboxMode.LargeDiagTopRight) { this.customHitboxPoints = "28730"; this.hitboxMode = HitboxMode.Custom; }
-            if (this.hitboxMode == HitboxMode.LargeDiagBotLeft) { this.customHitboxPoints = "15860"; this.hitboxMode = HitboxMode.Custom; }
-            if (this.hitboxMode == HitboxMode.LargeDiagBotRight) { this.customHitboxPoints = "12863"; this.hitboxMode = HitboxMode.Custom; }
+            this.tilesetPath = this.tileset.getBasePath();
         }
 
         [OnDeserialized]
         public void onDeserialize(StreamingContext context)
         {
-            if (this.tag.StartsWith(",")) this.tag = this.tag.Substring(1);
-            /*
-            if(this.customHitboxPoints == "013") { this.hitboxMode = HitboxMode.SmallDiagTopLeft; this.customHitboxPoints = ""; }
-            if(this.customHitboxPoints == "125") { this.hitboxMode = HitboxMode.SmallDiagTopRight; this.customHitboxPoints = ""; }
-            if(this.customHitboxPoints == "367") { this.hitboxMode = HitboxMode.SmallDiagBotLeft; this.customHitboxPoints = ""; }
-            if(this.customHitboxPoints == "578") { this.hitboxMode = HitboxMode.SmallDiagBotRight; this.customHitboxPoints = ""; }
-            if(this.customHitboxPoints == "02576") { this.hitboxMode = HitboxMode.LargeDiagTopLeft; this.customHitboxPoints = ""; }
-            if(this.customHitboxPoints == "02873") { this.hitboxMode = HitboxMode.LargeDiagTopRight; this.customHitboxPoints = ""; }
-            if(this.customHitboxPoints == "01586") { this.hitboxMode = HitboxMode.LargeDiagBotLeft; this.customHitboxPoints = ""; }
-            if(this.customHitboxPoints == "12863") { this.hitboxMode = HitboxMode.LargeDiagBotRight; this.customHitboxPoints = ""; }
-            */
+            if (tag != null && tag.StartsWith(",")) tag = tag.Substring(1);
         }
 
         public void setTileset(List<Spritesheet> tilesets)
@@ -147,6 +116,12 @@ namespace GameEditor.Models
                 if (tag == tagToCheck) return true;
             }
             return false;
+        }
+
+        public static void getPieces(string id, out string tilesetName, out GridCoords coords)
+        {
+            tilesetName = id.Split('_')[0];
+            coords = new GridCoords(int.Parse(id.Split('_')[1]), int.Parse(id.Split('_')[2]));
         }
     }
 }

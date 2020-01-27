@@ -20,3 +20,13 @@ D:\Documents\Game Projects\ZFG2.0\ZFG_CS\ZFG_CS\obj\Debug\netcoreapp2.1\ZFG_CS.A
 D:\Documents\Game Projects\ZFG2.0\ZFG_CS\ZFG_CS\obj\Debug\netcoreapp2.1\ZFG_CS.AssemblyInfo.cs
 D:\Documents\Game Projects\ZFG2.0\ZFG_CS\ZFG_CS\obj\Debug\netcoreapp2.1\ZFG_CS.dll
 D:\Documents\Game Projects\ZFG2.0\ZFG_CS\ZFG_CS\obj\Debug\netcoreapp2.1\ZFG_CS.pdb
+D:\Documents\Game Projects\zelda_singleplayer\ZFG_CS\bin\Debug\netcoreapp2.1\ZFG_CS.deps.json
+D:\Documents\Game Projects\zelda_singleplayer\ZFG_CS\bin\Debug\netcoreapp2.1\ZFG_CS.runtimeconfig.json
+D:\Documents\Game Projects\zelda_singleplayer\ZFG_CS\bin\Debug\netcoreapp2.1\ZFG_CS.runtimeconfig.dev.json
+D:\Documents\Game Projects\zelda_singleplayer\ZFG_CS\bin\Debug\netcoreapp2.1\ZFG_CS.dll
+D:\Documents\Game Projects\zelda_singleplayer\ZFG_CS\bin\Debug\netcoreapp2.1\ZFG_CS.pdb
+D:\Documents\Game Projects\zelda_singleplayer\ZFG_CS\obj\Debug\netcoreapp2.1\ZFG_CS.csprojAssemblyReference.cache
+D:\Documents\Game Projects\zelda_singleplayer\ZFG_CS\obj\Debug\netcoreapp2.1\ZFG_CS.AssemblyInfoInputs.cache
+D:\Documents\Game Projects\zelda_singleplayer\ZFG_CS\obj\Debug\netcoreapp2.1\ZFG_CS.AssemblyInfo.cs
+D:\Documents\Game Projects\zelda_singleplayer\ZFG_CS\obj\Debug\netcoreapp2.1\ZFG_CS.dll
+D:\Documents\Game Projects\zelda_singleplayer\ZFG_CS\obj\Debug\netcoreapp2.1\ZFG_CS.pdb

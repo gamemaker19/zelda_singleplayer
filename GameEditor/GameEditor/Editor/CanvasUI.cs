@@ -18,7 +18,7 @@ namespace GameEditor.Editor
         public PictureBox pictureBox;
 
         public bool ctrlHeld = false;
-        public float zoom = 1;
+        public float zoom = 2;
         public float noScrollZoom = 1;
         public bool mousedown = false;
         public bool middlemousedown = false;
@@ -54,8 +54,6 @@ namespace GameEditor.Editor
         public int CanvasWidth { get { return (int)pictureBox.Width; } }
         public int CanvasHeight { get { return (int)pictureBox.Height; } }
 
-        RenderTargetBitmap bmp;
-
         public CanvasUI(ScrollViewer panel, int canvasWidth, int canvasHeight, Color color)
         {
             this.color = color;
@@ -66,6 +64,8 @@ namespace GameEditor.Editor
             panel.Content = host;
             pictureBox = new PictureBox();
             host.Child = pictureBox;
+            host.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+            host.VerticalAlignment = System.Windows.VerticalAlignment.Top;
 
             pictureBox.Width = canvasWidth;
             pictureBox.Height = canvasHeight;
@@ -76,7 +76,7 @@ namespace GameEditor.Editor
             this.panel = panel;
 
             pictureBox.Paint += pictureBox_Paint;
-            pictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBox.SizeMode = PictureBoxSizeMode.Normal;
 
             pictureBox.MouseMove += mouseMoveEvent;
             pictureBox.MouseDown += mouseDownEvent;
@@ -207,12 +207,13 @@ namespace GameEditor.Editor
         {
             if (this.isHeld(Key.LeftCtrl))
             {
-                var delta = -(e.Delta / 180);
+                var delta = (e.Delta / 180.0f);
                 this.zoom += delta;
                 if (this.zoom < 1) this.zoom = 1;
                 if (this.zoom > 5) this.zoom = 5;
                 this.redraw();
                 this.onMouseWheel(delta);
+                return;
             }
             panel.ScrollToVerticalOffset(panel.VerticalOffset + 30 * -Math.Sign(e.Delta));
         }
@@ -266,8 +267,7 @@ namespace GameEditor.Editor
 
         public bool isHeld(Key keyCode)
         {
-            return false;
-            //return (System.Windows.Forms.Control.ModifierKeys & Keys.Control) == keyCode;
+            return keysHeld.Contains(keyCode);
         }
 
         public virtual void onMouseLeave() { }

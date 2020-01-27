@@ -85,7 +85,7 @@ namespace GameEditor.Editor
                 {
                     for (var j = 0; j < CanvasWidth / 8; j++)
                     {
-                        var tileData = levelEditor.getTileGrid()[i][j];
+                        var tileData = levelEditor.getTile(i, j);
                         if (tileData == null) continue;
                         if (tileData.hitboxMode == HitboxMode.Tile)
                         {
@@ -188,31 +188,6 @@ namespace GameEditor.Editor
                         {
                             Helpers.drawPolygon(graphics, new Shape(new List<Point>() { topLeftPt.addxy(Consts.TILE_WIDTH / 2, 0), topRightPt, botRightPt, botLeftPt, topLeftPt.addxy(0, Consts.TILE_WIDTH / 2) }), true, Color.Blue, null, 0, 0.5f);
                         }
-
-                        else if (tileData.hitboxMode == HitboxMode.Custom)
-                        {
-                            var pts = new List<Models.Point>();
-                            var customHitboxPoints = tileData.customHitboxPoints.ToString();
-                            for (var k = 0; k < customHitboxPoints.Length; k++)
-                            {
-                                var chr = customHitboxPoints[k];
-                                Point point = null;
-                                if (chr == '0') point = topLeftPt;
-                                if (chr == '1') point = topLeftPt.addxy(Consts.TILE_WIDTH / 2, 0);
-                                if (chr == '2') point = topRightPt;
-                                if (chr == '3') point = topLeftPt.addxy(0, Consts.TILE_WIDTH / 2);
-                                if (chr == '4') point = topLeftPt.addxy(Consts.TILE_WIDTH / 2, Consts.TILE_WIDTH / 2);
-                                if (chr == '5') point = topLeftPt.addxy(Consts.TILE_WIDTH, Consts.TILE_WIDTH / 2);
-                                if (chr == '6') point = botLeftPt;
-                                if (chr == '7') point = botLeftPt.addxy(Consts.TILE_WIDTH / 2, 0);
-                                if (chr == '8') point = botRightPt;
-                                pts.Add(point);
-                            }
-                            if (pts.Count > 2)
-                            {
-                                Helpers.drawPolygon(graphics, new Shape(pts), true, Color.Blue, null, 0, 0.5f);
-                            }
-                        }
                     }
                 }
             }
@@ -222,7 +197,8 @@ namespace GameEditor.Editor
                 {
                     for (var j = 0; j < CanvasWidth / 8; j++)
                     {
-                        var tileData = levelEditor.getTileGrid()[i][j];
+                        TileData tileData = levelEditor.getTile(i, j);
+                        if (tileData == null) continue;
                         var gridCoords = new GridCoords(i, j);
                         if (tileData != null && tileData.hasTag(levelEditor.showTilesWithTag))
                         {
@@ -237,7 +213,8 @@ namespace GameEditor.Editor
                 {
                     for (var j = 0; j < CanvasWidth / 8; j++)
                     {
-                        var tileData = levelEditor.getTileGrid()[i][j];
+                        TileData tileData = levelEditor.getTile(i, j);
+                        if (tileData == null) continue;
                         var gridCoords = new GridCoords(i, j);
                         if (tileData != null && tileData.zIndex == ZIndex.Foreground1)
                         {

@@ -9,21 +9,21 @@
         xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         xmlns:swfh="clr-namespace:WPFRichTextBox"
         mc:Ignorable="d"
-        Title="MainWindow" Width="1600" Height="1000" >
+        Title="MainWindow" Width="1920" Height="1080" >
     <Canvas>
-        <Label Content="Levels" Canvas.Left="10" Canvas.Top="10" RenderTransformOrigin="-0.346,-0.236" Height="34" Width="58" FontWeight="Bold" FontSize="16"/>
-        <Button Content="New Level" Canvas.Left="10" Canvas.Top="44" Width="75"/>
-        <TextBox Height="23" Canvas.Left="10" TextWrapping="Wrap" Canvas.Top="69" Width="120"/>
+        <Label Content="Levels" Canvas.Left="10" Canvas.Top="10" RenderTransformOrigin="-0.346,-0.236" Height="34" Width="58" FontWeight="Bold" FontSize="16" />
+        <Button Content="New Level" Canvas.Left="10" Canvas.Top="44" Width="75" Click="onNewLevelButtonClicked" />
+        <TextBox Height="23" Canvas.Left="10" TextWrapping="Wrap" Canvas.Top="69" Width="120" Text="{Binding newLevelName}" />
         <ListBox Height="326" Canvas.Left="10" Canvas.Top="107" Width="149" ItemsSource="{Binding Path=levels}" SelectedItem="{Binding Path=selectedLevel}" SelectionChanged="levelListboxChanged" />
         <Label Content="Objects" Canvas.Left="181" Canvas.Top="10" RenderTransformOrigin="-0.346,-0.236" Height="34" Width="72" FontWeight="Bold" FontSize="16"/>
         <ListBox Height="231" Canvas.Left="181" Canvas.Top="49" Width="149" ItemsSource="{Binding Path=objs}" SelectedItem="{Binding Path=selectedObj}"/>
         <Label Content="Instances" Canvas.Left="181" Canvas.Top="299" RenderTransformOrigin="-0.346,-0.236" Height="34" Width="89" FontWeight="Bold" FontSize="16"/>
         <ListBox Name="instanceListBox" Height="345" Canvas.Left="181" Canvas.Top="338" Width="149" SelectionMode="Extended" ItemsSource="{Binding Path=selectedLevel.instances}" SelectionChanged="instanceListboxChanged" />
 
-        <ScrollViewer Name="levelScroll" Width="714" Height="524" Canvas.Left="348" Canvas.Top="49" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <ScrollViewer Name="levelScroll" Width="869" Height="524" Canvas.Left="348" Canvas.Top="49" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <!--<uc:DrawingCanvas x:Name="levelCanvas" Height="524" Width="714" />-->
         </ScrollViewer>
-        <ScrollViewer Name="tileScroll" Width="476" Height="524" Canvas.Left="1080" Canvas.Top="49" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <ScrollViewer Name="tileScroll" Width="634" Height="524" Canvas.Left="1236" Canvas.Top="49" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <!--<uc:DrawingCanvas x:Name="tileCanvas" Width="476" Height="524" />-->
         </ScrollViewer>
 
@@ -39,37 +39,44 @@
         <Label Content="Height:" Canvas.Left="529" Canvas.Top="609"/>
         <Label Content="Show overrides with key:" Canvas.Left="704" Canvas.Top="610"/>
         <TextBox Text="{Binding showOverridesWithKey}" Height="23" Canvas.Left="846" TextWrapping="Wrap" Canvas.Top="614" Width="120"/>
-        <Label Content="{Binding getSelectionCoords}" Canvas.Left="349" Canvas.Top="638"/>
-        <Label Content="{Binding getLevelSelectionTileData}" Canvas.Left="641" Canvas.Top="640"/>
-        <WrapPanel Height="37" Canvas.Left="349" Canvas.Top="669" Width="692">
+        <TextBox Text="{Binding getSelectionCoords, Mode=OneWay}" Canvas.Left="349" Canvas.Top="638" Background="Transparent" BorderThickness="0" IsReadOnly="True" TextWrapping="Wrap"/>
+        <TextBox Text="{Binding getLevelSelectionTileData, Mode=OneWay}" Canvas.Left="641" Canvas.Top="640" Background="Transparent" BorderThickness="0" IsReadOnly="True" TextWrapping="Wrap"/>
+        <WrapPanel Height="37" Canvas.Left="353" Canvas.Top="696" Width="692">
             <Label FontWeight="Bold">Tool</Label>
             <RadioButton IsChecked="{Binding Path=selectedTool, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static local:Tool.Select}}">Select</RadioButton>
             <RadioButton IsChecked="{Binding Path=selectedTool, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static local:Tool.PlaceTile}}">Place Tile</RadioButton>
             <RadioButton IsChecked="{Binding Path=selectedTool, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static local:Tool.RectangleTile}}">Rectangle Tile</RadioButton>
             <RadioButton IsChecked="{Binding Path=selectedTool, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static local:Tool.SelectInstance}}">Select Instance</RadioButton>
             <RadioButton IsChecked="{Binding Path=selectedTool, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static local:Tool.CreateInstance}}">Create Instance</RadioButton>
+            <RadioButton IsChecked="{Binding Path=selectedTool, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static local:Tool.FloodfillTile}}">Floodfill Tile</RadioButton>
         </WrapPanel>
-        <StackPanel Visibility="{Binding Path=hasLevelSelectedTile, Converter={StaticResource BoolToVis}}" Height="232" Canvas.Left="349" Canvas.Top="706" Width="321">
+        <StackPanel Visibility="{Binding Path=hasLevelSelectedTile, Converter={StaticResource BoolToVis}}" Height="232" Canvas.Left="354" Canvas.Top="731" Width="320">
             <Label Content="Selection Properties" FontWeight="Bold" FontSize="16"/>
             <TextBox Text="{Binding Path=selectionProperties}" Height="191" Margin="0,0,10,0" />
         </StackPanel>
-        <StackPanel Visibility="{Binding Path=hasSelectedInstance, Converter={StaticResource BoolToVis}}" Height="232" Canvas.Left="688" Canvas.Top="706" Width="323">
+        <StackPanel Visibility="{Binding Path=hasSelectedInstance, Converter={StaticResource BoolToVis}}" Height="232" Canvas.Left="693" Canvas.Top="731" Width="323">
             <Label Content="Instance Properties" FontWeight="Bold" FontSize="16"/>
-            <TextBox Height="191" Margin="0,0,10,0" />
+            <WrapPanel>
+                <Label Content="X" Margin="0,0,-0.333,0"/>
+                <TextBox Text="{Binding Path=selectedInstanceX}" Width="94" />
+                <Label Content="Y"/>
+                <TextBox Text="{Binding Path=selectedInstanceY}" Width="87" />
+            </WrapPanel>
+            <TextBox Text="{Binding Path=selectedInstanceProperties}" Height="153" Margin="0,0,9.667,0" />
         </StackPanel>
-        <Label Content="Tileset:" Canvas.Left="1081" Canvas.Top="581"/>
-        <ComboBox ItemsSource="{Binding tilesets}" SelectedItem="{Binding selectedTileset}" SelectionChanged="tilesetComboBoxChanged" Canvas.Left="1145" Canvas.Top="585" Width="120"/>
-        <CheckBox IsChecked="{Binding showTileHitboxes}" Content="Show tile hitboxes" Canvas.Left="1091" Canvas.Top="622" RenderTransformOrigin="0.002,-0.695"/>
-        <CheckBox IsChecked="{Binding showTilesWithZIndex1}" Content="Show tiles with z index 1" Canvas.Left="1224" Canvas.Top="622" RenderTransformOrigin="0.174,0.543"/>
-        <Label Content="Show tiles with tag:" Canvas.Left="1091" Canvas.Top="651"/>
-        <TextBox Text="{Binding showTilesWithTag}" Height="23" Canvas.Left="1208" TextWrapping="Wrap" Canvas.Top="655" Width="93"/>
-        <Label Content="Show tiles with sprite" Canvas.Left="1306" Canvas.Top="651"/>
-        <ComboBox ItemsSource="{Binding sprites}" SelectedItem="{Binding showTilesWithSprite}" Canvas.Left="1433" Canvas.Top="655" Width="120"/>
-        <Canvas Height="182" Visibility="{Binding hasTileSelectedTiles, Converter={StaticResource BoolToVis}}" Canvas.Left="1091" Canvas.Top="693" Width="421">
+        <Label Content="Tileset:" Canvas.Left="1236" Canvas.Top="588"/>
+        <ComboBox ItemsSource="{Binding tilesets}" SelectedItem="{Binding selectedTileset}" SelectionChanged="tilesetComboBoxChanged" Canvas.Left="1300" Canvas.Top="592" Width="120"/>
+        <CheckBox IsChecked="{Binding showTileHitboxes}" Content="Show tile hitboxes" Canvas.Left="1245" Canvas.Top="629" RenderTransformOrigin="0.002,-0.695"/>
+        <CheckBox IsChecked="{Binding showTilesWithZIndex1}" Content="Show tiles with z index 1" Canvas.Left="1379" Canvas.Top="629" RenderTransformOrigin="0.174,0.543"/>
+        <Label Content="Show tiles with tag:" Canvas.Left="1245" Canvas.Top="658"/>
+        <TextBox Text="{Binding showTilesWithTag}" Height="23" Canvas.Left="1363" TextWrapping="Wrap" Canvas.Top="662" Width="93"/>
+        <Label Content="Show tiles with sprite" Canvas.Left="1461" Canvas.Top="658"/>
+        <ComboBox ItemsSource="{Binding sprites}" SelectedItem="{Binding showTilesWithSprite}" Canvas.Left="1588" Canvas.Top="662" Width="120"/>
+        <Canvas Height="182" Visibility="{Binding hasTileSelectedTiles, Converter={StaticResource BoolToVis}}" Canvas.Left="1246" Canvas.Top="700" Width="421">
             <Label Content="Tile name:" Canvas.Left="10" Canvas.Top="10"/>
             <TextBox Text="{Binding multiEditName}" Height="23" Canvas.Left="79" TextWrapping="Wrap" Canvas.Top="14" Width="120"/>
             <Label Content="Id:" Canvas.Left="212" Canvas.Top="12" RenderTransformOrigin="-0.098,0.524"/>
-            <Label Content="Label" Canvas.Left="250" Canvas.Top="12" RenderTransformOrigin="-0.122,0.615"/>
+            <TextBox Text="{Binding selectedTileId, Mode=OneWay}" Canvas.Left="249" Canvas.Top="17" RenderTransformOrigin="-0.122,0.615" Background="Transparent" BorderThickness="0" IsReadOnly="True" TextWrapping="Wrap"/>
             <Label Content="Hitbox Mode:" Canvas.Left="10" Canvas.Top="39"/>
             <ComboBox ItemsSource="{Binding hitboxModes}" SelectedItem="{Binding multiEditHitboxMode}" Canvas.Left="97" Canvas.Top="43" Width="120"/>
             <Label Content="Tag" Canvas.Left="10" Canvas.Top="65"/>
@@ -77,7 +84,16 @@
             <Label Content="Z-Index" Canvas.Left="179" Canvas.Top="66"/>
             <ComboBox ItemsSource="{Binding zIndices}" SelectedItem="{Binding multiEditZIndex}" Canvas.Left="236" Canvas.Top="70" Width="120"/>
             <Label Content="Sprite" Canvas.Left="11" Canvas.Top="93"/>
-            <ComboBox ItemsSource="{Binding sprites}" SelectedItem="{Binding multiEditTileSprite}" Canvas.Left="68" Canvas.Top="97" Width="120"/>
+            <ComboBox ItemsSource="{Binding spriteNames}" SelectedItem="{Binding multiEditTileSprite}" Canvas.Left="68" Canvas.Top="97" Width="120"/>
         </Canvas>
+        <Label Content="Default Tile Id" Canvas.Left="359" Canvas.Top="658"/>
+        <TextBox Height="23" Canvas.Left="447" TextWrapping="Wrap" Text="{Binding selectedLevel.defaultTileId}" Canvas.Top="662" Width="120"/>
+        <!--
+        <ComboBox Canvas.Left="402" Canvas.Top="667" Width="77" ItemsSource="{Binding layers}" SelectedItem="{Binding selectedLayer}" />
+        <Label Content="Layer" Canvas.Left="358" Canvas.Top="666"/>
+        <Button Content="Add" Click="onNewLayerButtonClicked" Canvas.Left="485" Canvas.Top="670" Width="75"/>
+        <Button Content="Delete" Click="onDeleteLayerButtonClicked" Canvas.Left="565" Canvas.Top="670" Width="75"/>
+        <Button Content="{Binding layerShowOrHide}" Click="onHideLayerButtonClicked" Canvas.Left="645" Canvas.Top="670" Width="75"/>
+        -->
     </Canvas>
 </Window>

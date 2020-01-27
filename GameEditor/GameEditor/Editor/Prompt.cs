@@ -30,5 +30,24 @@ namespace LevelEditor_CS.Editor
 
             return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
         }
+
+        public static void ShowMessage(string text, string caption)
+        {
+            Form prompt = new Form()
+            {
+                Width = 500,
+                Height = 175,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                Text = caption,
+                StartPosition = FormStartPosition.CenterScreen
+            };
+            Label textLabel = new Label() { Left = 20, Top = 20, Width = 450, Height = 150, Text = text };
+            Button confirmation = new Button() { Text = "Ok", Left = 150, Width = 100, Top = 70, DialogResult = DialogResult.OK };
+            confirmation.Click += (sender, e) => { prompt.Close(); };
+            prompt.Controls.Add(confirmation);
+            prompt.Controls.Add(textLabel);
+            prompt.AcceptButton = confirmation;
+            prompt.ShowDialog();
+        }
     }
 }

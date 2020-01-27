@@ -28,9 +28,9 @@ namespace GameEditor.Models
             return new Rect(this.j1 * Consts.TILE_WIDTH, this.i1 * Consts.TILE_WIDTH, (this.j2 + 1) * Consts.TILE_WIDTH, (this.i2 + 1) * Consts.TILE_WIDTH);
         }
 
-        public float i1 { get { return this.topLeftGridCoords.i; } }
-        public float j1 { get { return this.topLeftGridCoords.j; } }
-        public float i2 { get { return this.botRightGridCoords.i; } }
-        public float j2 { get { return this.botRightGridCoords.j; } }
+        public int i1 { get { return this.topLeftGridCoords.i; } }
+        public int j1 { get { return this.topLeftGridCoords.j; } }
+        public int i2 { get { return this.botRightGridCoords.i; } }
+        public int j2 { get { return this.botRightGridCoords.j; } }
     }
 }

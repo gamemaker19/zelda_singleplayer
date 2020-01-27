@@ -32,5 +32,10 @@ namespace GameEditor.Models
             if (other == null) return false;
             return this.i == other.i && this.j == other.j;
         }
+
+        public override string ToString()
+        {
+            return i.ToString() + "," + j.ToString();
+        }
     }
 }
