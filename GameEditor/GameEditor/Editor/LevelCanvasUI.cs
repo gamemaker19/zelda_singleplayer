@@ -31,9 +31,9 @@ namespace GameEditor.Editor
         public GridCoords lastMouseMoveGridCoords;
         public GridCoords lastMouseMoveGridCoords8x8;
         public bool mouseLeftCanvas = false;
-        public MainWindow levelEditor;
+        public LevelEditor levelEditor;
 
-        public LevelCanvasUI(ScrollViewer panel, MainWindow levelEditor) : base(panel, (int)panel.Width, (int)panel.Height, Color.Transparent)
+        public LevelCanvasUI(ScrollViewer panel, LevelEditor levelEditor) : base(panel, (int)panel.Width, (int)panel.Height, Color.Transparent)
         {
             this.levelEditor = levelEditor;
         }

@@ -99,7 +99,7 @@ namespace GameEditor.Models
                     int ti = int.Parse(tileId.Split('_')[1]);
                     int tj = int.Parse(tileId.Split('_')[2]);
 
-                    TileData tileData = MainWindow.tileDataGrids[tilesetName][ti][tj];
+                    TileData tileData = LevelEditor.tileDataGrids[tilesetName][ti][tj];
                     if (tileData == null)
                     {
                         continue;

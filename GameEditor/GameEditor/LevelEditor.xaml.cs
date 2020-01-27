@@ -29,9 +29,9 @@ namespace GameEditor
     }
 
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for LevelEditor.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class LevelEditor : Window, INotifyPropertyChanged
     {
         public float zoom = 1;
         public string newLevelName { get; set; }
@@ -139,7 +139,7 @@ namespace GameEditor
         public List<HitboxMode> hitboxModes { get; set; } = Helpers.getEnumList<HitboxMode>();
         public List<ZIndex> zIndices { get; set; } = Helpers.getEnumList<ZIndex>();
 
-        public MainWindow()
+        public LevelEditor()
         {
             InitializeComponent();
             this.DataContext = this;

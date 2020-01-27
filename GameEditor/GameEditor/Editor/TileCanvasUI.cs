@@ -15,9 +15,9 @@ namespace GameEditor.Editor
 {
     public class TileCanvasUI : CanvasUI
     {
-        public MainWindow levelEditor;
+        public LevelEditor levelEditor;
 
-        public TileCanvasUI(ScrollViewer panel, MainWindow levelEditor) : base(panel, (int)panel.Width, (int)panel.Height, Color.Transparent)
+        public TileCanvasUI(ScrollViewer panel, LevelEditor levelEditor) : base(panel, (int)panel.Width, (int)panel.Height, Color.Transparent)
         {
             this.levelEditor = levelEditor;
         }

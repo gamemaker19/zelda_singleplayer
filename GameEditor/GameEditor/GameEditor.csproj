@@ -70,7 +70,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="LevelEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -95,8 +95,8 @@
     <Compile Include="Editor\SpriteCanvasUI.cs" />
     <Compile Include="Editor\SpritesheetCanvasUI.cs" />
     <Compile Include="Editor\TileCanvasUI.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="LevelEditor.xaml.cs">
+      <DependentUpon>LevelEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Page Include="SpriteEditor.xaml">
