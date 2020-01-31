@@ -66,6 +66,7 @@ namespace GameEditor.Editor
             host.Child = pictureBox;
             host.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
             host.VerticalAlignment = System.Windows.VerticalAlignment.Top;
+            host.keyDownAction = keyDownEvent;
 
             pictureBox.Width = canvasWidth;
             pictureBox.Height = canvasHeight;
@@ -86,6 +87,15 @@ namespace GameEditor.Editor
 
             panel.KeyDown += keyDownEvent;
             panel.KeyUp += keyUpEvent;
+            /*
+            host.KeyDown += (object sender, System.Windows.Input.KeyEventArgs e) =>
+            {
+                if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
+                {
+                    keyDownEvent(sender, e);
+                }
+            };
+            */
         }
 
         public virtual void pictureBox_Paint(object sender, PaintEventArgs e)

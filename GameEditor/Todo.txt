@@ -1,9 +1,4 @@
--"Default" tile that fills when:
-	-Level is resized
-	-Section is moved
-	-(Possible) tiles erased
--Rectangle tile: use level selection first, if it exists
--Make ids double-clickable
+-Resize arrows in level editor to resize tile selection
 
 ========================================================================
 

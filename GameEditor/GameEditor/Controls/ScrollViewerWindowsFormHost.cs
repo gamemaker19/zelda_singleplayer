@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace WPFRichTextBox
@@ -27,7 +28,7 @@ namespace WPFRichTextBox
         #endregion
 
         #region Properties
-        private ScrollViewer ParentScrollViewer { get; set; }
+        public ScrollViewer ParentScrollViewer { get; set; }
         private bool Scrolling { get; set; }
         public bool Resizing { get; set; }
         private Visual RootVisual
@@ -48,6 +49,14 @@ namespace WPFRichTextBox
         #endregion
 
         #region Methods
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
+                return;
+            
+            base.OnKeyDown(e);
+        }
 
         protected override void OnWindowPositionChanged(Rect rcBoundingBox)
         {
@@ -146,8 +155,20 @@ namespace WPFRichTextBox
 
                 vParent = LogicalTreeHelper.GetParent(vParent);
             }
+
+            parentScroll.PreviewKeyDown += (object sender, System.Windows.Input.KeyEventArgs e) =>
+            {
+                if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
+                {
+                    e.Handled = true;
+                    keyDownAction?.Invoke(sender, e);
+                }
+            };
+
             return parentScroll;
         }
+
+        public Action<object, System.Windows.Input.KeyEventArgs> keyDownAction;
 
         private void SetRegion(int x1, int y1, int x2, int y2)
         {

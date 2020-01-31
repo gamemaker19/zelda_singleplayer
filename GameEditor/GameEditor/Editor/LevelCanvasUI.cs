@@ -315,7 +315,7 @@ namespace GameEditor.Editor
             if (levelEditor.clonedTiles != null)
             {
                 var rect = levelEditor.clonedTiles.getRect();
-                var destPoint = this.getMouseGridCoords();
+                var destPoint = gridCoords;
                 if (levelEditor.mode16x16 && this.mouseY % 16 >= 8)
                 {
                     destPoint.i--;
@@ -500,7 +500,7 @@ namespace GameEditor.Editor
                 return;
             }
 
-            if (keyCode == Key.Escape)
+            if (keyCode == Key.S)
             {
                 levelEditor.selectedTool = Tool.Select;
                 levelEditor.clonedTiles = null; //getLevelSelectedGridRect();
@@ -754,19 +754,19 @@ namespace GameEditor.Editor
                 }
                 var incX = 0;
                 var incY = 0;
-                if (keyCode == Key.A)
+                if (keyCode == Key.Left)
                 {
                     incX = -1;
                 }
-                else if (keyCode == Key.D)
+                else if (keyCode == Key.Right)
                 {
                     incX = 1;
                 }
-                else if (keyCode == Key.W)
+                else if (keyCode == Key.Up)
                 {
                     incY = -1;
                 }
-                else if (keyCode == Key.S)
+                else if (keyCode == Key.Down)
                 {
                     incY = 1;
                 }
