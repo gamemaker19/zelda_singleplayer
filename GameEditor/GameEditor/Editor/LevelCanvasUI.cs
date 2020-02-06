@@ -149,6 +149,7 @@ namespace GameEditor.Editor
             }
             if (levelEditor.selectedTool == Tool.CreateInstance && !this.mouseLeftCanvas)
             {
+                if (levelEditor.selectedObj == null) return;
                 var sprite = levelEditor.sprites.Where(s => { return s.name == levelEditor.selectedObj.spriteOrImage; }).FirstOrDefault();
 
                 float a = mouseX;
@@ -424,7 +425,10 @@ namespace GameEditor.Editor
             {
                 if (levelEditor.selectedLevel == null) return;
                 var oldSelectedInstances = levelEditor.selectedInstances;
-                levelEditor.clearSelectedInstances();
+                if (!isHeld(Key.LeftShift))
+                {
+                    levelEditor.clearSelectedInstances();
+                }
                 foreach (var instance in levelEditor.selectedLevel.instances)
                 {
                     var rect = instance.getPositionalRect();
@@ -906,8 +910,8 @@ namespace GameEditor.Editor
                 {
                     foreach (var instance in levelEditor.selectedInstances)
                     {
-                        instance.pos.x += incX;
-                        instance.pos.y += incY;
+                        instance.pos.x += incX * (isHeld(Key.LeftCtrl) ? 8 : 1);
+                        instance.pos.y += incY * (isHeld(Key.LeftCtrl) ? 8 : 1);
                     }
                     levelEditor.addUndoJson();
                     levelEditor.redrawLevelCanvas();

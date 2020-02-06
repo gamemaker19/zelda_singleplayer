@@ -52,7 +52,7 @@
         </WrapPanel>
         <StackPanel Visibility="{Binding Path=hasLevelSelectedTile, Converter={StaticResource BoolToVis}}" Height="232" Canvas.Left="354" Canvas.Top="731" Width="320">
             <Label Content="Selection Properties" FontWeight="Bold" FontSize="16"/>
-            <TextBox Text="{Binding Path=selectionProperties}" Height="191" Margin="0,0,10,0" />
+            <TextBox Text="{Binding Path=selectionProperties}" TextWrapping="Wrap" AcceptsReturn="True" Height="191" Margin="0,0,10,0" />
         </StackPanel>
         <StackPanel Visibility="{Binding Path=hasSelectedInstance, Converter={StaticResource BoolToVis}}" Height="232" Canvas.Left="693" Canvas.Top="731" Width="323">
             <Label Content="Instance Properties" FontWeight="Bold" FontSize="16"/>
@@ -62,7 +62,7 @@
                 <Label Content="Y"/>
                 <TextBox Text="{Binding Path=selectedInstanceY}" Width="87" />
             </WrapPanel>
-            <TextBox Text="{Binding Path=selectedInstanceProperties}" Height="153" Margin="0,0,9.667,0" />
+            <TextBox Text="{Binding Path=selectedInstanceProperties}" TextWrapping="Wrap" AcceptsReturn="True" Height="153" Margin="0,0,9.667,0" />
         </StackPanel>
         <Label Content="Tileset:" Canvas.Left="1236" Canvas.Top="588"/>
         <ComboBox ItemsSource="{Binding tilesets}" SelectedItem="{Binding selectedTileset}" SelectionChanged="tilesetComboBoxChanged" Canvas.Left="1300" Canvas.Top="592" Width="120"/>
