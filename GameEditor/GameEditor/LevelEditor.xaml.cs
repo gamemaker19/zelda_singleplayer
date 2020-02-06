@@ -8,7 +8,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -40,12 +39,11 @@ namespace GameEditor
 
         public int loadCount = -1;
         public int maxLoadCount = 0;
-        public List<string> undoJsons = new List<string>();
+        public List<byte[]> undoObjects = new List<byte[]>();
         public int undoIndex = 0;
         public int selectionElevation = 0;
 
         public int paintElevationHeight = 0;
-        public List<Spritesheet> levelImages = new List<Spritesheet>();
         public string lastSelectedTileSprite = "";
         public string customHitboxPoints = "";
         public GridRect clonedTiles = null;
@@ -148,7 +146,6 @@ namespace GameEditor
             spritesheets = Helpers.getSpritesheets("spritesheets");
             tilesets = Helpers.getSpritesheets("tilesets");
             tileDatas = Helpers.getTileDatas();
-            levelImages = Helpers.getSpritesheets("levelimages");
             sprites = Helpers.getSprites();
             levels = new ObservableCollection<Level>(Helpers.getLevels());
             spriteNames.Add("");
@@ -188,6 +185,14 @@ namespace GameEditor
             App.applicationExitAction = onApplicationExit;
         }
 
+        public List<List<string>> selectedLevelTiles
+        {
+            get
+            {
+                return selectedLevel.tileInstances[selectedLayer];
+            }
+        }
+
         public string selectedTileId
         {
             get
@@ -203,7 +208,7 @@ namespace GameEditor
             get
             {
                 if (selectedLevel == null || selectedLevel.layers.Count == 0) return "Hide";
-                if(selectedLevel.layers[selectedLayer].isHidden)
+                if (selectedLevel.layers[selectedLayer].isHidden)
                 {
                     return "Show";
                 }
@@ -373,7 +378,7 @@ namespace GameEditor
                 notifyPropertyChanged("layerShowOrHide");
             }
         }
-        public Bitmap selectedLayerBitmap 
+        public Bitmap selectedLayerBitmap
         {
             get
             {
@@ -498,11 +503,11 @@ namespace GameEditor
         {
             get
             {
-                if(selectedInstances.Count > 1)
+                if (selectedInstances.Count > 1)
                 {
                     return "-";
                 }
-                else if(selectedInstances.Count == 1)
+                else if (selectedInstances.Count == 1)
                 {
                     return selectedInstances[0].pos.x.ToString();
                 }
@@ -510,7 +515,7 @@ namespace GameEditor
             }
             set
             {
-                foreach(var instance in selectedInstances)
+                foreach (var instance in selectedInstances)
                 {
                     try
                     {
@@ -627,8 +632,9 @@ namespace GameEditor
             if (selectedTilesetIndex < 0) selectedTilesetIndex = 0;
             if (selectedTilesetIndex >= tilesets.Count) selectedTilesetIndex = 0;
             selectedTileset = tilesets[selectedTilesetIndex];
-            selectedLevel.setLayers(levelImages);
+            selectedLevel.setLayers(null);
             onTilesetChange(selectedTileset);
+            undoObjects.Clear();
             addUndoJson();
             resetUI();
             redrawLevelCanvas();
@@ -866,55 +872,71 @@ namespace GameEditor
 
         public void addUndoJson()
         {
-            //if (this.undoIndex < this.undoJsons.Count - 1)
-            //{
-            //    this.undoJsons.Count = this.undoIndex + 1;
-            //}
-            //var json = Helpers.serializeES6(selectedLevel);
-            //this.undoJsons.Add(json);
-            //if (this.undoJsons.Count > Consts.MAX_UNDOS)
-            //{
-            //    this.undoJsons.RemoveAt(0);
-            //}
-            //this.undoIndex = this.undoJsons.Count - 1;
+            /*
+            if (undoIndex < undoObjects.Count - 1)
+            {
+                var oldList = undoObjects;
+                undoObjects = new List<byte[]>(undoIndex + 1);
+                for (int i = 0; i < undoObjects.Count; i++)
+                {
+                    undoObjects[i] = oldList[i];
+                }
+            }
+
+            var bytes = Helpers.WriteObject(selectedLevel);
+            undoObjects.Add(bytes);
+            if (undoObjects.Count > Consts.MAX_UNDOS)
+            {
+                undoObjects.RemoveAt(0);
+            }
+            undoIndex = undoObjects.Count - 1;
+            */
         }
 
         public void undo()
         {
-            //this.undoIndex--;
-            //if (this.undoIndex < 0) this.undoIndex = 0;
-            //else
-            //{
-            //    var obj = JSON.parse(this.undoJsons[this.undoIndex]);
-            //    var level = Helpers.deserializeES6(obj);
-            //    for (var i = 0; i < levels.length; i++)
-            //    {
-            //        if (levels[i].name == level.name)
-            //        {
-            //            levels[i] = level;
-            //        }
-            //    }
-            //    changeLevel(level, true);
-            //}
+            /*
+            undoIndex--;
+            if (undoIndex < 0) undoIndex = 0;
+            else
+            {
+                var level = Helpers.ReadObject<Level>(undoObjects[undoIndex]);
+                for (var i = 0; i < levels.Count; i++)
+                {
+                    if (levels[i].name == level.name)
+                    {
+                        levels[i].destroy();
+                        levels[i] = level;
+                    }
+                }
+                selectedLevel.redrawLayer(selectedLayer);
+                redrawLevelCanvas();
+                resetUI();
+            }
+            */
         }
 
         public void redo()
         {
-            //this.undoIndex++;
-            //if (this.undoIndex >= this.undoJsons.Count) this.undoIndex = this.undoJsons.Count - 1;
-            //else
-            //{
-            //    var obj = JSON.parse(this.undoJsons[this.undoIndex]);
-            //    var level = Helpers.deserializeES6(obj);
-            //    for (var i = 0; i < levels.Count; i++)
-            //    {
-            //        if (levels[i].name == level.name)
-            //        {
-            //            levels[i] = level;
-            //        }
-            //    }
-            //    changeLevel(level, true);
-            //}
+            /*
+            undoIndex++;
+            if (undoIndex >= undoObjects.Count) undoIndex = undoObjects.Count - 1;
+            else
+            {
+                var level = Helpers.ReadObject<Level>(undoObjects[undoIndex]);
+                for (var i = 0; i < levels.Count; i++)
+                {
+                    if (levels[i].name == level.name)
+                    {
+                        levels[i].destroy();
+                        levels[i] = level;
+                    }
+                }
+                selectedLevel.redrawLayer(selectedLayer);
+                redrawLevelCanvas();
+                resetUI();
+            }
+            */
         }
 
         public void downloadImage()
@@ -924,7 +946,7 @@ namespace GameEditor
             //link.setAttribute('href', selectedLevel.layers[0].toDataURL("image/png").replace("image/png", "image/octet-stream"));
             //link.click();
         }
-        
+
         public void setTileDataGrids()
         {
             foreach (var tileset in tilesets)

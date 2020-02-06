@@ -35,6 +35,7 @@ namespace GameEditor.Models
 
         public int width { get; set; } = 0;
         public int height { get; set; } = 0;
+
         public Level(string name, int width, int height)
         {
             this.name = name;
@@ -71,7 +72,7 @@ namespace GameEditor.Models
             }
             else
             {
-                foreach(var grid in tileInstances)
+                foreach (var grid in tileInstances)
                 {
                     Bitmap bitmap = new Bitmap(width * Consts.TILE_WIDTH, height * Consts.TILE_WIDTH);
                     layers.Add(new Layer(bitmap));
@@ -80,34 +81,55 @@ namespace GameEditor.Models
             }
         }
 
-        public void redrawLayer(int index)
+        public void redrawLayer(int index, IList<GridCoords> coordsToRedraw = null)
         {
             Bitmap bitmap = layers[index].bitmap;
             var grid = tileInstances[index];
             Graphics canvas = Graphics.FromImage(bitmap);
-            canvas.Clear(Color.Transparent);
-            for (int i = 0; i < grid.Count; i++)
-            {
-                for (int j = 0; j < grid[i].Count; j++)
-                {
-                    string tileId = grid[i][j];
-                    if (string.IsNullOrEmpty(tileId))
-                    {
-                        continue;
-                    }
-                    string tilesetName = tileId.Split('_')[0];
-                    int ti = int.Parse(tileId.Split('_')[1]);
-                    int tj = int.Parse(tileId.Split('_')[2]);
+            bool fullWipe = (coordsToRedraw == null);
 
-                    TileData tileData = LevelEditor.tileDataGrids[tilesetName][ti][tj];
-                    if (tileData == null)
+            if (fullWipe)
+            {
+                canvas.Clear(Color.Transparent);
+                coordsToRedraw = new List<GridCoords>();
+                for (int i = 0; i < grid.Count; i++)
+                {
+                    for (int j = 0; j < grid[i].Count; j++)
                     {
-                        continue;
+                        coordsToRedraw.Add(new GridCoords(i, j));
                     }
-                    else
+                }
+            }
+
+            foreach (var coord in coordsToRedraw)
+            {
+                int i = coord.i;
+                int j = coord.j;
+                string tileId = grid[i][j];
+                if (string.IsNullOrEmpty(tileId))
+                {
+                    if (!fullWipe)
                     {
-                        Helpers.drawImage(canvas, tileData.tileset.image, j * Consts.TILE_WIDTH, i * Consts.TILE_WIDTH, tileData.gridCoords.j * Consts.TILE_WIDTH, tileData.gridCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH);
+                        Helpers.drawRect(canvas, coord.getRect(), Color.Transparent);
                     }
+                    continue;
+                }
+                string tilesetName = tileId.Split('_')[0];
+                int ti = int.Parse(tileId.Split('_')[1]);
+                int tj = int.Parse(tileId.Split('_')[2]);
+
+                TileData tileData = LevelEditor.tileDataGrids[tilesetName][ti][tj];
+                if (tileData == null)
+                {
+                    if (!fullWipe)
+                    {
+                        Helpers.drawRect(canvas, coord.getRect(), Color.Transparent);
+                    }
+                    continue;
+                }
+                else
+                {
+                    Helpers.drawImage(canvas, tileData.tileset.image, j * Consts.TILE_WIDTH, i * Consts.TILE_WIDTH, tileData.gridCoords.j * Consts.TILE_WIDTH, tileData.gridCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH);
                 }
             }
             canvas.Dispose();
@@ -136,12 +158,12 @@ namespace GameEditor.Models
             height = height + topAmount + bottomAmount;
 
             var newCoordPropertiesGrid = Helpers.make2DArray<Dictionary<string, string>>(height, width, new Dictionary<string, string>());
-            for(int i = 0; i < newCoordPropertiesGrid.Count; i++)
+            for (int i = 0; i < newCoordPropertiesGrid.Count; i++)
             {
-                for(int j = 0; j < newCoordPropertiesGrid[i].Count; j++)
+                for (int j = 0; j < newCoordPropertiesGrid[i].Count; j++)
                 {
                     if (i - topAmount < 0 || j - leftAmount < 0 || i - topAmount >= coordPropertiesGrid.Count || j - leftAmount >= coordPropertiesGrid[0].Count) continue;
-                    newCoordPropertiesGrid[i][j] = coordPropertiesGrid[i - topAmount][j - leftAmount];       
+                    newCoordPropertiesGrid[i][j] = coordPropertiesGrid[i - topAmount][j - leftAmount];
                 }
             }
             coordPropertiesGrid = newCoordPropertiesGrid;
@@ -177,12 +199,12 @@ namespace GameEditor.Models
                 layers[index].bitmap = newLayer;
             }
 
-            for(int i = 0; i < layers.Count; i++)
+            for (int i = 0; i < layers.Count; i++)
             {
                 redrawLayer(i);
             }
-            
-            foreach(var instance in instances)
+
+            foreach (var instance in instances)
             {
                 instance.pos.x += leftPixelAmount;
                 instance.pos.y += topPixelAmount;

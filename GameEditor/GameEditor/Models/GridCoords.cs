@@ -37,5 +37,12 @@ namespace GameEditor.Models
         {
             return i.ToString() + "," + j.ToString();
         }
+
+        public bool outOfBounds(int width, int height)
+        {
+            if (i < 0 || j < 0) return true;
+            if (i >= height || j >= width) return true;
+            return false;
+        }
     }
 }

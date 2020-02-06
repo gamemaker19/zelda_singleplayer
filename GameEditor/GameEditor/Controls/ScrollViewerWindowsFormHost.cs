@@ -50,13 +50,16 @@ namespace WPFRichTextBox
 
         #region Methods
 
+        /*
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
+            if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down ||
+                e.Key == Key.Insert || e.Key == Key.Delete || e.Key == Key.Home || e.Key == Key.End || e.Key == Key.PageDown || e.Key == Key.PageUp)
                 return;
-            
+
             base.OnKeyDown(e);
         }
+        */
 
         protected override void OnWindowPositionChanged(Rect rcBoundingBox)
         {
@@ -158,7 +161,7 @@ namespace WPFRichTextBox
 
             parentScroll.PreviewKeyDown += (object sender, System.Windows.Input.KeyEventArgs e) =>
             {
-                if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
+                if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down || e.Key == Key.Insert || e.Key == Key.Delete || e.Key == Key.Home || e.Key == Key.End || e.Key == Key.PageDown || e.Key == Key.PageUp)
                 {
                     e.Handled = true;
                     keyDownAction?.Invoke(sender, e);

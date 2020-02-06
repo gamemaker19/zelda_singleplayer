@@ -1,4 +1,3 @@
--Resize arrows in level editor to resize tile selection
 
 ========================================================================
 

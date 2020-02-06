@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml;
 
 namespace GameEditor.Editor
 {
@@ -169,6 +170,36 @@ namespace GameEditor.Editor
             setStorageKeyIfNull();
             string json = JsonConvert.SerializeObject(storageKeys);
             File.WriteAllText(storageKeysPath, json);
+        }
+
+        public static byte[] WriteObject<T>(T thingToSave)
+        {
+            byte[] bytes;
+            using (var stream = new MemoryStream())
+            {
+                var serializer = new DataContractSerializer(typeof(T));
+                serializer.WriteObject(stream, thingToSave);
+                bytes = new byte[stream.Length];
+                stream.Position = 0;
+                stream.Read(bytes, 0, (int)stream.Length);
+            }
+            return bytes;
+
+        }
+
+        public static T ReadObject<T>(byte[] data)
+        {
+            T deserializedThing = default(T);
+
+            using (var stream = new MemoryStream(data))
+            using (var reader = XmlDictionaryReader.CreateTextReader(stream, new XmlDictionaryReaderQuotas()))
+            {
+                var serializer = new DataContractSerializer(typeof(T));
+
+                // Deserialize the data and read it from the instance.
+                deserializedThing = (T)serializer.ReadObject(reader, true);
+            }
+            return deserializedThing;
         }
 
         public static void drawRect(Graphics canvas, Rect rect, Color? fillColor, Color? strokeColor = null, int strokeWidth = 0, float fillAlpha = 1)

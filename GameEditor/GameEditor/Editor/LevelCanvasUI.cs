@@ -153,13 +153,13 @@ namespace GameEditor.Editor
 
                 float a = mouseX;
                 float b = mouseY;
-                
+
                 if (true)
                 {
                     a = (this.getMouseGridCoordsCustomWidth(Consts.TILE_WIDTH).j * Consts.TILE_WIDTH);
                     b = (this.getMouseGridCoordsCustomWidth(Consts.TILE_WIDTH).i * Consts.TILE_WIDTH);
                 }
-                
+
                 var x = a + levelEditor.selectedObj.snapOffset.x;
                 var y = b + levelEditor.selectedObj.snapOffset.y;
                 sprite.draw(graphics, 0, x, y);
@@ -259,17 +259,17 @@ namespace GameEditor.Editor
                 var y = this.mouseY;
                 //if (levelEditor.selectedObj.snapToTile)
                 //{
-                    var sprite = levelEditor.sprites.Where(s => { return s.name == levelEditor.selectedObj.spriteOrImage; }).FirstOrDefault();
-                    var a = (this.getMouseGridCoordsCustomWidth(Consts.TILE_WIDTH).j * Consts.TILE_WIDTH);
-                    var b = (this.getMouseGridCoordsCustomWidth(Consts.TILE_WIDTH).i * Consts.TILE_WIDTH);
-                    var alignOffset = sprite.getAlignOffset(sprite.frames[0]);
-                    x = a + levelEditor.selectedObj.snapOffset.x;
-                    y = b + levelEditor.selectedObj.snapOffset.y;
-                    if (levelEditor.selectedLevel.instances.Any((SpriteInstance i) => { return i.pos.x == x && i.pos.y == y && i.obj == levelEditor.selectedObj; }))
-                    {
-                        Console.WriteLine("Same instance found at point! Not creating...");
-                        return;
-                    }
+                var sprite = levelEditor.sprites.Where(s => { return s.name == levelEditor.selectedObj.spriteOrImage; }).FirstOrDefault();
+                var a = (this.getMouseGridCoordsCustomWidth(Consts.TILE_WIDTH).j * Consts.TILE_WIDTH);
+                var b = (this.getMouseGridCoordsCustomWidth(Consts.TILE_WIDTH).i * Consts.TILE_WIDTH);
+                var alignOffset = sprite.getAlignOffset(sprite.frames[0]);
+                x = a + levelEditor.selectedObj.snapOffset.x;
+                y = b + levelEditor.selectedObj.snapOffset.y;
+                if (levelEditor.selectedLevel.instances.Any((SpriteInstance i) => { return i.pos.x == x && i.pos.y == y && i.obj == levelEditor.selectedObj; }))
+                {
+                    Console.WriteLine("Same instance found at point! Not creating...");
+                    return;
+                }
                 //}
                 var instance = new SpriteInstance(levelEditor.selectedObj.name, x, y, levelEditor.selectedObj, levelEditor.sprites);
                 levelEditor.selectedLevel.instances.Add(instance);
@@ -288,16 +288,16 @@ namespace GameEditor.Editor
             }
             else if (levelEditor.selectedTool == Tool.FloodfillTile)
             {
-                var grid = levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer];
-                for(int i = 0; i < grid.Count; i++)
+                var grid = levelEditor.selectedLevelTiles;
+                for (int i = 0; i < grid.Count; i++)
                 {
-                    for(int j = 0; j < grid[i].Count; j++)
+                    for (int j = 0; j < grid[i].Count; j++)
                     {
-                        if(string.IsNullOrEmpty(grid[i][j]))
+                        if (string.IsNullOrEmpty(grid[i][j]))
                         {
                             var tile = levelEditor.getTileSelectedTiles()[0];
                             grid[i][j] = tile.getId();
-                            
+
                             using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLayerBitmap))
                             {
                                 var rect = tile.gridCoords.getRect();
@@ -335,8 +335,8 @@ namespace GameEditor.Editor
                     {
                         try
                         {
-                            levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][destPoint.i + iDiff][destPoint.j + jDiff] =
-                                levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][i][j];
+                            levelEditor.selectedLevelTiles[destPoint.i + iDiff][destPoint.j + jDiff] =
+                                levelEditor.selectedLevelTiles[i][j];
                         }
                         catch (ArgumentOutOfRangeException) { }
                     }
@@ -375,7 +375,7 @@ namespace GameEditor.Editor
         {
             try
             {
-                levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][levelCoords.i][levelCoords.j] = TileData.createId(tileset, tileCoords);
+                levelEditor.selectedLevelTiles[levelCoords.i][levelCoords.j] = TileData.createId(tileset, tileCoords);
             }
             catch (ArgumentOutOfRangeException) { }
         }
@@ -451,7 +451,7 @@ namespace GameEditor.Editor
                 /*
                 if (levelEditor.clonedTiles != null)
                 {
-                    string tileId = levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][levelEditor.clonedTiles.i1][levelEditor.clonedTiles.j1];
+                    string tileId = levelEditor.selectedLevelTiles[levelEditor.clonedTiles.i1][levelEditor.clonedTiles.j1];
                     if(!string.IsNullOrEmpty(tileId))
                     {
                         TileData.getPieces(tileId, out var tilesetName, out tileCoordToPlace);
@@ -552,7 +552,7 @@ namespace GameEditor.Editor
                     {
                         tileHash[tile.getId()] = tile;
                     }
-                    var grid = levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer];
+                    var grid = levelEditor.selectedLevelTiles;
                     List<List<BFSNode>> searchGrid = Helpers.make2DArray<BFSNode>(grid[0].Count, grid.Count, null);
                     for (var i = 0; i < searchGrid.Count; i++)
                     {
@@ -743,17 +743,21 @@ namespace GameEditor.Editor
                         foreach (var gridCoords in levelEditor.levelSelectedCoords)
                         {
                             Helpers.drawRect(canvas, Rect.CreateWH(gridCoords.j * Consts.TILE_WIDTH, gridCoords.i * Consts.TILE_WIDTH, Consts.TILE_WIDTH, Consts.TILE_WIDTH), Color.Transparent);
-                            levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][gridCoords.i][gridCoords.j] = "";
+                            levelEditor.selectedLevelTiles[gridCoords.i][gridCoords.j] = "";
                         }
                     }
 
-                    levelEditor.selectedLevel.redrawLayer(levelEditor.selectedLayer);
+                    levelEditor.selectedLevel.redrawLayer(levelEditor.selectedLayer, levelEditor.levelSelectedCoords);
 
                     levelEditor.addUndoJson();
                     levelEditor.redrawLevelCanvas();
                 }
+            }
+            if (levelEditor.selectedTool == Tool.Select)
+            {
                 var incX = 0;
                 var incY = 0;
+
                 if (keyCode == Key.Left)
                 {
                     incX = -1;
@@ -770,15 +774,17 @@ namespace GameEditor.Editor
                 {
                     incY = 1;
                 }
-                if (incX != 0 || incY != 0)
+
+                bool resizeModifierHeld = (this.isHeld(Key.LeftCtrl) || this.isHeld(Key.LeftShift) || this.isHeld(Key.RightCtrl) || this.isHeld(Key.RightShift));
+                if ((incX != 0 || incY != 0) && !resizeModifierHeld)
                 {
                     using (Graphics canvas = Graphics.FromImage(levelEditor.selectedLayerBitmap))
                     {
                         var savedTiles = new Dictionary<string, string>();
                         foreach (var coord in levelEditor.levelSelectedCoords)
                         {
-                            savedTiles[coord.ToString()] = levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][coord.i][coord.j];
-                            levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][coord.i][coord.j] = levelEditor.selectedLevel.defaultTileId;
+                            savedTiles[coord.ToString()] = levelEditor.selectedLevelTiles[coord.i][coord.j];
+                            levelEditor.selectedLevelTiles[coord.i][coord.j] = levelEditor.selectedLevel.defaultTileId;
 
                             if (!string.IsNullOrEmpty(levelEditor.selectedLevel.defaultTileId))
                             {
@@ -795,7 +801,7 @@ namespace GameEditor.Editor
                         foreach (var coord in levelEditor.levelSelectedCoords)
                         {
                             string savedTileId = savedTiles[coord.ToString()];
-                            levelEditor.selectedLevel.tileInstances[levelEditor.selectedLayer][coord.i + incY][coord.j + incX] = savedTileId;
+                            levelEditor.selectedLevelTiles[coord.i + incY][coord.j + incX] = savedTileId;
                             if (!string.IsNullOrEmpty(savedTileId))
                             {
                                 TileData.getPieces(savedTileId, out var tilesetName, out var savedTileCoords);
@@ -814,9 +820,69 @@ namespace GameEditor.Editor
                         levelEditor.redrawLevelCanvas();
                     }
                 }
+                else if ((incX != 0 || incY != 0) && resizeModifierHeld)
+                {
+                    //Code to resize selection here
+                    GridRect selectionRect = levelEditor.getLevelSelectedGridRect();
+                    if (selectionRect == null) return;
+                    var gridCoordsToRedraw = new List<GridCoords>();
+
+                    if (incX < 0)
+                    {
+                        for (int i = selectionRect.i1; i <= selectionRect.i2; i++)
+                        {
+                            var gridCoordToAdd = new GridCoords(i, selectionRect.j1 - 1);
+                            if (gridCoordToAdd.outOfBounds(levelEditor.selectedLevel.width, levelEditor.selectedLevel.height)) continue;
+                            gridCoordsToRedraw.Add(gridCoordToAdd);
+                            levelEditor.levelSelectedCoords.Add(gridCoordToAdd);
+                            levelEditor.selectedLevelTiles[gridCoordToAdd.i][gridCoordToAdd.j] =
+                                levelEditor.selectedLevelTiles[i][selectionRect.j1];
+                        }
+                    }
+                    else if (incX > 0)
+                    {
+                        for (int i = selectionRect.i1; i <= selectionRect.i2; i++)
+                        {
+                            var gridCoordToAdd = new GridCoords(i, selectionRect.j2 + 1);
+                            if (gridCoordToAdd.outOfBounds(levelEditor.selectedLevel.width, levelEditor.selectedLevel.height)) continue;
+                            gridCoordsToRedraw.Add(gridCoordToAdd);
+                            levelEditor.levelSelectedCoords.Add(gridCoordToAdd);
+                            levelEditor.selectedLevelTiles[gridCoordToAdd.i][gridCoordToAdd.j] =
+                                levelEditor.selectedLevelTiles[i][selectionRect.j2];
+                        }
+                    }
+                    else if (incY < 0)
+                    {
+                        for (int j = selectionRect.j1; j <= selectionRect.j2; j++)
+                        {
+                            var gridCoordToAdd = new GridCoords(selectionRect.i1 - 1, j);
+                            if (gridCoordToAdd.outOfBounds(levelEditor.selectedLevel.width, levelEditor.selectedLevel.height)) continue;
+                            gridCoordsToRedraw.Add(gridCoordToAdd);
+                            levelEditor.levelSelectedCoords.Add(gridCoordToAdd);
+                            levelEditor.selectedLevelTiles[gridCoordToAdd.i][gridCoordToAdd.j] =
+                                levelEditor.selectedLevelTiles[selectionRect.i1][j];
+                        }
+                    }
+                    else if (incY > 0)
+                    {
+                        for (int j = selectionRect.j1; j <= selectionRect.j2; j++)
+                        {
+                            var gridCoordToAdd = new GridCoords(selectionRect.i2 + 1, j);
+                            if (gridCoordToAdd.outOfBounds(levelEditor.selectedLevel.width, levelEditor.selectedLevel.height)) continue;
+                            gridCoordsToRedraw.Add(gridCoordToAdd);
+                            levelEditor.levelSelectedCoords.Add(gridCoordToAdd);
+                            levelEditor.selectedLevelTiles[gridCoordToAdd.i][gridCoordToAdd.j] =
+                                levelEditor.selectedLevelTiles[selectionRect.i2][j];
+                        }
+                    }
+
+                    levelEditor.selectedLevel.redrawLayer(levelEditor.selectedLayer, gridCoordsToRedraw);
+                    levelEditor.addUndoJson();
+                    levelEditor.redrawLevelCanvas();
+                }
             }
 
-            else if (levelEditor.selectedTool == Tool.SelectInstance && levelEditor.selectedInstances.Count > 0)
+            if (levelEditor.selectedTool == Tool.SelectInstance && levelEditor.selectedInstances.Count > 0 && firstFrame)
             {
                 var incX = 0;
                 var incY = 0;
